@@ -14,6 +14,22 @@ different things. The technical terms defined in this series are no exceptions, 
 beware that the way this series defines and use them might differ, sometimes subtly, in other
 discussions on verification and induction.
 
+\
+\
+
+These posts discuss verification from the point of view of the solvers available for verification,
+and actual semi-industrial or industrial program verification challenges. Solvers are low-level
+tools working on systems that are relatively far from the programs to analyze: we are interested in
+bridging this gap.
+
+\
+\
+
+The main goal of these posts is to introduce readers to induction-based verification techniques. A
+simple tool called `mikino` is used throughout and will let us inspect low-level aspects as well as
+run and inspect our proofs at (relatively) high level. Readers are encouraged to attempt to verify
+their own programs. We also hope to give an understanding of the challenges in designing a
+verification framework for a specific context using existing low-level solvers.
 
 
 ## Table of Contents
