@@ -14,6 +14,8 @@ different things. The technical terms defined in this series are no exceptions, 
 beware that the way this series defines and use them might differ, sometimes subtly, in other
 discussions on verification and induction.
 
+
+
 ## Table of Contents
 
 - [Preface](./preface/readme.md)
