@@ -19,7 +19,7 @@ We also need an internal variable `is_counting` to remember whether we are count
 `start_stop` toggles counting, meaning we need to remember if we were previously counting or not to
 decide what a press of the `start_stop` button does. Hence, the state variables of our stopwatch are
 
-```rust
+```rust ,no_run,compile_fail
 vars: (
 	// inputs, `true` if pressed
 	start_stop, reset: bool
