@@ -56,7 +56,7 @@ verification framework for a specific context using existing low-level solvers.
     that illustrates a problem. It is also a good context to showcase what one can do with a
     transition system using an SMT solver.
 
-- [Plain Induction](./induction/readme.md)
+- [Induction](./induction/readme.md)
 
     Induction is a natural step from BMC. Since induction *is* a verification technique, this part
     is where we finally start proving things; which is actually not the interesting case because
@@ -65,12 +65,6 @@ verification framework for a specific context using existing low-level solvers.
 
     We will mostly discuss what *"induction not working"* means, why it *not-works*, and what
     information we can get back when it does.
-
-- [`k`-Induction](./k_induction/readme.md)
-
-    `k`-induction is a more powerful version of (plain) induction. It is a bit blunt and can
-    struggle to scale on complex (not necessarily big) systems. It is still a very useful technique,
-    but it cannot be the only string to your verification bow.
 
 - [Property Strengthening](./strength/readme.md)
 

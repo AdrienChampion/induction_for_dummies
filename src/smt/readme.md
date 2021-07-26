@@ -65,11 +65,10 @@ Formula satisfiability is concerned about whether it is possible to make some fo
 formula under which the formula is `true`. Such a valuation is called a *model* of the formula. Let
 us write a tiny example and start running Z3 to play with satisfiability directly.
 
-> **NB**: to be precise, *satisfiability* or *SAT* stands for the *boolean satisfiability problem*,
-> which deals with finding models for purely boolean formulas. *"SMT"* adds *"Modulo Theory"* to
-> *"Satisfiability"* to specify that atoms of the formula can mention theories different from
-> booleans (integers, reals, arrays, *etc.*) in its atoms, and that models must respect the rules
-> of these theories.
+> **NB**: to be precise, *SAT* stands for the *boolean satisfiability problem*, which deals with
+> finding models for purely boolean formulas. *"SMT"* adds *"Modulo Theory"* to *"Satisfiability"*
+> to specify that atoms of the formula can mention theories different from booleans (integers,
+> reals, arrays, *etc.*) in its atoms, and that models must respect the rules of these theories.
 
 
 ## SMT-LIB 2

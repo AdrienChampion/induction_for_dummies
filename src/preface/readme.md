@@ -242,11 +242,11 @@ being sound and correctly implemented.
 
 ## Next
 
-The following posts dive into SMT-based transition system `k`-induction, with some property
+The following posts dive into SMT-based transition system induction, with some property
 strengthening at the end. We will first get to know *SMT solvers*, which are powerful, flexible and
 generally quite amazing tools. Next are *(declarative) transition systems*, which are the kind of
-programs we will analyze. They are relatively simple to understand and require little
-encoding to analyze them, meaning the encoding will be understandable when we look at it.
+programs we will analyze. They are relatively simple to understand and require little encoding to
+analyze them, meaning the encoding will be understandable when we look at it.
 
 Next we discuss *bounded model checking*, which on its own cannot (usually) prove anything: it
 *just* finds counterexamples (bugs). The three posts after that discuss basic and more advanced
