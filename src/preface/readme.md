@@ -31,9 +31,9 @@ point, `res` is equal to `n` is not relevant for type-checking.
 
 Rust's most peculiar feature is the notion of *ownership* and the associated
 [*borrow-checker*][borrow checker]. Similar to type-checking, borrow-checking abstracts the actual
-code to encode it in a framework to reason about the program. Type-checking's core notion is that
-of types, and the equivalent for borrow-checking is *lifetimes*. Consider the following Rust
-function, where `'a` is a lifetime parameter.
+code to encode it in a framework so that it can reason about the program. Type-checking's core
+notion is that of types, and the equivalent for borrow-checking is *lifetimes*. Consider the
+following Rust function, where `'a` is a lifetime parameter.
 
 ```rust ,compile_fail
 // DOES NOT COMPILE
@@ -48,15 +48,7 @@ fn demo<'a>(n: &'a mut usize) -> &'a mut usize {
 
 Now, this code does not compile because of the notion of *ownership*. Here, the function's body
 *owns* `res` since it created (allocated) it and, since it does not transfer `res` itself to the
-caller (only `&mut res`), `res` is freed when we exit the body of the function (`res`'s owner).
-
-\
-\
-
-Type-checking and borrow-checking are examples of verification processes. In both cases, the
-semantics of the program is encoded in a proof system. The encoding of the program and the rules of
-the proof system let the compiler build a set of *constraints*. In the previous example, some of the
-constraints are
+caller (only `&mut res`), `res` is freed when we exit the body of the function (`res`'s owner):
 
 - *i)* `res` only lives for the lifetime `'demo` (lifetime of the body of `demo`)
 - *ii)* `demo` returns a mutable reference to `res`
@@ -68,6 +60,13 @@ general, live strictly longer (be valid for longer) than `'demo`. So, we have `'
 since `'a = 'demo`, we reach a contradiction: `'demo > 'demo`. This means that there is no solution
 to the constraints, and the compiler proceeds to reject the program by telling us that `res` does
 not live long enough.
+
+\
+\
+
+Type-checking and borrow-checking are examples of verification processes. In both cases, the
+semantics of the program is encoded in a proof system. The encoding of the program and the rules of
+the proof system let the compiler build a set of *constraints*.
 
 It is interesting to note that *formal verification*, at its core, really consists in **searching
 for a proof** of correctness. As we saw, the borrow-checker aggregates constraints and then looks

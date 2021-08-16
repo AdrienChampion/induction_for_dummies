@@ -7,7 +7,8 @@ constraints expressed in MSFOL (**M**any-**S**orted **F**irst **O**rder **L**ogi
 First, MSFOL is built on FOL (**F**irst **O**rder **L**ogic), which basically means *"boolean
 formulas"*. For instance, `a ∧ (false ∨ b ∨ c)` is a FOL formula, where `∧` is conjunction (`&&`)
 and `∨` is disjunction (`||`). So this formula *evaluates* to `true` *iff* `a` is `true` and either
-`b` or `c` is true. Note that such formulas are really trees.
+`b` or `c` is true. We can represent this formula as a tree, where leaves are boolean literals and
+nodes are boolean operators.
 
 ```text
  ┌───∧───┐
@@ -45,17 +46,17 @@ From this point forward we assume readers have a Z3 binary called `z3` in their 
 running the command `z3 -version` should not fail and produce an output similar to
 
 ```text
-Z3 version 4.8.12 - 64 bit
+Z3 version 4.8.13 - 64 bit
 ```
 
-While we recommend Z3 for this series of posts, other efficient solvers exist, such as [CVC4][cvc4]
-and [Yices 2][yices]. Solvers tend to be good at distinct kinds of problem from each other, and
-verification frameworks routinely run several of them in parallel, wait for the quickest answer,
-and discard solver instances that are still running.
+While we recommend Z3 for this series of posts, other efficient solvers exist and include
+[Alt-Ergo][ae], [CVC4][cvc4] and [Yices 2][yices]. Solvers tend to be good at distinct kinds of
+problem from each other, and verification frameworks routinely run several of them in parallel,
+wait for the quickest answer, and discard solver instances that are still running.
 
-Last, while we recommend having Z3 available locally, you can run the examples in this section
+<!-- Last, while we recommend having Z3 available locally, you can run the examples in this section
 using only the [Z3 online playground][z3 online]. Beware that all following posts about induction
-require to have Z3 in your path.
+require to have Z3 in your path. -->
 
 
 ## Satisfiability
@@ -92,7 +93,7 @@ The first two lines declare *"constants"* `x` and `y`. As programmers, we can se
 from the [SMT-LIB 2 standard][smt lib], which is the standard language for interacting with SMT
 solvers. Most, if not all, SMT solvers support SMT-LIB 2 input.
 
-Of course, the ASCII art tree representing the formula is legal SMT-LIB 2. An SMT-LIB 2 script
+Of course, the ASCII art tree representing the formula is *not* legal SMT-LIB 2. An SMT-LIB 2 script
 declares constants (and more) and uses these constants to *assert* formulas, *i.e.* specify to the
 solver what the constraints are.
 
@@ -104,15 +105,7 @@ actually write by hand. Still, it is readable enough for pedagogic and debugging
 Anyway, an SMT-LIB assertions of our running example would look like this:
 
 ```text
-(declare-const x Int)
-(declare-const y Int)
-
-(assert (and
-	(> x 7)
-	(or (= y (* 2 x)) (= x 11))
-))
-
-(check-sat)
+{{ #include code/ex_1.smt2 }}
 ```
 
 The `assert` command feeds a constraint to the solver. Next, we can ask the solver to check
@@ -126,7 +119,7 @@ SMT-LIB script above. No special option is needed and you should get the followi
 
 ```text
 ❯ z3 test.smt2
-sat
+{{ #include code/ex_1.out }}
 ```
 
 Z3 simply answered `sat`, indicating that the formula is *"satisfiable"*: there exists a model (a
@@ -135,16 +128,7 @@ if Z3 could give us a model to make sure it is not lying to us (it's not). We ca
 `get-model` command after the `check-sat`.
 
 ```text
-(declare-const x Int)
-(declare-const y Int)
-
-(assert (and
-	(> x 7)
-	(or (= y (* 2 x)) (= x 11))
-))
-
-(check-sat)
-(get-model)
+{{ #include code/ex_2.smt2 }}
 ```
 
 After updating `test.smt2`, running Z3 again will produce a model. You might not get exactly the
@@ -153,13 +137,7 @@ possibly other factors (such as you operating system).
 
 ```text
 ❯ z3 test.smt2
-sat
-(
-  (define-fun y () Int
-    16)
-  (define-fun x () Int
-    8)
-)
+{{ #include code/ex_2.out }}
 ```
 
 The model is slightly cryptic. Z3 defines `x` and `y` as functions taking no arguments, which means
@@ -178,14 +156,7 @@ all constraints. In our running example, our only constraint is a conjunction, m
 write it as two constraints.
 
 ```text
-(declare-const x Int)
-(declare-const y Int)
-
-(assert (> x 7))
-(assert (or (= y (* 2 x)) (= x 11)))
-
-(check-sat)
-(get-model)
+{{ #include code/ex_3.smt2 }}
 ```
 
 Let us now add the constraint that `y` is an odd number: `(= (mod y 2) 1)`. This should void the
@@ -193,15 +164,7 @@ previous model, and more generally any model that relies on making `(= y (* 2 x)
 the constraints. (Since `y` would need to be both even and odd.)
 
 ```text
-(declare-const x Int)
-(declare-const y Int)
-
-(assert (> x 7))
-(assert (or (= y (* 2 x)) (= x 11)))
-(assert (= (mod y 2) 1))
-
-(check-sat)
-(get-model)
+{{ #include code/ex_4.smt2 }}
 ```
 
 We now get
@@ -209,12 +172,7 @@ We now get
 ```text
 ❯ z3 test.smt2
 sat
-(
-  (define-fun x () Int
-    11)
-  (define-fun y () Int
-    1)
-)
+{{ #include code/ex_4.smt2 }}
 ```
 
 As expected, Z3 now makes the second constraint true through `(= x 11)`.
@@ -230,25 +188,14 @@ We can simply constrain `x` to be even (which prevents `x` to be `11`), which we
 cannot be odd".
 
 ```text
-(declare-const x Int)
-(declare-const y Int)
-
-(assert (> x 7))
-(assert (or (= y (* 2 x)) (= x 11)))
-(assert (= (mod y 2) 1))
-
-(assert (not (= mod x 2) 1))
-
-(check-sat)
-(get-model)
+{{ #include code/ex_5.smt2 }}
 ```
 
 Z3 knows exactly what we are doing and replies that the formula is unsatisfiable.
 
 ```text
 ❯ z3 test.smt2
-unsat
-(error "line 11 column 10: model is not available")
+{{ #include code/ex_5.out }}
 ```
 
 We get an error though, because it does not make sense to ask for a model if the formula is
@@ -294,7 +241,8 @@ we will see in the following posts.
 
 [z3]: https://github.com/Z3Prover/z3 (Z3 on github)
 [z3 release]: https://github.com/Z3Prover/z3/releases (Z3's releases on github)
-[z3 online]: https://rise4fun.com/z3 (Z3's online interface)
+<!-- [z3 online]: https://rise4fun.com/z3 (Z3's online interface) -->
+[ae]: https://alt-ergo.ocamlpro.com (Alt-Ergo homepage)
 [cvc4]: https://cvc4.github.io/ (CVC4 homepage)
 [yices]: https://yices.csl.sri.com (Yices 2 homepage)
 [smt lib]: http://smtlib.cs.uiowa.edu (SMT-LIB homepage)
