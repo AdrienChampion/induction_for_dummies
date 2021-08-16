@@ -69,6 +69,18 @@ pub mod test {
     pub fn book(path: impl AsRef<Path>) -> Res<()> {
         use std::process::Command;
 
+        log::info!("building with `mdbook`");
+        let status = Command::new("mdbook")
+            .arg("build")
+            .arg("--")
+            .arg(path.as_ref())
+            .status()
+            .chain_err(|| "failed to run `mdbook test`")?;
+        if !status.success() {
+            bail!("`mdbook build` returned with an error")
+        }
+
+        log::info!("testing with `mdbook`");
         let status = Command::new("mdbook")
             .arg("test")
             .arg("--")
@@ -76,7 +88,7 @@ pub mod test {
             .status()
             .chain_err(|| "failed to run `mdbook test`")?;
         if !status.success() {
-            bail!("`mdbook` returned with an error")
+            bail!("`mdbook test` returned with an error")
         }
         Ok(())
     }
@@ -98,17 +110,6 @@ pub mod test {
 
         if !(src.exists() && src.is_dir()) {
             bail!("expected directory path, got `{}`", src.display())
-        }
-
-        // Is there a `code` folder?
-        {
-            let mut code_dir = src.clone();
-            code_dir.push(CODE_DIR);
-            if code_dir.exists() && code_dir.is_dir() {
-                code_out_check(&code_dir).chain_err(|| {
-                    format!("while checking code snippets in `{}`", code_dir.display())
-                })?
-            }
         }
 
         'sub_dirs: for entry_res in src.read_dir().chain_err(dir_read_err!(src.display()))? {
