@@ -119,7 +119,7 @@ SMT-LIB script above. No special option is needed and you should get the followi
 
 ```text
 ❯ z3 test.smt2
-{{ #include code/ex_1.out }}
+{{ #include code/ex_1.smt2.out }}
 ```
 
 Z3 simply answered `sat`, indicating that the formula is *"satisfiable"*: there exists a model (a
@@ -137,7 +137,7 @@ possibly other factors (such as you operating system).
 
 ```text
 ❯ z3 test.smt2
-{{ #include code/ex_2.out }}
+{{ #include code/ex_2.smt2.out }}
 ```
 
 The model is slightly cryptic. Z3 defines `x` and `y` as functions taking no arguments, which means
@@ -195,7 +195,7 @@ Z3 knows exactly what we are doing and replies that the formula is unsatisfiable
 
 ```text
 ❯ z3 test.smt2
-{{ #include code/ex_5.out }}
+{{ #include code/ex_5.smt2.out }}
 ```
 
 We get an error though, because it does not make sense to ask for a model if the formula is
