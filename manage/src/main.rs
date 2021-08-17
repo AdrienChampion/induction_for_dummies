@@ -5,7 +5,12 @@ manage_api::prelude!();
 fn main() {
     const VERB_KEY: &str = "VERB";
     let matches = clap::App::new("manager")
-        .arg(clap::Arg::with_name(VERB_KEY).short("v").multiple(true))
+        .arg(
+            clap::Arg::with_name(VERB_KEY)
+                .short("v")
+                .help("Increases verbosity (max 2)")
+                .multiple(true),
+        )
         .get_matches();
     let log_level = match matches.occurrences_of(VERB_KEY) {
         0 => log::LevelFilter::Info,
