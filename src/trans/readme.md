@@ -41,72 +41,7 @@ The description of this system is
 	<summary>Expand this for a runnable implementation in Rust.</summary>
 
 ```rust ,editable
-# type Int = i64;
-struct State {
-	start_stop: bool,
-	reset: bool,
-	is_counting: bool,
-	cnt: Int, // arbitrary precision integer (ℕ)
-}
-impl State {
-	fn init(start_stop: bool, reset: bool, random_cnt: Int) -> State {
-		State {
-			start_stop,
-			reset,
-			is_counting: false,
-			cnt: if reset { 0 } else { random_cnt },
-		}
-	}
-	fn step(&mut self, start_stop: bool, reset: bool) {
-		self.start_stop = start_stop;
-		self.reset = reset;
-		// Need to toggle `self.is_counting`?
-		if self.start_stop {
-			self.is_counting = !self.is_counting
-		}
-		// `cnt` update
-		self.cnt =
-			if self.reset { 0 } else if self.is_counting { self.cnt + 1 } else {self.cnt};
-	}
-	fn to_string(&self) -> String {
-		format!(
-			"cnt: {}, {}counting",
-			self.cnt,
-			if self.is_counting { "" } else { "not " }
-		)
-	}
-}
-
-fn main() {
-	let mut state = State::init(false, false, -71);
-	let mut step_count = 0;
-	println!("initial state: {}", state.to_string());
-
-	let mut step_show = |start_stop, reset, count_check| {
-		if start_stop {
-			println!("`start_stop` pressed")
-		}
-		if reset {
-			println!("`reset` pressed")
-		}
-		state.step(start_stop, reset);
-		step_count += 1;
-		println!("@{} | {}", step_count, state.to_string());
-		assert_eq!(state.cnt, count_check);
-	};
-
-	step_show(true, false, -70);
-	step_show(false, false, -69);
-	step_show(false, false, -68);
-	step_show(false, false, -67);
-	step_show(false, true, 0);
-	step_show(false, false, 1);
-	step_show(false, false, 2);
-	step_show(false, false, 3);
-	step_show(true, false, 3);
-	step_show(false, false, 3);
-	step_show(false, false, 3);
-}
+{{ #include code/sw_1.rs }}
 ```
 
 </details>
@@ -167,9 +102,9 @@ depending on the value of `is_counting`. In most cases, these constraints will h
 <details>
 	<summary>Expand this for a concrete example of a conflict.</summary>
 
-Say `s.cnt = 1` and both `s'.reset` and `s'.is_counting` are `true`. Then by the first constraint,
-we must have `s'.cnt = 0`; by the second constraint, we must also have `s'.cnt = 2`. Verifying both
-is not exactly easy.
+> Say `s.cnt = 1`, and both `s'.reset` and `s'.is_counting` are `true`. Then by the first
+> constraint, we must have `s'.cnt = 0`; by the second constraint, we must also have `s'.cnt = 2`.
+> Hence, both constraints are in conflict and, together, they are unsatisfiable.
 </details>
 
 Assuming the order of the points in the description of the system matters, we can solve this problem

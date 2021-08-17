@@ -103,6 +103,7 @@ pub mod test {
     pub fn code_out(path: impl AsRef<Path>) -> Res<()> {
         code_out_in(path)
     }
+    /// Searches for `code` directories in `src`, recursively.
     fn code_out_in(src: impl AsRef<Path>) -> Res<()> {
         const CODE_DIR: &str = "code";
         let src = src.as_ref().to_path_buf();
@@ -138,6 +139,14 @@ pub mod test {
 
         Ok(())
     }
+    /// Tests a `code` directory at `path`.
+    ///
+    /// Scans the files in `path`, looking for *output* files with a `<name>.out` extension. Such
+    /// files must have an associated file `<name>`. The output file contains the output of
+    /// whatever tool corresponds to file `<name>`'s extension.
+    ///
+    /// For instance, `<name>.smt2` file's corresponding tool is Z3 and the output file contains
+    /// the output of `z3 <name>.smt2`.
     fn code_out_check(path: impl AsRef<Path>) -> Res<()> {
         const OUT_SUFF: &str = "out";
         let path = path.as_ref();
@@ -161,6 +170,7 @@ pub mod test {
 
             if !is_out_file {
                 log::trace!("not an `out` file");
+                warn_if_not_tested(path, entry_path)?;
                 continue 'out_files;
             }
 
@@ -217,6 +227,50 @@ pub mod test {
         Ok(())
     }
 
+    /// Checks a non-output file, issues a warning if there is a problem.
+    ///
+    /// A non-output file `name.ext` must be such that either
+    ///
+    /// - `ext` is `rs`: Rust files are checked by `mdbook` itself, or
+    /// - there exists a `name.ext.out` file, which will be handled by regular testing.
+    ///
+    /// Otherwise we have non-Rust file with no output file, meaning the file is not tested against
+    /// anything. We assume the author forgot the output file and issue a warning.
+    fn warn_if_not_tested(parent: impl AsRef<Path>, snippet_path: impl AsRef<Path>) -> Res<()> {
+        let (parent, snippet) = (parent.as_ref(), snippet_path.as_ref());
+
+        // Rust files are tested by `mdbook`, no need for output file.
+        if snippet.extension().map(|ext| ext == "rs").unwrap_or(false) {
+            return Ok(());
+        }
+
+        // Not a Rust file, construct expected output file path and check it exists.
+        let file_name = snippet
+            .file_name()
+            .ok_or_else(|| format!("failed to retrieve filename from `{}`", snippet.display()))?;
+        let out_file = {
+            let mut parent = parent.to_path_buf();
+            parent.push(format!("{}.out", file_name.to_string_lossy()));
+            parent
+        };
+        if !out_file.exists() {
+            log::warn!(
+                "file `{}` has no output file, no way to test it",
+                snippet.display()
+            );
+        }
+        if out_file.is_dir() {
+            log::warn!(
+                "file `{}` has no output 'file', `{}` exists but is a directory",
+                snippet.display(),
+                out_file.display()
+            );
+        }
+
+        Ok(())
+    }
+
+    /// Checks a single `.smt2` file `snippet_path` against its output file `out_path`.
     fn code_out_check_smt2(out_path: impl AsRef<Path>, snippet_path: impl AsRef<Path>) -> Res<()> {
         let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
         let cmd = || {
