@@ -99,7 +99,7 @@
 ; ANCHOR_END: deactlit_0
 
 ; ANCHOR: sanity
-(echo "; info: making sure assertion at 0 is not active anymore")
+(echo "; info: making sure assertion at 0 is not active anymore, expecting `sat`")
 (check-sat)
 ; ANCHOR_END: sanity
 
@@ -117,6 +117,8 @@
 (echo "; info: falsification at depth 1?")
 (check-sat-assuming ( actlit_1 ))
 (assert (not actlit_1))
+(echo "; info: making sure assertion at 1 is not active anymore, expecting `sat`")
+(check-sat)
 ; ANCHOR_END: depth_1
 
 (assert
@@ -132,4 +134,6 @@
 (echo "; info: falsification at depth 2?")
 (check-sat-assuming ( actlit_2 ))
 (assert (not actlit_2))
+(echo "; info: making sure assertion at 2 is not active anymore, expecting `sat`")
+(check-sat)
 ; ANCHOR_END: all

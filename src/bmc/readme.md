@@ -285,37 +285,45 @@ unrolled twice.
 \
 \
 
+> **Warning:** slightly (more) technical and practical discussion ahead. What follows is not
+> mandatory to understand the upcoming chapters, but we think it is quite interesting and
+> definitely mandatory for writing your own (efficient) verification engine.
+
+\
+\
+
 Let's discuss a few practical points regarding BMC. Mainly, the fact that it is incremental and
 that what we do at a given step depends on the solver's previous answer. For instance, say we have
 several candidate invariants and we are checking whether we can falsify some of them by unrolling
 `k` times. Say also the solver answers yes (`sat`) and gives us a model. Then what we want to do is
-check which candidates are falsified (using the model), and check the candidates that were not
-falsified. We got a counterexample for some of the candidates, but there might be a different
+check which candidates are falsified (using the model), and keep BMC-ing the candidates that were
+not falsified. We got a counterexample for some of the candidates, but there might be a different
 counterexample at the same depth falsifying other candidates. If not (`unsat`), we move on and
-check the remaining candidates at `k+1`. Maybe they can be falsified by unrolling more than `k`
-times.
+check the remaining candidates at `k+1` and so on. Maybe they can be falsified by unrolling more
+than `k` times.
 
 So, this whole process is interactive: what BMC does depends on what the solver previously said. In
 the next chapter, we will introduce mikino which is a tool that will perform BMC (and more) for us.
 The way mikino conducts BMC is by launching Z3 as a separate process and feed it definitions,
 declarations, assertions, `check-sat`s and `get-model`s on its standard input. Z3 produces answers
-on its standard output, which mikino looks at to decide what to do next.
+on its standard output, which mikino looks at to decide if/how to continue and what to stream to
+the input of the Z3 process.
 
 \
 \
 
 Based on what we have done so far, this would require restarting the solver each time. Say Z3
 answers `unsat` when we unroll `k` times. It means that we have an assertion of the negation of the
-candidate(s) for `s_k` which made our whole SMT-LIB instance `unsat`: `(assert (not (candidate
-s_k)))`. Now, this assertion is only there for our check at depth `k`, to ask for a falsification
-of the candidate(s). Still, we cannot move on and unroll at `k+1`: this assertion will still be
-there, and the instance will remain `unsat`.
+candidate(s) for `s_k` which made our whole SMT-LIB instance (all the assertions together) `unsat`:
+`(assert (not (candidate s_k)))`. Now, this assertion is only there for our check at depth `k`, to
+ask for a falsification of the candidate(s). Still, we cannot move on and unroll at `k+1`: this
+assertion will still be there, and the instance will remain `unsat`.
 
 So, instead of restarting Z3, we can make the assertion of the negation of the candidates
 conditional. That is, we can give ourselves a *boolean flag* that *activates* this assertion.
-Such flag is called an *activation literal*, or *actlit*.
+Such a flag is called an *activation literal*, or *actlit*.
 
-Say we are performing a BMC check at depth `k`. First, we need to declare this boolean flag.
+Say we are performing a BMC check at depth `k`. First, we need to declare this *"boolean flag"*.
 
 ```text
 (declare-const actlit_k Bool)
@@ -333,22 +341,23 @@ needs to be true for the assertion to be active.
 ```
 
 Notice that if `actlit_k` is `false`, then this assertion is trivially `true` and thus does not
-contribute to whether other assertions are satisfiable.
+contribute to whether other assertions are satisfiable. This is because `false ⇒ P` is always
+`true`, regardless of what `P` is. In particular, `false ⇒ false` is true.
 
 The last thing we need now is to perform a `check-sat` *assuming* `actlit_k` is true. We could
-`(assert actlit_k)` but that would not solve our problem: we cannot go back and *undo* the
-assertion anymore.
+`(assert actlit_k)` but that would not solve our problem: we cannot go back and *undo* this
+assertion, hence the negation of the candidates is active, hence the whole instance is `unsat`.
 
 \
 \
 
-Instead, we can use the `check-sat-assuming` command. This command takes a list of boolean
+Instead, we can use the `check-sat-assuming` SMT-LIB command. This command takes a list of boolean
 variables and forces to `check-sat` our assertions **assuming** these variables are `true`, but
-**without** actually asserting them. Meaning that after the check-sat, these variables are still
+**without** actually asserting them. Meaning that, after the check-sat, these variables are still
 unconstrained.
 
 In particular, it means we can perform a `check-sat-assuming` on `actlit_k`, and then just assert
-`actlit_k` to be false to effectively deactivate the assertion of the negation of the properties.
+`actlit_k` to be false to effectively deactivate the assertion of the negation of the candidates.
 
 \
 \
@@ -358,7 +367,7 @@ Unrolling](#bmc-with-unrolling) section shows an unrolling of the system at dept
 corresponding check for candidate `cnt ≥ 0`, and just that check. Let's modify it so that it uses
 activation literals to perform all checks up to depth `2`.
 
-The first check to perform is at depth `0`, so all we asserted to far is that state `0` is initial.
+The first check to perform is at depth `0`, so all we asserted so far is that state `0` is initial.
 
 ```text
 {{ #include code/sw_actlit_1.smt2:assert_init }}
@@ -376,7 +385,7 @@ Then we conditionally assert the negation of the candidate.
 {{ #include code/sw_actlit_1.smt2:actlit_0_assert }}
 ```
 
-Then comes the check itself, using the brand new `check-sat-assuming` we just discussed.
+Then comes the check itself, using the brand new `check-sat-assuming` command we just discussed.
 
 ```text
 {{ #include code/sw_actlit_1.smt2:actlit_0_check_sat }}
@@ -387,7 +396,7 @@ string to its standard output. Remember that we will perform more than one check
 to keep track of what question the `sat`/`unsat` answers are for.
 
 As we already saw, this check will produce `unsat`: there is no falsification of this candidate at
-depth `0`.
+depth `0` (or at any depth, but we have not proved that yet).
 
 ```text
 {{ #include code/sw_actlit_1.smt2:deactlit_0 }}
@@ -395,14 +404,15 @@ depth `0`.
 
 As a sanity check, we can `check-sat` right after we deactivated `actlit_0`. We just got an `unsat`
 because we assumed `actlit_0`, so if the deactivation of the negation of the candidate failed then
-a regular `check-sat` would also yield `unsat`.
+a regular `check-sat` would also yield `unsat`. If deactivation worked, we should get `sat` because
+`(init s_0)`, our only active assertion, is `sat`.
 
 ```text
 {{ #include code/sw_actlit_1.smt2:sanity }}
 ```
 
 We can now keep on unrolling and `check-sat-assuming`, since the assertion of the negation of the
-candidate is now deactivated.
+candidate should now be deactivated.
 
 ```text
 {{ #include code/sw_actlit_1.smt2:depth_1 }}
@@ -416,8 +426,8 @@ Actlits](#bmc-with-actlits) section below for the full code).
 {{ #include code/sw_actlit_1.smt2.out }}
 ```
 
-Pretty nice 😸. Let's never do this again as it is very tedious, and instead just use a nice tool to
-do it for us: mikino.
+Pretty nice 😸. Let's never do this again manually to preserve our own sanity, and move on to the
+next chapter where we will introduce mikino to do all of this automatically.
 
 
 ### Full Code for all Examples
