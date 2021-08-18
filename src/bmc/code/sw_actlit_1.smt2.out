@@ -1,0 +1,8 @@
+; info: falsification at depth 0?
+unsat
+; info: making sure assertion at 0 is not active anymore
+sat
+; info: falsification at depth 1?
+unsat
+; info: falsification at depth 2?
+unsat

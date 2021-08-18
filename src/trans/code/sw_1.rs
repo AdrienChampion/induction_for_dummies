@@ -10,7 +10,9 @@ impl State {
         State {
             start_stop,
             reset,
-            is_counting: false,
+            // Initially not counting, unless `start_stop` is pressed
+            // and triggers counting.
+            is_counting: start_stop,
             cnt: if reset { 0 } else { random_cnt },
         }
     }

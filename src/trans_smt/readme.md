@@ -45,7 +45,7 @@ the main concern, but relatively small examples are quite readable if indented p
 {{ #include code/sw_trans_1.smt2:trans_def }}
 ```
 
-> **NB:** full example in [Version 1](#version-1) section below.
+> **NB:** full code in the [Version 1](#version-1) section below.
 
 \
 \
@@ -80,10 +80,11 @@ state that's a successor of state `0`. For instance,
 
 \
 \
-> **NB:** full example in [Version 1](#version-1) section below.
 
 The `check-sat` command asks Z3 whether there exists a valuation of all state variables verifying
 all our constraints. Said constraints include that state `1` must be a legal successor of state `0`.
+
+> **NB:** full code in the [Version 1](#version-1) section below.
 
 ```text
 > z3 test.smt2
@@ -112,11 +113,11 @@ Let's modify our last assertion: we keep the constraints over state `0` and repl
 The question we are asking Z3 is now *"say `cnt > 7` and we're not counting; is it possible then to
 have `cnt = 0` in one transition?"*.
 
+> **NB:** full code in the [Version 2](#version-2) section below.
+
 ```text
 {{ #include code/sw_trans_2.smt2.out }}
 ```
-
-> **NB:** full example in [Version 2](#version-2) section below.
 
 Z3 answers *"yes"* (`sat`), and shows us that by pressing `reset` in state `1`, then we have `cnt =
 0`. That's fair, but what if we don't allow `reset` to be pressed in state `1`?
@@ -125,13 +126,13 @@ Z3 answers *"yes"* (`sat`), and shows us that by pressing `reset` in state `1`, 
 {{ #include code/sw_trans_3.smt2:state_constraints }}
 ```
 
-> **NB:** full example in [Version 3](#version-3) section below.
-
 Readers comfortable with our toy stopwatch system know this should not be possible. If `reset` is
 not pressed, `cnt` can only increase or stay the same depending on whether the system is counting.
 
 Humans (us) *"knowing"* this is not possible is not very valuable, as humans are notoriously great
 at being wrong. Let's just ask Z3 to prove (or disprove) what we *know*.
+
+> **NB:** full code in the [Version 1](#version-1) section below.
 
 ```text
 > z3 test.smt2
@@ -176,6 +177,13 @@ values.
 ```text
 {{ #include code/sw_trans_1.smt2:all }}
 ```
+
+Output:
+
+```text
+> z3 test.smt2
+{{ #include code/sw_trans_1.smt2.out }}
+```
 </details>
 
 #### Version 2
@@ -185,6 +193,13 @@ values.
 
 ```text
 {{ #include code/sw_trans_2.smt2:all }}
+```
+
+Output:
+
+```text
+> z3 test.smt2
+{{ #include code/sw_trans_2.smt2.out }}
 ```
 </details>
 
@@ -196,6 +211,13 @@ values.
 ```text
 {{ #include code/sw_trans_3.smt2:all }}
 ```
+
+Output:
+
+```text
+> z3 test.smt2
+{{ #include code/sw_trans_3.smt2.out }}
+```
 </details>
 
 #### Version 4
@@ -206,6 +228,8 @@ values.
 ```text
 {{ #include code/sw_trans_4.smt2:all }}
 ```
+
+Output:
 
 ```text
 > z3 test.smt2

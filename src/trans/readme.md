@@ -70,6 +70,16 @@ can write it in pseudo-code as `init(s) ≜ s.reset ⇒ s.cnt = 0` or, equivalen
 > of `s.cnt`. If it helps, you can think of `=` as the usual `==` operator found in most
 > programming languages.
 
+Our initial predicate is not complete though. The specification also tells us that we are
+originally *not counting*, and that when `start_stop` is `true` we should toggle counting on/off.
+That is, the initial value of `is_counting` should be `false` when `start_stop` is `false` (not
+pressed), and `true` when `start_stop` is `true` (pressed). Hence, the initial value of
+`is_counting` is `start_stop`. Our initial predicate is thus
+
+```text
+init(s) ≜ (s.reset ⇒ s.cnt = 0) ∧ (s.is_counting = s.start_stop)
+```
+
 \
 \
 

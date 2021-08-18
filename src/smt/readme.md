@@ -102,9 +102,12 @@ Also, SMT-LIB formulas are written using *prefix notation* (or *Polish notation*
 human readability. SMT-LIB is really meant to be used by programs to communicate, not for humans to
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.
 
-> **NB:** [VS Code] has an extension for SMT-LIB syntax highlighting (`.smt2` files).
+> **NB:** [VS Code] has an extension for SMT-LIB syntax highlighting (`.smt2` files). The pieces of
+> SMT-LIB code we will show in these posts will not have syntax highlighting, unfortunately. We
+> apologize for this problem, and encourage readers to copy these pieces of code in an editor that
+> supports SMT-LIB using the button at the top-right of the code blocks.
 
-Anyway, an SMT-LIB assertions of our running example would look like this:
+Anyway, an SMT-LIB assertion of our running example would look like this:
 
 ```text
 {{ #include code/ex_1.smt2 }}
