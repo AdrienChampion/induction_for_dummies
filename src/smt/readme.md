@@ -102,6 +102,8 @@ Also, SMT-LIB formulas are written using *prefix notation* (or *Polish notation*
 human readability. SMT-LIB is really meant to be used by programs to communicate, not for humans to
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.
 
+> **NB:** [VS Code] has an extension for SMT-LIB syntax highlighting (`.smt2` files).
+
 Anyway, an SMT-LIB assertions of our running example would look like this:
 
 ```text
@@ -246,4 +248,4 @@ we will see in the following posts.
 [cvc4]: https://cvc4.github.io/ (CVC4 homepage)
 [yices]: https://yices.csl.sri.com (Yices 2 homepage)
 [smt lib]: http://smtlib.cs.uiowa.edu (SMT-LIB homepage)
-
+[VS Code]: https://code.visualstudio.com (VS Code homepage)

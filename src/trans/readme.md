@@ -1,4 +1,8 @@
-# Transition Sytems
+# Transition Systems
+
+> **NB:** this chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter
+> builds on this one and is nothing but fun manipulations 😺 on the notions and examples introduced
+> here.
 
 A *(declarative) transition system* describes an infinite loop updating some *state*. The *state*
 can be understood as some variables storing some data. These variables are usually called *state
@@ -49,6 +53,8 @@ The description of this system is
 \
 \
 
+## Initial Predicate
+
 Let us think in terms of constraints: what must the values of the state variables verify to be a
 legal initial state? We only have one constraint, `reset => cnt = 0`. That is, if `reset` is
 `true`, then `cnt` must be `0`, otherwise anything goes. Given the description of the system, this
@@ -67,14 +73,17 @@ can write it in pseudo-code as `init(s) ≜ s.reset ⇒ s.cnt = 0` or, equivalen
 \
 \
 
+## Transition Relation
+
 So at this point we have a notion of state (data) maintained by the transition system, and a
 predicate (formula) that is true on a state valuation iff it is a legal initial state. We are only
 missing the description of how the system evolves.
 
-This is what the *step relation* does. Its job is to examine the relation between two state
-valuations `s` and `s'`, and evaluate to `true` if and only `s'` is a legal successor of `s`. The
-first part of the *step relation* deals with `is_counting`, which should be toggled by
-`start_stop`. This is a constraint, if `s'` is a successor of `s` then they should verify
+This is what the *transition relation* (a.k.a *step relation*) does. Its job is to examine the
+relation between two state valuations `s` and `s'`, and evaluate to `true` if and only `s'` is a
+legal successor of `s`. The first part of the *transition relation* deals with `is_counting`, which
+should be toggled by `start_stop`. This is a constraint, if `s'` is a successor of `s` then they
+should verify
 
 - `s'.start_stop ⇒ (s'.is_counting = ¬s.is_counting)`, and
 - `¬s'.start_stop ⇒ (s'.is_counting = s.is_counting)`.
@@ -105,6 +114,7 @@ depending on the value of `is_counting`. In most cases, these constraints will h
 > Say `s.cnt = 1`, and both `s'.reset` and `s'.is_counting` are `true`. Then by the first
 > constraint, we must have `s'.cnt = 0`; by the second constraint, we must also have `s'.cnt = 2`.
 > Hence, both constraints are in conflict and, together, they are unsatisfiable.
+
 </details>
 
 Assuming the order of the points in the description of the system matters, we can solve this problem
@@ -122,3 +132,37 @@ s'.cnt =
 	else if s'.is_counting { s.cnt + 1 }
 	else { s.cnt }
 ```
+
+Our transition relation is thus
+
+```rust ,compile_fail,no_run
+trans(s, s') =
+	  ( s'.start_stop ⇒ (s'.is_counting = ¬s.is_counting))
+	∧ (¬s'.start_stop ⇒ (s'.is_counting =  s.is_counting))
+	∧ (
+		s'.cnt =
+			if s'.reset { 0 }
+			else if s'.is_counting { s.cnt + 1 }
+			else { s.cnt }
+	)
+```
+
+\
+\
+
+Notice that `trans` only really constrains `s'.is_counting` and `s'.cnt`. This makes sense as the
+two other states variables `s'.start_stop` and `s'.reset` (both of type `bool`) are seen as
+*inputs*. Since they are not constrained, they can take any (boolean) value at all.
+
+Notice also that, if we fix some values for `s'.start_stop` and `s'.reset`, then `trans` is
+*deterministic*: `s`, whatever it is, can only have one successor.
+
+| `s'.start_stop` | `s'.reset` | `s'.is_counting` | `s'.cnt` |
+|:---:|:---:|:---:|:---:|
+| `false` | `false` | `s.is_counting` | `if s'.is_counting { s.cnt + 1 } else { s.cnt }` |
+| `true` | `false` | `¬s.is_counting` | `if s'.is_counting { s.cnt + 1 } else { s.cnt }` |
+| `false` | `true` | `s.is_counting` | `0` |
+| `true` | `true` | `¬s.is_counting` | `0` |
+
+So, there are **at most** four potential successors to any state `s`, depending on the
+(unconstrained) values of the two inputs.
