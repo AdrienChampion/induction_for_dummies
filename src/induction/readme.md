@@ -200,7 +200,7 @@ Done and done. Both *base* and *step* hold, and thus we can finally invoke induc
 that `cnt ≥ 0` is an invariant for the stopwatch system.
 
 Before we move on to mikino's induction mode, some readers might want to check out Section
-[Stopwatch Actlit](#stopwatch-actlit). In it, we conduct *base* and *step* in succession in a
+[Stopwatch Actlit](#stopwatch-actlit) below. In it, we conduct *base* and *step* in succession in a
 single file using an activation literal. That's not all we do however, there is a clever trick that
 we use for the checks. The trick is discussed in details in the comments.
 

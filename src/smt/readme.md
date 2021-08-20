@@ -130,7 +130,8 @@ SMT-LIB script above. No special option is needed and you should get the followi
 Z3 simply answered `sat`, indicating that the formula is *"satisfiable"*: there exists a model (a
 valuation of the variables) that make our constraints `true`. This is nice, but it would be better
 if Z3 could give us a model to make sure it is not lying to us (it's not). We can do so by adding a
-`get-model` command after the `check-sat`.
+`get-model` command after the `check-sat`. (Note that `get-model` is **only** legal after a
+`check-sat` yielded `sat`.)
 
 ```text
 {{ #include code/ex_2.smt2 }}

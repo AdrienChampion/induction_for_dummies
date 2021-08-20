@@ -52,7 +52,6 @@ its output.
 \
 \
 
-
 ## Run BMC
 
 Mikino is a proof engine, meaning that it can prove invariants over transition systems as we will
@@ -91,6 +90,18 @@ will not show in this plain text rendition:
 > mikino bmc --bmc_max 10 test.mkn
 {{ #include code/sw_1.mkn.out }}
 ```
+
+> **Pro tip:** use the `--smt_log <DIR>` flag to specify a directory where mikino will create an
+> SMT-LIB 2 file per solver it uses, and log all the commands issued to that solver. For instance,
+>
+> ```text
+> > mikino bmc --smt_log smt_traces --bmc_max 10 test.mkn
+> > tree smt_traces/
+> smt_traces
+> └── bmc.smt2
+> ```
+>
+> This can be useful to inspect the exact checks mikino is performing and modify/relaunch them.
 
 Mikino incrementally unrolls BMC just like we discussed in the previous chapter. It starts at depth
 `0`, which means *`0` transitions away from the initial states*, which really means *the initial
