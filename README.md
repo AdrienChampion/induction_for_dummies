@@ -16,7 +16,8 @@ Induction as a formal program verification technique for the uninitiated.
 ```
 
 Use the [`manager`](#Manager) to run the tests if you want, but be aware that this requires the
-[Z3] SMT-solver. You can download its latest release [here][Z3 releases].
+binaries for [Z3] and mikino to be in your path. You can download its latest release [here][Z3
+releases].
 
 ```bash
 > make test
