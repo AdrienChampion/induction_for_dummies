@@ -206,8 +206,19 @@ pub mod test {
                     )
                 })?
                 .to_string_lossy();
+
+            let err = || {
+                format!(
+                    "while checking `{}` with out file `{}`",
+                    snippet_path.display(),
+                    out_path.display()
+                )
+            };
+
             if ext == "smt2" {
-                code_out_check_smt2(&out_path, &snippet_path)?;
+                code_out_check_smt2(&out_path, &snippet_path).chain_err(err)?;
+            } else if ext == "mkn" {
+                code_out_check_mkn(&out_path, &snippet_path).chain_err(err)?;
             } else {
                 bail!(
                     "unknown extension `{}` for code snippet `{}` with out file `{}`",
@@ -270,41 +281,123 @@ pub mod test {
         Ok(())
     }
 
-    /// Checks a single `.smt2` file `snippet_path` against its output file `out_path`.
-    fn code_out_check_smt2(out_path: impl AsRef<Path>, snippet_path: impl AsRef<Path>) -> Res<()> {
-        let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
-        let cmd = || {
-            let mut cmd = std::process::Command::new("z3");
-            cmd.arg(snippet_path);
-            cmd
-        };
-        let output = cmd()
+    /// Compares the output of a command to the content of a file.
+    fn cmd_output_same_as_file_content(
+        cmd: &mut std::process::Command,
+        path: impl AsRef<Path>,
+    ) -> Res<()> {
+        let path = path.as_ref();
+        let output = cmd
             .output()
-            .chain_err(|| format!("running z3 on `{}`", snippet_path.display()))?;
+            .chain_err(|| format!("running command {:?}", cmd))?;
         let stdout = String::from_utf8_lossy(&output.stdout);
         let expected = {
             use std::{fs::OpenOptions, io::BufReader};
             let mut file = BufReader::new(
                 OpenOptions::new()
                     .read(true)
-                    .open(out_path)
-                    .chain_err(|| format!("while read-opening `{}`", out_path.display()))?,
+                    .open(path)
+                    .chain_err(|| format!("while read-opening `{}`", path.display()))?,
             );
             let mut buf = String::new();
             file.read_to_string(&mut buf)
-                .chain_err(|| format!("while reading `{}`", out_path.display()))?;
+                .chain_err(|| format!("while reading `{}`", path.display()))?;
             buf
         };
-
         if stdout != expected {
-            let _ = cmd().status();
-            return Err(err::Error::from(format!(
-                "unexpected output for `z3 {}`",
-                snippet_path.display()
-            ))
-            .chain_err(|| format!("expected output:\n{}", expected)));
+            bail!("unexpected output for `{:?}`", cmd)
+        } else {
+            Ok(())
         }
+    }
+
+    /// Checks a single `.smt2` file `snippet_path` against its output file `out_path`.
+    fn code_out_check_smt2(out_path: impl AsRef<Path>, snippet_path: impl AsRef<Path>) -> Res<()> {
+        let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
+        let mut cmd = std::process::Command::new("z3");
+        cmd.arg(snippet_path);
+        let () = cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
         Ok(())
+    }
+
+    /// Checks a single `.mkn` file `snippet_path` against its output file `out_path`.
+    fn code_out_check_mkn(out_path: impl AsRef<Path>, snippet_path: impl AsRef<Path>) -> Res<()> {
+        let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
+        let mut cmd = retrieve_mkn_cmd(snippet_path, "//")?;
+        cmd_output_same_as_file_content(&mut cmd, out_path)?;
+
+        Ok(())
+    }
+
+    fn retrieve_mkn_cmd(path: impl AsRef<Path>, pref: &str) -> Res<std::process::Command> {
+        let path = path.as_ref();
+        // Mikino files are expected to start with a special line specifying the command to run.
+        let cmd_line = first_line_of(path)?
+            .ok_or_else(|| "first line of `mkn` files must specify a `mikino` command")?;
+        const CMD_PREF: &str = " CMD: ";
+        if !cmd_line.starts_with(pref) || !cmd_line[pref.len()..].starts_with(CMD_PREF) {
+            bail!(
+                "first line of `mkn` files should start with `{}{}` to specify the mikino command",
+                pref,
+                CMD_PREF,
+            )
+        }
+
+        let start = pref.len() + CMD_PREF.len();
+        let cmd_line = &cmd_line[start..];
+        let mut elems = cmd_line.split_whitespace();
+
+        match elems.next() {
+            Some("mikino") => (),
+            Some(tkn) => bail!(
+                "unexpected token `{}` on first line, expected `mikino`",
+                tkn,
+            ),
+            None => bail!("expected `mikino` command on first line"),
+        }
+
+        let mut cmd = std::process::Command::new("mikino");
+
+        for arg in elems {
+            if arg == "<file>" {
+                cmd.arg(path);
+            } else {
+                cmd.arg(arg);
+            }
+        }
+
+        Ok(cmd)
+    }
+
+    /// Retrieves the first line of a file.
+    ///
+    /// Some code snippets are expected to specify, on their first line, the command used to run
+    /// them. Mikino files, for example.
+    fn first_line_of(path: impl AsRef<Path>) -> Res<Option<String>> {
+        use std::{
+            fs::OpenOptions,
+            io::{BufRead, BufReader},
+        };
+
+        let path = path.as_ref();
+        let mut reader = BufReader::new(
+            OpenOptions::new()
+                .read(true)
+                .open(path)
+                .chain_err(|| format!("while read-opening file `{}`", path.display()))?,
+        );
+
+        let mut line = String::with_capacity(31);
+        let bytes_read = reader
+            .read_line(&mut line)
+            .chain_err(|| format!("while reading for line of file `{}`", path.display()))?;
+
+        if bytes_read == 0 {
+            Ok(None)
+        } else {
+            line.shrink_to_fit();
+            Ok(Some(line))
+        }
     }
 }

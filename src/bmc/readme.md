@@ -430,7 +430,7 @@ Pretty nice 😸. Let's never do this again manually to preserve our own sanity,
 next chapter where we will introduce mikino to do all of this automatically.
 
 
-### Full Code for all Examples
+### Full Code For All Examples
 
 #### Version 1
 

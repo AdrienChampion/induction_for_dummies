@@ -167,7 +167,7 @@ values.
 \
 \
 
-### Full Code for all Examples
+### Full Code For All Examples
 
 #### Version 1
 
