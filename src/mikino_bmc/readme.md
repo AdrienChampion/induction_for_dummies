@@ -5,6 +5,9 @@ we have seen so far (and will see later). It is designed to be relatively simple
 experience front and center: the goal is to have a tool that is gratifying to interact with to
 teach about induction-based verification.
 
+\
+\
+
 
 ## Input Format
 
@@ -83,8 +86,16 @@ process manually (or it exhausts memory/time).
 \
 \
 
+> **NB:** mikino requires [Z3][z3] to run, you can retrieve a binary for your operating system on
+> [Z3's release page][z3 release]. Mikino, by default, assumes a Z3 binary is in your `PATH` with
+> name `z3`. You can override this with the `--z3_cmd` command-line argument: `mikino --z3_cmd
+> "my_z3" ...` or `mikino --z3_cmd "./my_z3" ...` if Z3 is not in your `PATH` but is in the current
+> directory.
+
 Let's try it. Mikino tries to improve its output's readability by using colors: unfortunately, this
-will not show in this plain text rendition:
+will not show in this plain text rendition. (As discussed when we introduced SMT, different
+versions of Z3 or even different operating system might produce different models. The same applies
+to mikino as its counterexamples are Z3 models.)
 
 ```text
 > mikino bmc --bmc_max 10 test.mkn
@@ -248,3 +259,6 @@ Output:
 {{ #include code/sw_3.mkn.out }}
 ```
 </details>
+
+[z3]: https://github.com/Z3Prover/z3 (Z3 on github)
+[z3 release]: https://github.com/Z3Prover/z3/releases (Z3's releases on github)
