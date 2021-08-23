@@ -1,6 +1,11 @@
 # Preface
 
-<!-- - [TL;DR below](#tldr) -->
+> This preface introduces formal verification in general with relatively concrete examples. It then
+> goes into the details of what a formal verification tool looks like, and which aspects of such
+> tools we will then discuss.
+
+\
+\
 
 [Formal logics][logics] deals with reasoning in the context of a formal framework. For example, a
 *type system* is a formal framework. [Strongly-typed][strong typing] programming languages rely on
