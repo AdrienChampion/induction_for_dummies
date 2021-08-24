@@ -26,4 +26,5 @@ jobs:
         run: mdbook build
 
       - name: test
-        run: make test
+        # Should be `make test`, but this requires z3 and mikino (which is private ATM).
+        run: cargo test
