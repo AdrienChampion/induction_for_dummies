@@ -27,5 +27,3 @@ jobs:
 
       - name: test
         run: make test
-
-      - run: make test
