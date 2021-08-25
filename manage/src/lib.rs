@@ -16,11 +16,62 @@ pub mod prelude {
 
     pub use crate::{
         prelude::err::{Res, ResExt},
-        test,
+        test, Conf,
     };
 
     pub mod err {
         pub use crate::error::*;
+    }
+}
+
+prelude!();
+
+/// Test configuration.
+#[derive(Clone, Debug)]
+pub struct Conf<'s> {
+    check_smt2: Option<(bool, &'s str)>,
+    check_mikino: Option<(bool, &'s str)>,
+}
+impl Default for Conf<'static> {
+    fn default() -> Self {
+        Self {
+            check_smt2: Some((true, "z3")),
+            check_mikino: Some((true, "mikino")),
+        }
+    }
+}
+impl<'s> Conf<'s> {
+    /// Constructor.
+    pub fn new() -> Self {
+        Self {
+            check_smt2: None,
+            check_mikino: None,
+        }
+    }
+
+    pub fn set_smt2(mut self, check: bool, command: &'s str) -> Self {
+        self.check_smt2 = Some((check, command));
+        self
+    }
+    pub fn set_mikino(mut self, check: bool, command: &'s str) -> Self {
+        self.check_mikino = Some((check, command));
+        self
+    }
+
+    fn get_smt2(&self) -> Res<(bool, &'s str)> {
+        self.check_smt2.ok_or_else(|| {
+            format!("[internal] no information provided for SMT file checking").into()
+        })
+    }
+    fn get_mikino(&self) -> Res<(bool, &'s str)> {
+        self.check_mikino.ok_or_else(|| {
+            format!("[internal] no information provided for mikino file checking").into()
+        })
+    }
+
+    /// Runs the actual checks.
+    pub fn check(&self, path: impl AsRef<Path>) -> Res<()> {
+        test::run(self, path)
     }
 }
 
@@ -38,7 +89,8 @@ pub mod test {
             .expect("failed to initialize logger");
         let out = std::process::Command::new("pwd").output().unwrap();
         println!("pwd: {}", String::from_utf8_lossy(&out.stdout));
-        match run("..") {
+        let conf = Conf::default();
+        match run(&conf, "..") {
             Ok(()) => (),
             Err(e) => {
                 eprintln!("|===| Error(s):");
@@ -50,16 +102,16 @@ pub mod test {
     }
 
     /// Runs all the tests.
-    pub fn run(path: impl AsRef<Path>) -> Res<()> {
+    pub fn run(conf: &Conf, path: impl AsRef<Path>) -> Res<()> {
         let path = path.as_ref();
 
         log::info!("testing book...");
         test::book(path)?;
 
-        log::info!("testing `.out` code snippets");
+        log::info!("testing code snippets");
         let mut src_path = path.to_path_buf();
         src_path.push("src");
-        test::code_out(src_path)?;
+        test::code_out(conf, src_path)?;
 
         log::info!("everything okay");
         Ok(())
@@ -100,14 +152,14 @@ pub mod test {
     }
 
     /// Tests the code snippets that have a `.out` file.
-    pub fn code_out(path: impl AsRef<Path>) -> Res<()> {
-        code_out_in(path)
+    pub fn code_out(conf: &Conf, path: impl AsRef<Path>) -> Res<()> {
+        code_out_in(conf, path)
     }
     /// Searches for `code` directories in `src`, recursively.
-    fn code_out_in(src: impl AsRef<Path>) -> Res<()> {
+    fn code_out_in(conf: &Conf, src: impl AsRef<Path>) -> Res<()> {
         const CODE_DIR: &str = "code";
         let src = src.as_ref().to_path_buf();
-        log::debug!("code_out_in({})", src.display());
+        log::trace!("code_out_in({})", src.display());
 
         if !(src.exists() && src.is_dir()) {
             bail!("expected directory path, got `{}`", src.display())
@@ -120,7 +172,7 @@ pub mod test {
                 continue 'sub_dirs;
             }
 
-            log::debug!("code_out_in: looking at `{}`", entry_path.display());
+            log::trace!("code_out_in: looking at `{}`", entry_path.display());
 
             // `code` directory, check what's inside
             if entry_path
@@ -128,13 +180,13 @@ pub mod test {
                 .map(|name| name == CODE_DIR)
                 .unwrap_or(false)
             {
-                code_out_check(&entry_path).chain_err(|| {
+                code_out_check(conf, &entry_path).chain_err(|| {
                     format!("while checking code snippets in `{}`", entry_path.display())
                 })?
             }
 
             // just a sub-directory, go down
-            code_out_in(entry_path)?
+            code_out_in(conf, entry_path)?
         }
 
         Ok(())
@@ -147,10 +199,10 @@ pub mod test {
     ///
     /// For instance, `<name>.smt2` file's corresponding tool is Z3 and the output file contains
     /// the output of `z3 <name>.smt2`.
-    fn code_out_check(path: impl AsRef<Path>) -> Res<()> {
+    fn code_out_check(conf: &Conf, path: impl AsRef<Path>) -> Res<()> {
         const OUT_SUFF: &str = "out";
         let path = path.as_ref();
-        log::debug!("code_out_check({})", path.display());
+        log::trace!("code_out_check({})", path.display());
 
         'out_files: for entry_res in path.read_dir().chain_err(dir_read_err!(path.display()))? {
             let entry = entry_res.chain_err(dir_read_err!(path.display()))?;
@@ -215,10 +267,10 @@ pub mod test {
                 )
             };
 
-            if ext == "smt2" {
-                code_out_check_smt2(&out_path, &snippet_path).chain_err(err)?;
+            let actually_okay = if ext == "smt2" {
+                code_out_check_smt2(conf, &out_path, &snippet_path).chain_err(err)?
             } else if ext == "mkn" {
-                code_out_check_mkn(&out_path, &snippet_path).chain_err(err)?;
+                code_out_check_mkn(conf, &out_path, &snippet_path).chain_err(err)?
             } else {
                 bail!(
                     "unknown extension `{}` for code snippet `{}` with out file `{}`",
@@ -226,13 +278,15 @@ pub mod test {
                     snippet_path.display(),
                     out_path.display()
                 )
-            }
+            };
 
-            log::info!(
-                "`{}` is okay w.r.t. `{}`",
-                snippet_path.display(),
-                out_path.display()
-            );
+            if actually_okay {
+                log::debug!(
+                    "`{}` is okay w.r.t. `{}`",
+                    snippet_path.display(),
+                    out_path.display()
+                );
+            }
         }
 
         Ok(())
@@ -312,22 +366,46 @@ pub mod test {
     }
 
     /// Checks a single `.smt2` file `snippet_path` against its output file `out_path`.
-    fn code_out_check_smt2(out_path: impl AsRef<Path>, snippet_path: impl AsRef<Path>) -> Res<()> {
+    fn code_out_check_smt2(
+        conf: &Conf,
+        out_path: impl AsRef<Path>,
+        snippet_path: impl AsRef<Path>,
+    ) -> Res<bool> {
         let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
+        if !conf.get_smt2()?.0 {
+            log::warn!(
+                "SMT2 checking deactivated, skipping `{}` (`{}`)",
+                snippet_path.display(),
+                out_path.display()
+            );
+            return Ok(false);
+        }
         let mut cmd = std::process::Command::new("z3");
         cmd.arg(snippet_path);
         let () = cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
-        Ok(())
+        Ok(true)
     }
 
     /// Checks a single `.mkn` file `snippet_path` against its output file `out_path`.
-    fn code_out_check_mkn(out_path: impl AsRef<Path>, snippet_path: impl AsRef<Path>) -> Res<()> {
+    fn code_out_check_mkn(
+        conf: &Conf,
+        out_path: impl AsRef<Path>,
+        snippet_path: impl AsRef<Path>,
+    ) -> Res<bool> {
         let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
+        if !conf.get_mikino()?.0 {
+            log::warn!(
+                "mikino checking deactivated, skipping `{}` (`{}`)",
+                snippet_path.display(),
+                out_path.display()
+            );
+            return Ok(false);
+        }
         let mut cmd = retrieve_mkn_cmd(snippet_path, "//")?;
         cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
-        Ok(())
+        Ok(true)
     }
 
     fn retrieve_mkn_cmd(path: impl AsRef<Path>, pref: &str) -> Res<std::process::Command> {
