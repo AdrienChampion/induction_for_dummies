@@ -1,0 +1,30 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v1
+        with:
+          mdbook-version: 'latest'
+
+      - name: linkcheck setup
+        run: cargo install mdbook-linkcheck
+
+      - name: build
+        run: mdbook build
+
+      - name: test
+        # Reactivate mikino/smt2 checks once mikino is public.
+        run: cargo run -- --check_mikino off --check_smt2 off
