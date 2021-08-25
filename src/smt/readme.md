@@ -74,7 +74,7 @@ us write a tiny example and start running Z3 to play with satisfiability directl
 
 ## SMT-LIB 2
 
-For simplicity's sake, let us only allow atoms to mention integers. Consider the following formula.
+For simplicity's sake, let's only allow atoms to mention integers. Consider the following formula.
 
 ```text
 (declare-const x Int)
@@ -119,7 +119,7 @@ the satisfiability of all the constraints (of which there is just one here) with
 
 ## Playing with Z3: `sat`
 
-Let us now run Z3 on this tiny example. Create a file `test.smt2` and copy the content of the
+Let's now run Z3 on this tiny example. Create a file `test.smt2` and copy the content of the
 SMT-LIB script above. No special option is needed and you should get the following output.
 
 ```text
@@ -139,7 +139,7 @@ if Z3 could give us a model to make sure it is not lying to us (it's not). We ca
 
 After updating `test.smt2`, running Z3 again will produce a model. You might not get exactly the
 same model as the one reported here depending on the precise version of Z3 you are using and
-possibly other factors (such as you operating system).
+possibly other factors (such as your operating system).
 
 ```text
 ❯ z3 test.smt2
@@ -165,7 +165,7 @@ write it as two constraints.
 {{ #include code/ex_3.smt2 }}
 ```
 
-Let us now add the constraint that `y` is an odd number: `(= (mod y 2) 1)`. This should void the
+Let's now add the constraint that `y` is an odd number: `(= (mod y 2) 1)`. This should void the
 previous model, and more generally any model that relies on making `(= y (* 2 x))` true to satisfy
 the constraints. (Since `y` would need to be both even and odd.)
 
@@ -177,16 +177,15 @@ We now get
 
 ```text
 ❯ z3 test.smt2
-sat
-{{ #include code/ex_4.smt2 }}
+{{ #include code/ex_4.smt2.out }}
 ```
 
-As expected, Z3 now makes the second constraint true through `(= x 11)`.
+As expected, Z3 now has to make the second constraint `true` through `(= x 11)`.
 
 
 ## Playing with Z3 (`unsat`)
 
-Let us add another constraint to make these constraints unsatisfiable. In the latest version of our
+Let's add another constraint to make these constraints unsatisfiable. In the latest version of our
 example, Z3 has no choice but to have `x` be `11` since it is the only way to verify the second
 constraint (because the third constraint prevents `y` from being even).
 
