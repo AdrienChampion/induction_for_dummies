@@ -26,5 +26,5 @@ jobs:
         run: mdbook build
 
       - name: test
-        # Should be `make test`, but this requires z3 and mikino (which is private ATM).
-        run: cargo test
+        # Reactivate mikino/smt2 checks once mikino is public.
+        run: cargo run -- --check_mikino off --check_smt2 off
