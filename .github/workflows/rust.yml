@@ -37,4 +37,7 @@ jobs:
         run: cargo install mikino
 
       - name: test
-        run: cargo run -- --z3_cmd "./z3"
+        run: cargo run -- -vv --z3_cmd "./z3"
+
+      - name: check vanilla generation
+        run: cargo run -- -vv vanilla
