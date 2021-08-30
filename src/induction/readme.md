@@ -115,7 +115,7 @@ We can rephrase these two in terms of SMT solving and formula (un)satisfiability
 We all know what this means: it is finally time to achieve our dream of proving that the
 stopwatch's counter is always positive. We will use the version that starts from `cnt = 0`, not the
 one where it can take an arbitrary positive value. Both versions work for this proof, but the
-former is bettor for obtaining non-trivial (length `0`) counterexamples if we need to.
+former is better for obtaining non-trivial (length `0`) counterexamples if we need to.
 
 > **NB:** readers eager to *learn by doing* can start from any of the previous SMT examples
 > involving BMC and try to conduct the proof themselves. The SMT examples for BMC have definitions

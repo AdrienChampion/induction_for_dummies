@@ -226,7 +226,7 @@ Output:
 ```
 </details>
 
-### Version 3
+### Version 2
 
 <details>
 	<summary>Expand this for the full code.</summary>
