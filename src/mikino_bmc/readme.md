@@ -5,6 +5,12 @@ we have seen so far (and will see later). It is designed to be relatively simple
 experience front and center: the goal is to have a tool that is gratifying to interact with to
 teach about induction-based verification.
 
+The easiest way to retrieve mikino is if you already have [rust] installed.
+
+```text
+> cargo install mikino
+```
+
 \
 \
 
@@ -12,8 +18,8 @@ teach about induction-based verification.
 ## Input Format
 
 Mikino takes as input a transition system in a format consistent but slightly different from what
-we have seen so far. Systems are written in files organized as follows, illustrated on our
-stopwatch running example.
+we have seen up to this point. Systems are written in files organized as follows, illustrated on
+our stopwatch running example.
 
 First are state variable declarations. It is a list of declarations between parens introduced by
 the `vars` keyword and of form `<var_1>, <var_2>, ..., <var_n>: <type>` with `n ≥ 1`.
@@ -263,3 +269,4 @@ Output:
 
 [z3]: https://github.com/Z3Prover/z3 (Z3 on github)
 [z3 release]: https://github.com/Z3Prover/z3/releases (Z3's releases on github)
+[rust]: https://www.rust-lang.org/tools/install (Rust website, installation)
