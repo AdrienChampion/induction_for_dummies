@@ -25,6 +25,16 @@ jobs:
       - name: build
         run: mdbook build
 
+      - name: Get Z3
+        run: |
+          mkdir tmp_z3
+          wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.12/z3-4.8.12-x64-glibc-2.31.zip -P tmp_z3
+          unzip tmp_z3/*.zip -d tmp_z3
+          mv tmp_z3/z3-*x64-glibc*/bin/z3 .
+          rm -rf tmp_z3
+
+      - name: Get Mikino
+        run: cargo install mikino
+
       - name: test
-        # Reactivate mikino/smt2 checks once mikino is public.
-        run: cargo run -- --check_mikino off --check_smt2 off
+        run: cargo run
