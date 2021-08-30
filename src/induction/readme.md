@@ -248,6 +248,30 @@ Output:
 <details>
 	<summary>Expand this for the full code.</summary>
 
+Until now, we performed the *step* check of an induction proof by giving ourselves a state `0` and
+a state `1` such that
+- `trans(s_0, s_1)`: state `1` is state `0`'s successor,
+- `candidate(s_0)`: state `0` verifies the candidate,
+- `¬candidate(s_1)`: state `1` falsifies the candidate.
+
+Now, the example below swaps the state indices `0` and `1`. That is:
+- `trans(s_1, s_0)`: state `0` is state `1`'s successor,
+- `candidate(s_1)`: state `1` verifies the candidate,
+- `¬candidate(s_0)`: state `0` falsifies the candidate.
+
+This does not really change anything by itself, the check is same except that the indices have
+changed. We do need to be careful to extract the counterexample correctly though.
+
+The reason we present this version is that this *reverse-unrolling* version lets us keep state `0`
+as the *last state of the trace*, *i.e.* the state on which the falsification occurs. In normal
+unrolling, if we wanted to unroll the transition relation more, we would need to introduce `s_2`,
+deactivate `¬candidate(s_1)`, assert `candidate(s_1)`, and conditionally assert `¬candidate(s_2)`.
+
+With reverse-unrolling we can just say `s_2` is `s_1`'s previous state, and assert
+`candidate(s_2)`. We are not unrolling more than once here (a process called `k`-induction), but
+this reverse-unrolling trick is still convenient *w.r.t.* the *base* check. The *base* check asserts
+`¬candidate(s_0)`, which *step* also needs.
+
 ```text
 {{ #include code/sw_actlit_1.smt2:all }}
 ```
