@@ -404,7 +404,9 @@ pub mod test {
             );
             return Ok(false);
         }
-        let mut cmd = retrieve_mkn_cmd(mikino_cmd, snippet_path, "//")?;
+
+        let (_, z3_cmd) = conf.get_smt2()?;
+        let mut cmd = retrieve_mkn_cmd(mikino_cmd, z3_cmd, snippet_path, "//")?;
         cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
         Ok(true)
@@ -412,6 +414,7 @@ pub mod test {
 
     fn retrieve_mkn_cmd(
         mikino_cmd: &str,
+        z3_cmd: &str,
         path: impl AsRef<Path>,
         pref: &str,
     ) -> Res<std::process::Command> {
@@ -442,6 +445,7 @@ pub mod test {
         }
 
         let mut cmd = std::process::Command::new(mikino_cmd);
+        cmd.args(&["--z3_cmd", z3_cmd]);
 
         for arg in elems {
             if arg == "<file>" {
