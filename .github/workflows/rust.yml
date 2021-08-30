@@ -37,4 +37,4 @@ jobs:
         run: cargo install mikino
 
       - name: test
-        run: cargo run
+        run: cargo run -- --z3_cmd "./z3"
