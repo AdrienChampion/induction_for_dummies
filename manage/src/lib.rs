@@ -372,7 +372,8 @@ pub mod test {
         snippet_path: impl AsRef<Path>,
     ) -> Res<bool> {
         let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
-        if !conf.get_smt2()?.0 {
+        let (check_smt2, z3_cmd) = conf.get_smt2()?;
+        if !check_smt2 {
             log::warn!(
                 "SMT2 checking deactivated, skipping `{}` (`{}`)",
                 snippet_path.display(),
@@ -380,7 +381,7 @@ pub mod test {
             );
             return Ok(false);
         }
-        let mut cmd = std::process::Command::new("z3");
+        let mut cmd = std::process::Command::new(z3_cmd);
         cmd.arg(snippet_path);
         let () = cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
@@ -394,7 +395,8 @@ pub mod test {
         snippet_path: impl AsRef<Path>,
     ) -> Res<bool> {
         let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
-        if !conf.get_mikino()?.0 {
+        let (check_mikino, mikino_cmd) = conf.get_mikino()?;
+        if !check_mikino {
             log::warn!(
                 "mikino checking deactivated, skipping `{}` (`{}`)",
                 snippet_path.display(),
@@ -402,13 +404,20 @@ pub mod test {
             );
             return Ok(false);
         }
-        let mut cmd = retrieve_mkn_cmd(snippet_path, "//")?;
+
+        let (_, z3_cmd) = conf.get_smt2()?;
+        let mut cmd = retrieve_mkn_cmd(mikino_cmd, z3_cmd, snippet_path, "//")?;
         cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
         Ok(true)
     }
 
-    fn retrieve_mkn_cmd(path: impl AsRef<Path>, pref: &str) -> Res<std::process::Command> {
+    fn retrieve_mkn_cmd(
+        mikino_cmd: &str,
+        z3_cmd: &str,
+        path: impl AsRef<Path>,
+        pref: &str,
+    ) -> Res<std::process::Command> {
         let path = path.as_ref();
         // Mikino files are expected to start with a special line specifying the command to run.
         let cmd_line = first_line_of(path)?
@@ -435,7 +444,8 @@ pub mod test {
             None => bail!("expected `mikino` command on first line"),
         }
 
-        let mut cmd = std::process::Command::new("mikino");
+        let mut cmd = std::process::Command::new(mikino_cmd);
+        cmd.args(&["--z3_cmd", z3_cmd]);
 
         for arg in elems {
             if arg == "<file>" {
