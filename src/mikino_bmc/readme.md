@@ -166,9 +166,10 @@ Let's modify our candidates, full code available in the [Version 3](#version-3) 
 {{ #include code/sw_3.mkn:candidates }}
 ```
 
-You can place your bets as to which of these candidates are actual invariants. Again, BMC cannot
-prove that any of them are indeed invariants, but it can disprove some of them if it finds a
-counterexample at some depth.
+You can place your bets as to which of these candidates are actual invariants. The third candidate
+is a bit strange, we will discuss why it is written that way shortly. Again, BMC cannot prove that
+any of them are indeed invariants, but it can disprove some of them if it finds a counterexample at
+some depth.
 
 ```text
 > mikino bmc --bmc_max 10 test.mkn
