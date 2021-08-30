@@ -7,10 +7,12 @@ const CHECK_SMT2_KEY: &str = "CHECK_SMT2";
 const CHECK_MIKINO_KEY: &str = "CHECK_MIKINO";
 const Z3_CMD_KEY: &str = "Z3_CMD";
 const MIKINO_CMD_KEY: &str = "MIKINO_CMD";
+const VANILLA_MODE: &str = "vanilla";
+const VANILLA_TARGET_KEY: &str = "vanilla";
 
 fn main() {
     let matches = {
-        use clap::{App, Arg};
+        use clap::{App, Arg, SubCommand};
         App::new("manager")
             .args(&[
                 Arg::with_name(VERB_KEY)
@@ -40,6 +42,17 @@ fn main() {
                     .takes_value(true)
                     .default_value("mikino"),
             ])
+            .subcommand(
+                SubCommand::with_name(VANILLA_MODE)
+                    .about("generates vanilla markdown, inlines all code blocks")
+                    .arg(
+                        Arg::with_name(VANILLA_TARGET_KEY)
+                            .long("target")
+                            .help("Output directory for vanilla markdown")
+                            .takes_value(true)
+                            .default_value("target/vanilla"),
+                    ),
+            )
             .get_matches()
     };
     let log_level = match matches.occurrences_of(VERB_KEY) {
@@ -84,10 +97,23 @@ fn run(matches: &clap::ArgMatches) -> Res<()> {
         .value_of(MIKINO_CMD_KEY)
         .expect("argument with default value");
 
-    Conf::new()
+    let conf = Conf::new()
         .set_smt2(test_smt2, z3_cmd)
-        .set_mikino(test_mikino, mikino_cmd)
-        .check(".")
+        .set_mikino(test_mikino, mikino_cmd);
+
+    if let Some(matches) = matches.subcommand_matches(VANILLA_MODE) {
+        let target = matches
+            .value_of(VANILLA_TARGET_KEY)
+            .expect("argument with default value");
+        let vanilla = Vanilla::new(conf, target);
+        log::info!("generating vanilla markdown to `{}`", vanilla.target());
+
+        vanilla.run()?;
+    } else {
+        conf.check(".")?;
+    }
+
+    Ok(())
 }
 
 fn check_bool_arg(arg: &str) -> Result<(), String> {

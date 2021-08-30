@@ -9,18 +9,55 @@ macro_rules! prelude {
 
 /// Crate's prelude.
 pub mod prelude {
-    pub use std::path::Path;
+    pub use std::{
+        fs, io,
+        path::{Path, PathBuf},
+    };
 
     pub use error_chain::bail;
     pub use log;
 
     pub use crate::{
         prelude::err::{Res, ResExt},
-        test, Conf,
+        test, Conf, Vanilla,
     };
 
     pub mod err {
         pub use crate::error::*;
+    }
+
+    /// Loads the content of a file.
+    pub fn load_file(path: impl AsRef<Path>) -> Res<String> {
+        use std::{
+            fs::OpenOptions,
+            io::{BufReader, Read},
+        };
+        let path = path.as_ref();
+
+        let reader = OpenOptions::new()
+            .read(true)
+            .open(path)
+            .chain_err(|| format!("while read-opening file `{}`", path.display()))?;
+        let mut reader = BufReader::new(reader);
+        let mut content = String::new();
+        reader
+            .read_to_string(&mut content)
+            .chain_err(|| format!("while reading file `{}`", path.display()))?;
+        Ok(content)
+    }
+
+    /// Opens a writer on a file.
+    pub fn open_write(path: impl AsRef<Path>) -> Res<fs::File> {
+        use std::fs::OpenOptions;
+        let path = path.as_ref();
+
+        let file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create(true)
+            .open(path)
+            .chain_err(|| format!("while write-opening file `{}`", path.display()))?;
+        Ok(file)
     }
 }
 
@@ -487,5 +524,260 @@ pub mod test {
             line.shrink_to_fit();
             Ok(Some(line))
         }
+    }
+}
+
+/// A top-level markdown file, a path and a name.
+pub struct TopLevelMd {
+    path: String,
+    title: String,
+}
+
+/// Vanilla markdown generator.
+pub struct Vanilla<'s> {
+    target: &'s str,
+    #[allow(dead_code)]
+    conf: Conf<'s>,
+}
+impl<'s> Vanilla<'s> {
+    /// Constructor.
+    pub fn new(conf: Conf<'s>, target: &'s str) -> Self {
+        Self {
+            conf,
+            target: target.into(),
+        }
+    }
+    /// Target accessor.
+    pub fn target(&self) -> &'s str {
+        self.target
+    }
+
+    /// Runs vanilla markdown generation.
+    pub fn run(&self) -> Res<()> {
+        std::fs::create_dir_all(self.target)
+            .chain_err(|| format!("during (recursive) folder creation for `{}`", self.target))?;
+        let top_level = Self::top_level_md()?;
+        log::info!(
+            "working on vanilla versions for {} markdown file(s)",
+            top_level.len()
+        );
+        for (idx, file) in top_level.into_iter().enumerate() {
+            log::debug!(
+                "generating vanilla markdown for `{}` from `{}`",
+                file.title,
+                file.path,
+            );
+            self.work_one(idx, file)?;
+        }
+
+        log::info!("done with vanilla markdown generation");
+        Ok(())
+    }
+
+    const SRC: &'static str = "src";
+    const SUMMARY: &'static str = "src/SUMMARY.md";
+
+    /// Vector of the top-level markdown files.
+    pub fn top_level_md() -> Res<Vec<TopLevelMd>> {
+        let mut res = vec![];
+
+        let content =
+            load_file(Self::SUMMARY).chain_err(|| format!("on top-level summary file"))?;
+
+        for (idx, line) in content.lines().enumerate() {
+            // skip lines that refer no markdown
+            if !line.contains("readme.md") {
+                continue;
+            }
+            // skip intro
+            if line.contains("Introduction") {
+                continue;
+            }
+
+            // Expecting a line of shape `- [<NAME>](<PATH>)`
+            let err = || {
+                err::Error::from(format!(
+                    "line {} is illegal, expected `- [<TITLE>](<PATH>)`",
+                    idx
+                ))
+                .chain_err(|| format!("in summary file `{}`", Self::SUMMARY))
+            };
+            let title_start = line.find('[').ok_or_else(err)? + 1;
+            let title_end = line.find(']').ok_or_else(err)?;
+            let path_start = line.find('(').ok_or_else(err)? + 1;
+            let path_end = line.find(')').ok_or_else(err)?;
+
+            let title = line[title_start..title_end].into();
+            let path = line[path_start..path_end].into();
+
+            res.push(TopLevelMd { title, path })
+        }
+
+        Ok(res)
+    }
+
+    pub fn src_dir(&self) -> PathBuf {
+        PathBuf::from(Self::SRC)
+    }
+    pub fn tgt_dir(&self) -> PathBuf {
+        PathBuf::from(self.target)
+    }
+
+    /// Works on a single top-level file.
+    pub fn work_one(&self, idx: usize, file: TopLevelMd) -> Res<()> {
+        let src_path = {
+            let mut src_path = self.src_dir();
+            src_path.push(&file.path);
+            src_path
+        };
+
+        let tgt_path = {
+            let mut tgt_path = self.tgt_dir();
+            let mut tgt_file = format!("{:0>2}_", idx);
+            let mut last_is_underscore = true;
+            for c in file.title.chars() {
+                if c.is_alphanumeric() {
+                    tgt_file.push(c);
+                    last_is_underscore = false;
+                } else if !last_is_underscore {
+                    tgt_file.push('_');
+                    last_is_underscore = true;
+                }
+            }
+            tgt_file.push_str(".md");
+            tgt_path.push(&tgt_file);
+            tgt_path
+        };
+
+        log::trace!(
+            "src_path: {}, tgt_path: {}",
+            src_path.display(),
+            tgt_path.display()
+        );
+
+        let src_content = load_file(&src_path)?;
+        let mut tgt_file = open_write(&tgt_path)?;
+
+        for (idx, line) in src_content.lines().enumerate() {
+            if line.contains("#include") {
+                log::trace!(
+                    "inlining line {} of `{}`: {}",
+                    idx,
+                    src_path.display(),
+                    line.trim()
+                );
+                self.inline_block(&src_path, line, &mut tgt_file)
+                    .chain_err(|| {
+                        format!(
+                            "while inlining code block line {} of `{}`",
+                            idx,
+                            src_path.display()
+                        )
+                    })?;
+            } else {
+                use io::Write;
+                let line = if line == "\\" { "<br>" } else { line };
+                writeln!(&mut tgt_file, "{}", line).chain_err(|| {
+                    format!(
+                        "while writing line {} from `{}` to `{}`",
+                        idx,
+                        src_path.display(),
+                        tgt_path.display()
+                    )
+                })?;
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn inline_block(
+        &self,
+        md_path: impl AsRef<Path>,
+        line: &str,
+        target: &mut impl io::Write,
+    ) -> Res<()> {
+        let pat = "#include ";
+        let err = || err::Error::from(format!("illegal code block include line"));
+        let md_path = md_path.as_ref();
+
+        let path_start = line.find(pat).ok_or_else(err)? + pat.len();
+        let line = &line[path_start..];
+        let path_end = line.find(|c| c == ':' || c == ' ').ok_or_else(err)?;
+        let line_tail = &line[path_end..];
+
+        let path = &line[..path_end];
+
+        let code_path = {
+            let mut src_path = md_path.to_path_buf();
+            let has_parent = src_path.pop();
+            if !has_parent {
+                bail!("illegal markdown path `{}`", md_path.display())
+            }
+            src_path.push(path);
+            src_path
+        };
+
+        let (anchor_start, anchor_end) = if line_tail.starts_with(':') {
+            let tail = &line[1..];
+            let anchor_end = tail
+                .find(|c: char| c == '}' || c.is_whitespace())
+                .ok_or_else(err)?;
+            let anchor = &tail[..anchor_end];
+            (
+                Some(format!("ANCHOR: {}", anchor)),
+                Some(format!("ANCHOR_END: {}", anchor)),
+            )
+        } else {
+            (None, None)
+        };
+
+        log::trace!(
+            "code path: {}, anchor: `{}` / `{}`",
+            code_path.display(),
+            anchor_start.as_deref().unwrap_or("none"),
+            anchor_end.as_deref().unwrap_or("none"),
+        );
+
+        #[derive(Clone, Copy)]
+        enum Mode<'s> {
+            Skip { start: &'s str },
+            Copy { end: Option<&'s str> },
+        }
+
+        let mut mode = if let Some(start) = anchor_start.as_ref() {
+            Mode::Skip { start }
+        } else {
+            Mode::Copy { end: None }
+        };
+        let code_content = load_file(&code_path)?;
+
+        for line in code_content.lines() {
+            match mode {
+                Mode::Skip { start } => {
+                    if line.contains(start) {
+                        mode = Mode::Copy {
+                            end: anchor_end.as_deref(),
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+                Mode::Copy { end: Some(end) } if line.contains(end) => {
+                    break;
+                }
+                Mode::Copy { end }
+                    if end.is_some()
+                        && (line.contains("ANCHOR: ") || line.contains("ANCHOR_END: ")) =>
+                {
+                    continue;
+                }
+                Mode::Copy { .. } => {
+                    writeln!(target, "{}", line)?;
+                }
+            }
+        }
+
+        Ok(())
     }
 }
