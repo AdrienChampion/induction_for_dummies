@@ -183,7 +183,7 @@ We now get
 As expected, Z3 now has to make the second constraint `true` through `(= x 11)`.
 
 
-## Playing with Z3 (`unsat`)
+## Playing with Z3: `unsat`
 
 Let's add another constraint to make these constraints unsatisfiable. In the latest version of our
 example, Z3 has no choice but to have `x` be `11` since it is the only way to verify the second
@@ -204,8 +204,8 @@ Z3 knows exactly what we are doing and replies that the formula is unsatisfiable
 ```
 
 We get an error though, because it does not make sense to ask for a model if the formula is
-unsatisfiable. *"Unsatisfiable"* means *"has no model"* (*i.e.* no valuation of the variables can
-make all constraints true).
+unsatisfiable. *"Unsatisfiable"*, or *unsat*, means *"has no model"* (*i.e.* no valuation of the
+variables can make all constraints true).
 
 \
 \
@@ -225,10 +225,10 @@ Z3 answers "no": in this context, it is not possible for `x` not to be odd. This
 proved for us that the program's assert statement can never fail (and can be compiled away).
 
 What if, with different constraints, the negation of the program's assert statement was
-satisfiable? Then Z3 can give us a model, which constitutes a *counterexample* showing how it is
-possible to verify the whole context but still falsify the program assertion (*i.e* satisfy the
-`(assert (not <program_assertion>))`).
-
+satisfiable? Then, [as we saw in the previous section](#playing-with-z3-sat), Z3 can give us a
+*model*: a valuation of all the (relevant) variables involved in the check. this constitutes a
+*counterexample*, which shows how it is possible to verify the whole context but still falsify the
+program assertion (*i.e* satisfy the SMT-LIB-level `(assert (not <program_assertion>))`).
 
 ## Outro
 
@@ -238,7 +238,7 @@ highly optimized tools constantly improved by ongoing theoretical and practical 
 arrays, algebraic data types, *etc.* And *expressive* because a great deal of verification problems
 are amenable to SMT without too much trouble.
 
-On such verification problem is *declarative transition system (induction-based) verification*, as
+One such verification problem is *declarative transition system (induction-based) verification*, as
 we will see in the following posts.
 
 

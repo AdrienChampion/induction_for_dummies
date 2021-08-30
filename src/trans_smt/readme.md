@@ -238,16 +238,4 @@ Output:
 </details>
 
 
-## Mikino Syntax
-
-As we have seen so far, a transition system is
-
-- some (typed) state variables defining a notion of *state*;
-- the initial predicate `init(s)`,
-
-	with `init(s) = true` iff `s` is an initial state;
-- the transition relation `trans(s, s')`,
-
-	with `init(s, s') = true` iff `s'` is a legal successor of `s`.
-
 [smt lib]: http://smtlib.cs.uiowa.edu (SMT-LIB homepage)

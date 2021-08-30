@@ -18,7 +18,7 @@ In the previous chapter, we played with our running example using Z3 by
 	<summary>Expand for a refresher on these declarations.</summary>
 
 ```text
-{{ #include ../trans_smt/code/sw_trans_1.smt2:state_def }}
+{{ #include ../trans_smt/code/sw_trans_1.smt2:states_def }}
 ```
 </details>
 
@@ -36,7 +36,7 @@ In the previous chapter, we played with our running example using Z3 by
   prove some basic properties over it.
 
 <details>
-	<summary>Expand for a refresher on the querying.</summary>
+	<summary>Expand for the last assertion and the queries.</summary>
 
 ```text
 {{ #include ../trans_smt/code/sw_trans_1.smt2:state_constraints }}

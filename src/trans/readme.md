@@ -111,8 +111,8 @@ could take any value. These two constraints are arguable more readable as
 Next, the system's description discusses how `cnt` evolves, which gives the following constraints:
 
 - `s'.reset ⇒ (s'.cnt = 0)`,
-- `s'.is_counting ⇒ (s'.cnt = s'.cnt + 1)`, and
-- `¬s'.is_counting ⇒ (s'.cnt = s'.cnt)`.
+- `s'.is_counting ⇒ (s'.cnt = s.cnt + 1)`, and
+- `¬s'.is_counting ⇒ (s'.cnt = s.cnt)`.
 
 Most readers might notice that these constraints will not work well together. Whenever `reset` is
 pressed `cnt` must be `0`, and at the same time it must be either incremented or unchanged
