@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Induction For Dummies</title>
+        <title>Induction For Dummies by OCamlPro</title>
                 <meta name="robots" content="noindex" />
                 
 
@@ -112,7 +112,7 @@
                         </button>
                                             </div>
 
-                    <h1 class="menu-title">Induction For Dummies</h1>
+                    <h1 class="menu-title">Induction For Dummies by OCamlPro</h1>
 
                     <div class="right-buttons">
                                                 <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -225,9 +225,9 @@ modern induction-based verification engines focus heavily on property strengthen
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="preface"><a class="header" href="#preface">Preface</a></h1>
 <blockquote>
-<p>This preface introduces formal verification in general with relatively concrete examples. It then
-goes into the details of what a formal verification tool looks like, and which aspects of such
-tools we will then discuss.</p>
+<p>This preface is a high-level introduction to formal verification. It then goes into the details
+of what a formal verification tool looks like, and which aspects of such tools we will discuss in
+later posts.</p>
 </blockquote>
 <p><br />
 </p>
@@ -436,7 +436,15 @@ analyze them, meaning the encoding will be understandable when we look at it.</p
 <em>just</em> finds counterexamples (bugs). The three posts after that discuss basic and more advanced
 induction techniques.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="smt-solvers"><a class="header" href="#smt-solvers">SMT Solvers</a></h1>
-<p><strong>S</strong>atisfiability <strong>M</strong>odulo <strong>T</strong>heory (SMT) is a solver for establishing whether some
+<blockquote>
+<p>SMT solvers are basic building blocks for most modern verification tools. While studying SMT
+solvers is particularly rewarding for developing such tools, understanding SMT forces to grasp
+concepts that are very useful even for high-level users. Later posts will rely heavily on SMT
+solvers and readers are encouraged to run and modify examples themselves, or even create new ones.</p>
+</blockquote>
+<p><br />
+</p>
+<p>A <strong>S</strong>atisfiability <strong>M</strong>odulo <strong>T</strong>heory (SMT) solver is a solver for establishing whether some
 constraints expressed in MSFOL (<strong>M</strong>any-<strong>S</strong>orted <strong>F</strong>irst <strong>O</strong>rder <strong>L</strong>ogic) are
 <em>satisfiable</em>. Let's unpack this.</p>
 <p>First, MSFOL is built on FOL (<strong>F</strong>irst <strong>O</strong>rder <strong>L</strong>ogic), which basically means <em>&quot;boolean
@@ -664,8 +672,13 @@ we will see in the following posts.</p>
 <blockquote>
 <p><strong>NB:</strong> this chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter
 builds on this one and is nothing but fun manipulations 😺 on the notions and examples introduced
-here.</p>
+here. Transition systems are the <em>&quot;objects&quot;</em> we will later analyze and are, in a sense,
+relatively close to pieces of actual code (loops). This chapter starts bridging the gap between
+the relatively high-level notion of transition system and SMT solvers which are relatively
+low-level tools.</p>
 </blockquote>
+<p><br />
+</p>
 <p>A <em>(declarative) transition system</em> describes an infinite loop updating some <em>state</em>. The <em>state</em>
 can be understood as some variables storing some data. These variables are usually called <em>state
 variables</em> and they characterize the system completely. At each <em>step</em>, or <em>iteration of the loop</em>,
@@ -1451,6 +1464,11 @@ unsat
 </code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="unrolling-and-bmc"><a class="header" href="#unrolling-and-bmc">Unrolling and BMC</a></h1>
+<blockquote>
+<p>Here we finally start doing things. We will perform a kind of analysis called BMC. While not a
+proof technique in general, it is a very useful <em>falsification</em> technique and paves the way
+towards <em>induction</em>.</p>
+</blockquote>
 <p>In the previous chapter, we played with our running example using Z3 by</p>
 <ul>
 <li>defining the transition relation as a <code>define-fun</code>,</li>
@@ -3628,7 +3646,7 @@ counterexample (cex)</em>. Remember what a <em>step</em> check is: for any state
 <li>assuming state <code>k+1</code> is a successor of state <code>k</code>,</li>
 <li>is it possible that state <code>k+1</code> falsifies <code>candidate</code>?</li>
 </ul>
-<p>If the answer is negative, it means that there exists a state <code>k</code> verifying <code>candidate</code> which has a
+<p>If it is possible, it means that there exists a state <code>k</code> verifying <code>candidate</code> which has a
 successor state <code>k+1</code> falsifying <code>candidate</code>. Under the hood, this means the solver answered <code>sat</code>
 to mikino's <em>step</em> <code>check-sat</code> query, meaning mikino can invoke <code>get-model</code> for <em>step cex</em>: a pair
 of succeeding states showing that <code>candidate</code> is not necessarily preserved by the transition
@@ -3893,6 +3911,11 @@ failed: the following PO(s) are not inductive:
 </code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="property-strengthening"><a class="header" href="#property-strengthening">Property Strengthening</a></h1>
+<p>We have seen two kinds of candidate so far:</p>
+<ul>
+<li>inductive candidates, meaning induction can prove they are invariants, and</li>
+<li>falsifiable candidates, which can be falsified by running BMC for long enough.</li>
+</ul>
 
                     </main>
 

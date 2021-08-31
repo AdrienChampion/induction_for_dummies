@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Induction: Mikino and Step Cex-s - Induction For Dummies</title>
+        <title>Induction: Mikino and Step Cex-s - Induction For Dummies by OCamlPro</title>
                 
 
         <!-- Custom HTML head -->
@@ -111,7 +111,7 @@
                         </button>
                                             </div>
 
-                    <h1 class="menu-title">Induction For Dummies</h1>
+                    <h1 class="menu-title">Induction For Dummies by OCamlPro</h1>
 
                     <div class="right-buttons">
                                                 <a href="../print.html" title="Print this book" aria-label="Print this book">
@@ -249,7 +249,7 @@ counterexample (cex)</em>. Remember what a <em>step</em> check is: for any state
 <li>assuming state <code>k+1</code> is a successor of state <code>k</code>,</li>
 <li>is it possible that state <code>k+1</code> falsifies <code>candidate</code>?</li>
 </ul>
-<p>If the answer is negative, it means that there exists a state <code>k</code> verifying <code>candidate</code> which has a
+<p>If it is possible, it means that there exists a state <code>k</code> verifying <code>candidate</code> which has a
 successor state <code>k+1</code> falsifying <code>candidate</code>. Under the hood, this means the solver answered <code>sat</code>
 to mikino's <em>step</em> <code>check-sat</code> query, meaning mikino can invoke <code>get-model</code> for <em>step cex</em>: a pair
 of succeeding states showing that <code>candidate</code> is not necessarily preserved by the transition
