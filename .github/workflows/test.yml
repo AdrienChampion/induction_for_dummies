@@ -9,12 +9,14 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v2
+      - uses: jontze/action-mdbook@v1
+        with:
+          use-linkcheck: true
 
-      - name: Setup mdBook
-        uses: michaelfbryan/mdbook-docker-image:latest
-        # uses: peaceiris/actions-mdbook@v1
-        # with:
-        #   mdbook-version: 'latest'
+      # - name: Setup mdBook
+      #   uses: peaceiris/actions-mdbook@v1
+      #   with:
+      #     mdbook-version: 'latest'
 
       # - name: linkcheck setup
       #   run: cargo install mdbook-linkcheck
