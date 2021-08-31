@@ -3,7 +3,7 @@ authors = ["Adrien Champion"]
 language = "en"
 multilingual = false
 src = "src"
-title = "Induction For Dummies"
+title = "Induction For Dummies by OCamlPro"
 
 [output.html.fold]
 enable = true

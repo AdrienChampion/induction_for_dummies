@@ -2,7 +2,13 @@
 
 > **NB:** this chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter
 > builds on this one and is nothing but fun manipulations 😺 on the notions and examples introduced
-> here.
+> here. Transition systems are the *"objects"* we will later analyze and are, in a sense,
+> relatively close to pieces of actual code (loops). This chapter starts bridging the gap between
+> the relatively high-level notion of transition system and SMT solvers which are relatively
+> low-level tools.
+
+\
+\
 
 A *(declarative) transition system* describes an infinite loop updating some *state*. The *state*
 can be understood as some variables storing some data. These variables are usually called *state

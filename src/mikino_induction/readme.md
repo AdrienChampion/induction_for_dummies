@@ -62,7 +62,7 @@ counterexample (cex)*. Remember what a *step* check is: for any state `k`
 - assuming state `k+1` is a successor of state `k`,
 - is it possible that state `k+1` falsifies `candidate`?
 
-If the answer is negative, it means that there exists a state `k` verifying `candidate` which has a
+If it is possible, it means that there exists a state `k` verifying `candidate` which has a
 successor state `k+1` falsifying `candidate`. Under the hood, this means the solver answered `sat`
 to mikino's *step* `check-sat` query, meaning mikino can invoke `get-model` for *step cex*: a pair
 of succeeding states showing that `candidate` is not necessarily preserved by the transition

@@ -1,6 +1,14 @@
 # SMT Solvers
 
-**S**atisfiability **M**odulo **T**heory (SMT) is a solver for establishing whether some
+> SMT solvers are basic building blocks for most modern verification tools. While studying SMT
+> solvers is particularly rewarding for developing such tools, understanding SMT forces to grasp
+> concepts that are very useful even for high-level users. Later posts will rely heavily on SMT
+> solvers and readers are encouraged to run and modify examples themselves, or even create new ones.
+
+\
+\
+
+A **S**atisfiability **M**odulo **T**heory (SMT) solver is a solver for establishing whether some
 constraints expressed in MSFOL (**M**any-**S**orted **F**irst **O**rder **L**ogic) are
 *satisfiable*. Let's unpack this.
 

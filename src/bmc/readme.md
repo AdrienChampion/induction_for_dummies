@@ -1,5 +1,9 @@
 # Unrolling and BMC
 
+> Here we finally start doing things. We will perform a kind of analysis called BMC. While not a
+> proof technique in general, it is a very useful *falsification* technique and paves the way
+> towards *induction*.
+
 In the previous chapter, we played with our running example using Z3 by
 
 - defining the transition relation as a `define-fun`,
