@@ -11,15 +11,13 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup mdBook
-        uses: peaceiris/actions-mdbook@v1
-        with:
-          mdbook-version: 'latest'
+        uses: michaelfbryan/mdbook-docker-image:latest
+        # uses: peaceiris/actions-mdbook@v1
+        # with:
+        #   mdbook-version: 'latest'
 
-      - name: linkcheck setup
-        run: cargo install mdbook-linkcheck
-
-      - name: build
-        run: mdbook build
+      # - name: linkcheck setup
+      #   run: cargo install mdbook-linkcheck
 
       - name: Get Z3
         run: |
@@ -35,11 +33,5 @@ jobs:
       - name: Test All Examples
         run: cargo run -- -vv --z3_cmd "./z3"
 
-      - name: build
+      - name: Build
         run: mdbook build
-
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@4.1.4
-        with:
-          branch: gh-pages
-          folder: book/html
