@@ -180,8 +180,15 @@ point, <code>res</code> is equal to <code>n</code> is not relevant for type-chec
 <p>Rust's most peculiar feature is the notion of <em>ownership</em> and the associated
 <a href="https://doc.rust-lang.org/1.8.0/book/references-and-borrowing.html"><em>borrow-checker</em></a>. Similar to type-checking, borrow-checking abstracts the actual
 code to encode it in a framework so that it can reason about the program. Type-checking's core
-notion is that of types, and the equivalent for borrow-checking is <em>lifetimes</em>. Consider the
-following Rust function, where <code>'a</code> is a lifetime parameter.</p>
+notion is that of types, and the equivalent for borrow-checking is <em>lifetimes</em>, <em>i.e.</em> the length
+of time for which some data exists and can be used.</p>
+<blockquote>
+<p>Understanding lifetimes and the borrow-checker is not required for the next chapters. It is
+presented here as an example of encoding a problem in a framework where constraints can be
+constructed. Looking at these constraints, a tool (the borrow-checker here) can draw conclusion
+regarding the (un)safety of the program.</p>
+</blockquote>
+<p>Consider the following Rust function, where <code>'a</code> is a lifetime parameter.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {

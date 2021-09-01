@@ -181,9 +181,9 @@ discussed here makes understanding other approaches significantly easier.</p>
 </li>
 <li>
 <p><a href="./trans">Transition Systems</a></p>
-<p>Transition systems are <em>one way</em> to encode a wide variety of programs in a formalism suited for
+<p>Transition systems are <em>one way</em> to encode a wide variety of programs in a framework suited for
 formal verification. Following sections will discuss all notions in the context of transition
-system as they are fairly easy to understand. They definitely have downsides, but one can get a
+systems as they are fairly easy to understand. They definitely have downsides, but one can get a
 surprising mileage out of them if careful.</p>
 </li>
 <li>
@@ -260,8 +260,15 @@ point, <code>res</code> is equal to <code>n</code> is not relevant for type-chec
 <p>Rust's most peculiar feature is the notion of <em>ownership</em> and the associated
 <a href="https://doc.rust-lang.org/1.8.0/book/references-and-borrowing.html"><em>borrow-checker</em></a>. Similar to type-checking, borrow-checking abstracts the actual
 code to encode it in a framework so that it can reason about the program. Type-checking's core
-notion is that of types, and the equivalent for borrow-checking is <em>lifetimes</em>. Consider the
-following Rust function, where <code>'a</code> is a lifetime parameter.</p>
+notion is that of types, and the equivalent for borrow-checking is <em>lifetimes</em>, <em>i.e.</em> the length
+of time for which some data exists and can be used.</p>
+<blockquote>
+<p>Understanding lifetimes and the borrow-checker is not required for the next chapters. It is
+presented here as an example of encoding a problem in a framework where constraints can be
+constructed. Looking at these constraints, a tool (the borrow-checker here) can draw conclusion
+regarding the (un)safety of the program.</p>
+</blockquote>
+<p>Consider the following Rust function, where <code>'a</code> is a lifetime parameter.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
@@ -444,14 +451,15 @@ solvers and readers are encouraged to run and modify examples themselves, or eve
 </blockquote>
 <p><br />
 </p>
-<p>A <strong>S</strong>atisfiability <strong>M</strong>odulo <strong>T</strong>heory (SMT) solver is a solver for establishing whether some
-constraints expressed in MSFOL (<strong>M</strong>any-<strong>S</strong>orted <strong>F</strong>irst <strong>O</strong>rder <strong>L</strong>ogic) are
+<p>Let's go over a few theory-level notions before we actually start playing with SMT solvers. A
+<strong>S</strong>atisfiability <strong>M</strong>odulo <strong>T</strong>heory (SMT) solver is a solver for establishing whether some
+constraints expressed in <strong>M</strong>any-<strong>S</strong>orted <strong>F</strong>irst <strong>O</strong>rder <strong>L</strong>ogic (MSFOL) are
 <em>satisfiable</em>. Let's unpack this.</p>
 <p>First, MSFOL is built on FOL (<strong>F</strong>irst <strong>O</strong>rder <strong>L</strong>ogic), which basically means <em>&quot;boolean
 formulas&quot;</em>. For instance, <code>a ∧ (false ∨ b ∨ c)</code> is a FOL formula, where <code>∧</code> is conjunction (<code>&amp;&amp;</code>)
 and <code>∨</code> is disjunction (<code>||</code>). So this formula <em>evaluates</em> to <code>true</code> <em>iff</em> <code>a</code> is <code>true</code> and either
-<code>b</code> or <code>c</code> is true. We can represent this formula as a tree, where leaves are boolean literals and
-nodes are boolean operators.</p>
+<code>b</code> or <code>c</code> is <code>true</code> (since <code>false</code> tends not to be <code>true</code>). We can represent this formula as a
+tree, where leaves are boolean literals and nodes are boolean operators.</p>
 <pre><code class="language-text"> ┌───∧───┐
  │       │
  a    ┌──∨──┬───────┐
