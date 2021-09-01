@@ -8,15 +8,16 @@
 \
 \
 
-A **S**atisfiability **M**odulo **T**heory (SMT) solver is a solver for establishing whether some
-constraints expressed in MSFOL (**M**any-**S**orted **F**irst **O**rder **L**ogic) are
+Let's go over a few theory-level notions before we actually start playing with SMT solvers. A
+**S**atisfiability **M**odulo **T**heory (SMT) solver is a solver for establishing whether some
+constraints expressed in **M**any-**S**orted **F**irst **O**rder **L**ogic (MSFOL) are
 *satisfiable*. Let's unpack this.
 
 First, MSFOL is built on FOL (**F**irst **O**rder **L**ogic), which basically means *"boolean
 formulas"*. For instance, `a ∧ (false ∨ b ∨ c)` is a FOL formula, where `∧` is conjunction (`&&`)
 and `∨` is disjunction (`||`). So this formula *evaluates* to `true` *iff* `a` is `true` and either
-`b` or `c` is true. We can represent this formula as a tree, where leaves are boolean literals and
-nodes are boolean operators.
+`b` or `c` is `true` (since `false` tends not to be `true`). We can represent this formula as a
+tree, where leaves are boolean literals and nodes are boolean operators.
 
 ```text
  ┌───∧───┐

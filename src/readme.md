@@ -39,9 +39,9 @@ discussed here makes understanding other approaches significantly easier.
 
 - [Transition Systems](./trans)
 
-    Transition systems are *one way* to encode a wide variety of programs in a formalism suited for
+    Transition systems are *one way* to encode a wide variety of programs in a framework suited for
     formal verification. Following sections will discuss all notions in the context of transition
-    system as they are fairly easy to understand. They definitely have downsides, but one can get a
+    systems as they are fairly easy to understand. They definitely have downsides, but one can get a
     surprising mileage out of them if careful.
 
 - [SMT and Transition Systems](./trans_smt)

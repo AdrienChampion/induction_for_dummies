@@ -37,8 +37,15 @@ point, `res` is equal to `n` is not relevant for type-checking.
 Rust's most peculiar feature is the notion of *ownership* and the associated
 [*borrow-checker*][borrow checker]. Similar to type-checking, borrow-checking abstracts the actual
 code to encode it in a framework so that it can reason about the program. Type-checking's core
-notion is that of types, and the equivalent for borrow-checking is *lifetimes*. Consider the
-following Rust function, where `'a` is a lifetime parameter.
+notion is that of types, and the equivalent for borrow-checking is *lifetimes*, *i.e.* the length
+of time for which some data exists and can be used.
+
+> Understanding lifetimes and the borrow-checker is not required for the next chapters. It is
+> presented here as an example of encoding a problem in a framework where constraints can be
+> constructed. Looking at these constraints, a tool (the borrow-checker here) can draw conclusion
+> regarding the (un)safety of the program.
+
+Consider the following Rust function, where `'a` is a lifetime parameter.
 
 ```rust ,compile_fail
 // DOES NOT COMPILE
