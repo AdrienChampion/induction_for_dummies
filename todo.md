@@ -2,8 +2,6 @@
 
 - most chapters end with little to no explicit connective tissue with the next chapter
 
-- remove `**NB:**` from notes, I think it pisses people off
-
 - change *chapters* to *posts* throughout
 
 - mention BMC always finds the shortest cex by design

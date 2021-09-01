@@ -75,10 +75,10 @@ Formula satisfiability is concerned about whether it is possible to make some fo
 formula under which the formula is `true`. Such a valuation is called a *model* of the formula. Let
 us write a tiny example and start running Z3 to play with satisfiability directly.
 
-> **NB**: to be precise, *SAT* stands for the *boolean satisfiability problem*, which deals with
-> finding models for purely boolean formulas. *"SMT"* adds *"Modulo Theory"* to *"Satisfiability"*
-> to specify that atoms of the formula can mention theories different from booleans (integers,
-> reals, arrays, *etc.*) in its atoms, and that models must respect the rules of these theories.
+> To be precise, *SAT* stands for the *boolean satisfiability problem*, which deals with finding
+> models for purely boolean formulas. *"SMT"* adds *"Modulo Theory"* to *"Satisfiability"* to
+> specify that atoms of the formula can mention theories different from booleans (integers, reals,
+> arrays, *etc.*) in its atoms, and that models must respect the rules of these theories.
 
 
 ## SMT-LIB 2
@@ -111,10 +111,10 @@ Also, SMT-LIB formulas are written using *prefix notation* (or *Polish notation*
 human readability. SMT-LIB is really meant to be used by programs to communicate, not for humans to
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.
 
-> **NB:** [VS Code] has an extension for SMT-LIB syntax highlighting (`.smt2` files). The pieces of
-> SMT-LIB code we will show in these posts will not have syntax highlighting, unfortunately. We
-> apologize for this problem, and encourage readers to copy these pieces of code in an editor that
-> supports SMT-LIB using the button at the top-right of the code blocks.
+> [VS Code] has an extension for SMT-LIB syntax highlighting (`.smt2` files). The pieces of SMT-LIB
+> code we will show in these posts will not have syntax highlighting, unfortunately. We apologize
+> for this problem, and encourage readers to copy these pieces of code in an editor that supports
+> SMT-LIB using the button at the top-right of the code blocks.
 
 Anyway, an SMT-LIB assertion of our running example would look like this:
 

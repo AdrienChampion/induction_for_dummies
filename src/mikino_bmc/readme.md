@@ -54,9 +54,9 @@ its output.
 {{ #include code/sw_1.mkn:candidates }}
 ```
 
-> **NB:** mikino's input format is designed to look relatively pretty with Rust syntax highlighting
-> (which is used in the snippets above). It is definitely not legal Rust syntax though, so make
-> sure `rustfmt` does not run on it as it will fail.
+> Mikino's input format is designed to look relatively pretty with Rust syntax highlighting (which
+> is used in the snippets above). It is definitely not legal Rust syntax though, so make sure
+> `rustfmt` does not run on it as it will fail.
 
 \
 \
@@ -92,7 +92,7 @@ process manually (or it exhausts memory/time).
 \
 \
 
-> **NB:** mikino requires [Z3][z3] to run, you can retrieve a binary for your operating system on
+> Mikino requires [Z3][z3] to run, you can retrieve a binary for your operating system on
 > [Z3's release page][z3 release]. Mikino, by default, assumes a Z3 binary is in your `PATH` with
 > name `z3`. You can override this with the `--z3_cmd` command-line argument: `mikino --z3_cmd
 > "my_z3" ...` or `mikino --z3_cmd "./my_z3" ...` if Z3 is not in your `PATH` but is in the current
@@ -190,10 +190,10 @@ transition relation and causes `cnt` to be `0` regardless of `is_counting`'s val
 \
 \
 
-> **NB:** we had to somewhat artificially write the candidate as `(⇒ (and is_counting (not
-> start_stop)) (> cnt 0))`. Based on the paragraph above, the `(and is_counting (not start_stop))`
-> part should really be `is_counting`. The problem with this is that we actually ignore
-> `is_counting` in the initial state.
+> We had to somewhat artificially write the candidate as `(⇒ (and is_counting (not start_stop)) (>
+> cnt 0))`. Based on the paragraph above, the `(and is_counting (not start_stop))` part should
+> really be `is_counting`. The problem with this is that we actually ignore `is_counting` in the
+> initial state.
 >
 > Hence, we would get a initial state counterexample where `start_stop` is `true`, meaning
 > `is_counting` is `true`, but `cnt` ignores it and is just `0`. As authors, we wanted to show a

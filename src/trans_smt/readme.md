@@ -45,7 +45,7 @@ the main concern, but relatively small examples are quite readable if indented p
 {{ #include code/sw_trans_1.smt2:trans_def }}
 ```
 
-> **NB:** full code in the [Version 1](#version-1) section below.
+> Full code in the [Version 1](#version-1) section below.
 
 \
 \
@@ -84,7 +84,7 @@ state that's a successor of state `0`. For instance,
 The `check-sat` command asks Z3 whether there exists a valuation of all state variables verifying
 all our constraints. Said constraints include that state `1` must be a legal successor of state `0`.
 
-> **NB:** full code in the [Version 1](#version-1) section below.
+> Full code in the [Version 1](#version-1) section below.
 
 ```text
 > z3 test.smt2
@@ -107,13 +107,13 @@ Let's modify our last assertion: we keep the constraints over state `0` and repl
 {{ #include code/sw_trans_2.smt2:state_constraints }}
 ```
 
-> **NB:** note that this assertion **replaces** the one above where we constrained state `1`'s
+> Note that this assertion **replaces** the one above where we constrained state `1`'s
 > inputs.
 
 The question we are asking Z3 is now *"say `cnt > 7` and we're not counting; is it possible then to
 have `cnt = 0` in one transition?"*.
 
-> **NB:** full code in the [Version 2](#version-2) section below.
+> Full code in the [Version 2](#version-2) section below.
 
 ```text
 {{ #include code/sw_trans_2.smt2.out }}
@@ -132,7 +132,7 @@ not pressed, `cnt` can only increase or stay the same depending on whether the s
 Humans (us) *"knowing"* this is not possible is not very valuable, as humans are notoriously great
 at being wrong. Let's just ask Z3 to prove (or disprove) what we *know*.
 
-> **NB:** full code in the [Version 1](#version-1) section below.
+> Full code in the [Version 1](#version-1) section below.
 
 ```text
 > z3 test.smt2

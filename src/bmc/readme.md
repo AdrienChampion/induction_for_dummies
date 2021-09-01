@@ -85,7 +85,7 @@ state variables, and that a *state* is a valuation of all these state variables.
 state `s` is *reachable* if the system, starting from one of its initial states, can reach `s` by
 applying its transition relation `n` times, where `n` is an arbitrary natural number.
 
-> **NB:** `n` can be `0`, *i.e.* the initial states of a system are reachable, naturally.
+> Note that `n` can be `0`, *i.e.* the initial states of a system are reachable, naturally.
 
 This notion of *reachability* is usually extended to apply to state predicates. For instance, in
 the stopwatch system, we can say that the state predicate `cnt > 5` is reachable: just start from
@@ -102,8 +102,8 @@ reason about boolean, integer... theories directly to assess whether a given for
 satisfiable. The only time actual values (and thus states) are produced in when the formula is
 satisfiable and we ask for a model.
 
-> **NB:** while generally inefficient, tools such as [TLA+] do manage to scale the explicit-state
-> approach to impressively large systems. Also, it should be noted that when such a tool manages to
+> While generally inefficient, tools such as [TLA+] do manage to scale the explicit-state approach
+> to impressively large systems. Also, it should be noted that when such a tool manages to
 > terminate, *i.e.* compute the entire reachable state space, they are able to (dis)prove
 > properties that are much more complex than anything we will do here. [TLA+] for instance can
 > reason about *linear temporal logic* formulas which are far beyond the scope of these posts.
@@ -205,7 +205,7 @@ such that they
 - represent an actual initial state, and
 - falsify our candidate.
 
-> **NB:** full code in the [Version 1](#version-1) section below.
+> Full code in the [Version 1](#version-1) section below.
 
 ```text
 > z3 test.smt2
@@ -238,7 +238,7 @@ integer*. Let's fix our initial predicate.
 We do not need to change anything else, we can just run the same check on the updated initial
 predicate.
 
-> **NB:** full code in the [Version 2](#version-2) section below.
+> Full code in the [Version 2](#version-2) section below.
 
 ```text
 > z3 test.smt2
@@ -260,9 +260,9 @@ Congratulations to us, we just invented BMC.
 \
 \
 
-> **NB:** the stopwatch system has an infinite reachable state space since `cnt` can reach any
-> integer value (just keep incrementing it). Start actually proving candidates in the next chapter,
-> this one focuses solely on finding counterexamples.
+> The stopwatch system has an infinite reachable state space since `cnt` can reach any integer
+> value (just keep incrementing it). Start actually proving candidates in the next chapter, this
+> one focuses solely on finding counterexamples.
 
 \
 \

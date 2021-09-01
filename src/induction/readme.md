@@ -117,10 +117,10 @@ stopwatch's counter is always positive. We will use the version that starts from
 one where it can take an arbitrary positive value. Both versions work for this proof, but the
 former is better for obtaining non-trivial (length `0`) counterexamples if we need to.
 
-> **NB:** readers eager to *learn by doing* can start from any of the previous SMT examples
-> involving BMC and try to conduct the proof themselves. The SMT examples for BMC have definitions
-> for both `init` and `trans` ready to use. The easy version consists in having an SMT-LIB script
-> for the *base* case, and another one for the *step* case. Solution in the [Stopwatch
+> Readers eager to *learn by doing* can start from any of the previous SMT examples involving BMC
+> and try to conduct the proof themselves. The SMT examples for BMC have definitions for both
+> `init` and `trans` ready to use. The easy version consists in having an SMT-LIB script for the
+> *base* case, and another one for the *step* case. Solution in the [Stopwatch
 > Base](#stopwatch-base) and [Stopwatch Step](#stopwatch-step) sections.
 >
 > Bonus points if you can do both with just one script, using activation literals. Perfect score if
@@ -155,7 +155,7 @@ In the *base* check, we are only concerned with the initial states. All we need 
 
 Z3 easily answers our question.
 
-> **NB:** full code in the [Stopwatch Base](#stopwatch-base) section below.
+> Full code in the [Stopwatch Base](#stopwatch-base) section below.
 
 ```text
 > z3 test.smt2
@@ -188,7 +188,7 @@ Next, we want to ask whether it is possible to have
 
 And that's it. Unless Z3 decides to answer `sat` for some reason, we are done.
 
-> **NB:** full code in the [Stopwatch Step](#stopwatch-step) section below.
+> Full code in the [Stopwatch Step](#stopwatch-step) section below.
 
 ```text
 > play drumroll.wav

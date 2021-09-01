@@ -1,11 +1,11 @@
 # Transition Systems
 
-> **NB:** this chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter
-> builds on this one and is nothing but fun manipulations 😺 on the notions and examples introduced
-> here. Transition systems are the *"objects"* we will later analyze and are, in a sense,
-> relatively close to pieces of actual code (loops). This chapter starts bridging the gap between
-> the relatively high-level notion of transition system and SMT solvers which are relatively
-> low-level tools.
+> This chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter builds on
+> this one and is nothing but fun manipulations 😺 on the notions and examples introduced here.
+> Transition systems are the *"objects"* we will later analyze and are, in a sense, relatively
+> close to pieces of actual code (loops). This chapter starts bridging the gap between the
+> relatively high-level notion of transition system and SMT solvers which are relatively low-level
+> tools.
 
 \
 \
@@ -71,10 +71,9 @@ valuation as input, and is true if and only if that state valuation is a legal i
 can write it in pseudo-code as `init(s) ≜ s.reset ⇒ s.cnt = 0` or, equivalently, `init(s) ≜
 ¬s.reset ∨ (s.cnt = 0)`: *"either `reset` is `false` or `cnt` is `0`"*.
 
-> **NB:** it might seem like a detail, but you should **not** think of `s.cnt = 0` as an
-> assignment. It is really a constraint that evaluates to `true` or `false` depending on the value
-> of `s.cnt`. If it helps, you can think of `=` as the usual `==` operator found in most
-> programming languages.
+> It might seem like a detail, but you should **not** think of `s.cnt = 0` as an assignment. It is
+> really a constraint that evaluates to `true` or `false` depending on the value of `s.cnt`. If it
+> helps, you can think of `=` as the usual `==` operator found in most programming languages.
 
 Our initial predicate is not complete though. The specification also tells us that we are
 originally *not counting*, and that when `start_stop` is `true` we should toggle counting on/off.

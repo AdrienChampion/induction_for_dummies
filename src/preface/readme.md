@@ -218,9 +218,9 @@ clear, if the goal is formal verification then **we need the encoding to be soun
 proof on the encoded program tells us nothing of the real program, *i.e.* the one we want to verify
 in the first place.
 
-> **NB:** this is not to say that unsound encodings are necessarily useless. They can be useful if
-> we are interested solely in finding bugs for instance. Since we will not try to prove anything,
-> it is fine for the encoding to be unsound as long as it allows us to find actual/potential bugs.
+> This is not to say that unsound encodings are necessarily useless. They can be useful if we are
+> interested solely in finding bugs for instance. Since we will not try to prove anything, it is
+> fine for the encoding to be unsound as long as it allows us to find actual/potential bugs.
 
 
 ## Outro
@@ -244,11 +244,11 @@ Note that the problem is less severe for failed proof attempts that produce a *c
 sense for the original program is easy and fast. But a proof of correctness relies on the encoding
 being sound and correctly implemented.
 
-> **NB**: There are ways to mitigate this kind of problem. Soundness can be formally proved. The
-> frontend can be made redundant by implementing it twice by two different teams in two different
-> languages (two or more), and checking they produce exactly the same constraints. Solver-side,
-> *proof logging* consists in having the solver log the logical steps of the actual proof it found
-> so that they can be checked by one or more separate tools.
+> There are ways to mitigate this kind of problem. Soundness can be formally proved. The frontend
+> can be made redundant by implementing it twice by two different teams in two different languages
+> (two or more), and checking they produce exactly the same constraints. Solver-side, *proof
+> logging* consists in having the solver log the logical steps of the actual proof it found so that
+> they can be checked by one or more separate tools.
 
 
 ## Next
