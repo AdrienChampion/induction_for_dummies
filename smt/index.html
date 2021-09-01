@@ -201,10 +201,10 @@ require to have Z3 in your path. -->
 formula under which the formula is <code>true</code>. Such a valuation is called a <em>model</em> of the formula. Let
 us write a tiny example and start running Z3 to play with satisfiability directly.</p>
 <blockquote>
-<p><strong>NB</strong>: to be precise, <em>SAT</em> stands for the <em>boolean satisfiability problem</em>, which deals with
-finding models for purely boolean formulas. <em>&quot;SMT&quot;</em> adds <em>&quot;Modulo Theory&quot;</em> to <em>&quot;Satisfiability&quot;</em>
-to specify that atoms of the formula can mention theories different from booleans (integers,
-reals, arrays, <em>etc.</em>) in its atoms, and that models must respect the rules of these theories.</p>
+<p>To be precise, <em>SAT</em> stands for the <em>boolean satisfiability problem</em>, which deals with finding
+models for purely boolean formulas. <em>&quot;SMT&quot;</em> adds <em>&quot;Modulo Theory&quot;</em> to <em>&quot;Satisfiability&quot;</em> to
+specify that atoms of the formula can mention theories different from booleans (integers, reals,
+arrays, <em>etc.</em>) in its atoms, and that models must respect the rules of these theories.</p>
 </blockquote>
 <h2 id="smt-lib-2"><a class="header" href="#smt-lib-2">SMT-LIB 2</a></h2>
 <p>For simplicity's sake, let's only allow atoms to mention integers. Consider the following formula.</p>
@@ -229,10 +229,10 @@ solver what the constraints are.</p>
 human readability. SMT-LIB is really meant to be used by programs to communicate, not for humans to
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.</p>
 <blockquote>
-<p><strong>NB:</strong> <a href="https://code.visualstudio.com" title="VS Code homepage">VS Code</a> has an extension for SMT-LIB syntax highlighting (<code>.smt2</code> files). The pieces of
-SMT-LIB code we will show in these posts will not have syntax highlighting, unfortunately. We
-apologize for this problem, and encourage readers to copy these pieces of code in an editor that
-supports SMT-LIB using the button at the top-right of the code blocks.</p>
+<p><a href="https://code.visualstudio.com" title="VS Code homepage">VS Code</a> has an extension for SMT-LIB syntax highlighting (<code>.smt2</code> files). The pieces of SMT-LIB
+code we will show in these posts will not have syntax highlighting, unfortunately. We apologize
+for this problem, and encourage readers to copy these pieces of code in an editor that supports
+SMT-LIB using the button at the top-right of the code blocks.</p>
 </blockquote>
 <p>Anyway, an SMT-LIB assertion of our running example would look like this:</p>
 <pre><code class="language-text">(declare-const x Int)

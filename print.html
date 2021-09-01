@@ -406,9 +406,9 @@ clear, if the goal is formal verification then <strong>we need the encoding to b
 proof on the encoded program tells us nothing of the real program, <em>i.e.</em> the one we want to verify
 in the first place.</p>
 <blockquote>
-<p><strong>NB:</strong> this is not to say that unsound encodings are necessarily useless. They can be useful if
-we are interested solely in finding bugs for instance. Since we will not try to prove anything,
-it is fine for the encoding to be unsound as long as it allows us to find actual/potential bugs.</p>
+<p>This is not to say that unsound encodings are necessarily useless. They can be useful if we are
+interested solely in finding bugs for instance. Since we will not try to prove anything, it is
+fine for the encoding to be unsound as long as it allows us to find actual/potential bugs.</p>
 </blockquote>
 <h2 id="outro"><a class="header" href="#outro">Outro</a></h2>
 <p>We hope we got across the point that setting up a verification process in a (semi-)industrial
@@ -427,11 +427,11 @@ result to mean anything.</p>
 sense for the original program is easy and fast. But a proof of correctness relies on the encoding
 being sound and correctly implemented.</p>
 <blockquote>
-<p><strong>NB</strong>: There are ways to mitigate this kind of problem. Soundness can be formally proved. The
-frontend can be made redundant by implementing it twice by two different teams in two different
-languages (two or more), and checking they produce exactly the same constraints. Solver-side,
-<em>proof logging</em> consists in having the solver log the logical steps of the actual proof it found
-so that they can be checked by one or more separate tools.</p>
+<p>There are ways to mitigate this kind of problem. Soundness can be formally proved. The frontend
+can be made redundant by implementing it twice by two different teams in two different languages
+(two or more), and checking they produce exactly the same constraints. Solver-side, <em>proof
+logging</em> consists in having the solver log the logical steps of the actual proof it found so that
+they can be checked by one or more separate tools.</p>
 </blockquote>
 <h2 id="next"><a class="header" href="#next">Next</a></h2>
 <p>The following posts dive into SMT-based transition system induction, with some property
@@ -500,10 +500,10 @@ require to have Z3 in your path. -->
 formula under which the formula is <code>true</code>. Such a valuation is called a <em>model</em> of the formula. Let
 us write a tiny example and start running Z3 to play with satisfiability directly.</p>
 <blockquote>
-<p><strong>NB</strong>: to be precise, <em>SAT</em> stands for the <em>boolean satisfiability problem</em>, which deals with
-finding models for purely boolean formulas. <em>&quot;SMT&quot;</em> adds <em>&quot;Modulo Theory&quot;</em> to <em>&quot;Satisfiability&quot;</em>
-to specify that atoms of the formula can mention theories different from booleans (integers,
-reals, arrays, <em>etc.</em>) in its atoms, and that models must respect the rules of these theories.</p>
+<p>To be precise, <em>SAT</em> stands for the <em>boolean satisfiability problem</em>, which deals with finding
+models for purely boolean formulas. <em>&quot;SMT&quot;</em> adds <em>&quot;Modulo Theory&quot;</em> to <em>&quot;Satisfiability&quot;</em> to
+specify that atoms of the formula can mention theories different from booleans (integers, reals,
+arrays, <em>etc.</em>) in its atoms, and that models must respect the rules of these theories.</p>
 </blockquote>
 <h2 id="smt-lib-2"><a class="header" href="#smt-lib-2">SMT-LIB 2</a></h2>
 <p>For simplicity's sake, let's only allow atoms to mention integers. Consider the following formula.</p>
@@ -528,10 +528,10 @@ solver what the constraints are.</p>
 human readability. SMT-LIB is really meant to be used by programs to communicate, not for humans to
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.</p>
 <blockquote>
-<p><strong>NB:</strong> <a href="https://code.visualstudio.com" title="VS Code homepage">VS Code</a> has an extension for SMT-LIB syntax highlighting (<code>.smt2</code> files). The pieces of
-SMT-LIB code we will show in these posts will not have syntax highlighting, unfortunately. We
-apologize for this problem, and encourage readers to copy these pieces of code in an editor that
-supports SMT-LIB using the button at the top-right of the code blocks.</p>
+<p><a href="https://code.visualstudio.com" title="VS Code homepage">VS Code</a> has an extension for SMT-LIB syntax highlighting (<code>.smt2</code> files). The pieces of SMT-LIB
+code we will show in these posts will not have syntax highlighting, unfortunately. We apologize
+for this problem, and encourage readers to copy these pieces of code in an editor that supports
+SMT-LIB using the button at the top-right of the code blocks.</p>
 </blockquote>
 <p>Anyway, an SMT-LIB assertion of our running example would look like this:</p>
 <pre><code class="language-text">(declare-const x Int)
@@ -678,12 +678,12 @@ we will see in the following posts.</p>
 <!-- [z3 online]: https://rise4fun.com/z3 (Z3's online interface) -->
 <div style="break-before: page; page-break-before: always;"></div><h1 id="transition-systems"><a class="header" href="#transition-systems">Transition Systems</a></h1>
 <blockquote>
-<p><strong>NB:</strong> this chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter
-builds on this one and is nothing but fun manipulations 😺 on the notions and examples introduced
-here. Transition systems are the <em>&quot;objects&quot;</em> we will later analyze and are, in a sense,
-relatively close to pieces of actual code (loops). This chapter starts bridging the gap between
-the relatively high-level notion of transition system and SMT solvers which are relatively
-low-level tools.</p>
+<p>This chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter builds on
+this one and is nothing but fun manipulations 😺 on the notions and examples introduced here.
+Transition systems are the <em>&quot;objects&quot;</em> we will later analyze and are, in a sense, relatively
+close to pieces of actual code (loops). This chapter starts bridging the gap between the
+relatively high-level notion of transition system and SMT solvers which are relatively low-level
+tools.</p>
 </blockquote>
 <p><br />
 </p>
@@ -810,10 +810,9 @@ constraint captures the legal initial states and only the legal initial states.<
 valuation as input, and is true if and only if that state valuation is a legal initial state. We
 can write it in pseudo-code as <code>init(s) ≜ s.reset ⇒ s.cnt = 0</code> or, equivalently, <code>init(s) ≜ ¬s.reset ∨ (s.cnt = 0)</code>: <em>&quot;either <code>reset</code> is <code>false</code> or <code>cnt</code> is <code>0</code>&quot;</em>.</p>
 <blockquote>
-<p><strong>NB:</strong> it might seem like a detail, but you should <strong>not</strong> think of <code>s.cnt = 0</code> as an
-assignment. It is really a constraint that evaluates to <code>true</code> or <code>false</code> depending on the value
-of <code>s.cnt</code>. If it helps, you can think of <code>=</code> as the usual <code>==</code> operator found in most
-programming languages.</p>
+<p>It might seem like a detail, but you should <strong>not</strong> think of <code>s.cnt = 0</code> as an assignment. It is
+really a constraint that evaluates to <code>true</code> or <code>false</code> depending on the value of <code>s.cnt</code>. If it
+helps, you can think of <code>=</code> as the usual <code>==</code> operator found in most programming languages.</p>
 </blockquote>
 <p>Our initial predicate is not complete though. The specification also tells us that we are
 originally <em>not counting</em>, and that when <code>start_stop</code> is <code>true</code> we should toggle counting on/off.
@@ -989,7 +988,7 @@ the main concern, but relatively small examples are quite readable if indented p
 )
 </code></pre>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="trans_smt/index.html#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="trans_smt/index.html#version-1">Version 1</a> section below.</p>
 </blockquote>
 <p><br />
 </p>
@@ -1040,7 +1039,7 @@ state that's a successor of state <code>0</code>. For instance,</p>
 <p>The <code>check-sat</code> command asks Z3 whether there exists a valuation of all state variables verifying
 all our constraints. Said constraints include that state <code>1</code> must be a legal successor of state <code>0</code>.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="trans_smt/index.html#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="trans_smt/index.html#version-1">Version 1</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 sat
@@ -1084,13 +1083,13 @@ Let's modify our last assertion: we keep the constraints over state <code>0</cod
 (get-model)
 </code></pre>
 <blockquote>
-<p><strong>NB:</strong> note that this assertion <strong>replaces</strong> the one above where we constrained state <code>1</code>'s
+<p>Note that this assertion <strong>replaces</strong> the one above where we constrained state <code>1</code>'s
 inputs.</p>
 </blockquote>
 <p>The question we are asking Z3 is now <em>&quot;say <code>cnt &gt; 7</code> and we're not counting; is it possible then to
 have <code>cnt = 0</code> in one transition?&quot;</em>.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="trans_smt/index.html#version-2">Version 2</a> section below.</p>
+<p>Full code in the <a href="trans_smt/index.html#version-2">Version 2</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">sat
 (
@@ -1129,7 +1128,7 @@ not pressed, <code>cnt</code> can only increase or stay the same depending on wh
 <p>Humans (us) <em>&quot;knowing&quot;</em> this is not possible is not very valuable, as humans are notoriously great
 at being wrong. Let's just ask Z3 to prove (or disprove) what we <em>know</em>.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="trans_smt/index.html#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="trans_smt/index.html#version-1">Version 1</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 unsat
@@ -1676,7 +1675,7 @@ state variables, and that a <em>state</em> is a valuation of all these state var
 state <code>s</code> is <em>reachable</em> if the system, starting from one of its initial states, can reach <code>s</code> by
 applying its transition relation <code>n</code> times, where <code>n</code> is an arbitrary natural number.</p>
 <blockquote>
-<p><strong>NB:</strong> <code>n</code> can be <code>0</code>, <em>i.e.</em> the initial states of a system are reachable, naturally.</p>
+<p>Note that <code>n</code> can be <code>0</code>, <em>i.e.</em> the initial states of a system are reachable, naturally.</p>
 </blockquote>
 <p>This notion of <em>reachability</em> is usually extended to apply to state predicates. For instance, in
 the stopwatch system, we can say that the state predicate <code>cnt &gt; 5</code> is reachable: just start from
@@ -1691,8 +1690,8 @@ reason about boolean, integer... theories directly to assess whether a given for
 satisfiable. The only time actual values (and thus states) are produced in when the formula is
 satisfiable and we ask for a model.</p>
 <blockquote>
-<p><strong>NB:</strong> while generally inefficient, tools such as <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> do manage to scale the explicit-state
-approach to impressively large systems. Also, it should be noted that when such a tool manages to
+<p>While generally inefficient, tools such as <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> do manage to scale the explicit-state approach
+to impressively large systems. Also, it should be noted that when such a tool manages to
 terminate, <em>i.e.</em> compute the entire reachable state space, they are able to (dis)prove
 properties that are much more complex than anything we will do here. <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> for instance can
 reason about <em>linear temporal logic</em> formulas which are far beyond the scope of these posts.</p>
@@ -1790,7 +1789,7 @@ such that they</p>
 <li>falsify our candidate.</li>
 </ul>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="bmc/index.html#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="bmc/index.html#version-1">Version 1</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 sat
@@ -1838,7 +1837,7 @@ integer</em>. Let's fix our initial predicate.</p>
 <p>We do not need to change anything else, we can just run the same check on the updated initial
 predicate.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="bmc/index.html#version-2">Version 2</a> section below.</p>
+<p>Full code in the <a href="bmc/index.html#version-2">Version 2</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 unsat
@@ -1855,9 +1854,9 @@ candidate. If not, we can unroll once more, and so on until we find a falsificat
 <p><br />
 </p>
 <blockquote>
-<p><strong>NB:</strong> the stopwatch system has an infinite reachable state space since <code>cnt</code> can reach any
-integer value (just keep incrementing it). Start actually proving candidates in the next chapter,
-this one focuses solely on finding counterexamples.</p>
+<p>The stopwatch system has an infinite reachable state space since <code>cnt</code> can reach any integer
+value (just keep incrementing it). Start actually proving candidates in the next chapter, this
+one focuses solely on finding counterexamples.</p>
 </blockquote>
 <p><br />
 </p>
@@ -2447,9 +2446,9 @@ po_s: (
 <span class="boring">}
 </span></code></pre></pre>
 <blockquote>
-<p><strong>NB:</strong> mikino's input format is designed to look relatively pretty with Rust syntax highlighting
-(which is used in the snippets above). It is definitely not legal Rust syntax though, so make
-sure <code>rustfmt</code> does not run on it as it will fail.</p>
+<p>Mikino's input format is designed to look relatively pretty with Rust syntax highlighting (which
+is used in the snippets above). It is definitely not legal Rust syntax though, so make sure
+<code>rustfmt</code> does not run on it as it will fail.</p>
 </blockquote>
 <p><br />
 </p>
@@ -2485,7 +2484,7 @@ process manually (or it exhausts memory/time).</p>
 <p><br />
 </p>
 <blockquote>
-<p><strong>NB:</strong> mikino requires <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3</a> to run, you can retrieve a binary for your operating system on
+<p>Mikino requires <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3</a> to run, you can retrieve a binary for your operating system on
 <a href="https://github.com/Z3Prover/z3/releases" title="Z3's releases on github">Z3's release page</a>. Mikino, by default, assumes a Z3 binary is in your <code>PATH</code> with
 name <code>z3</code>. You can override this with the <code>--z3_cmd</code> command-line argument: <code>mikino --z3_cmd &quot;my_z3&quot; ...</code> or <code>mikino --z3_cmd &quot;./my_z3&quot; ...</code> if Z3 is not in your <code>PATH</code> but is in the current
 directory.</p>
@@ -2733,9 +2732,9 @@ transition relation and causes <code>cnt</code> to be <code>0</code> regardless 
 <p><br />
 </p>
 <blockquote>
-<p><strong>NB:</strong> we had to somewhat artificially write the candidate as <code>(⇒ (and is_counting (not start_stop)) (&gt; cnt 0))</code>. Based on the paragraph above, the <code>(and is_counting (not start_stop))</code>
-part should really be <code>is_counting</code>. The problem with this is that we actually ignore
-<code>is_counting</code> in the initial state.</p>
+<p>We had to somewhat artificially write the candidate as <code>(⇒ (and is_counting (not start_stop)) (&gt; cnt 0))</code>. Based on the paragraph above, the <code>(and is_counting (not start_stop))</code> part should
+really be <code>is_counting</code>. The problem with this is that we actually ignore <code>is_counting</code> in the
+initial state.</p>
 <p>Hence, we would get a initial state counterexample where <code>start_stop</code> is <code>true</code>, meaning
 <code>is_counting</code> is <code>true</code>, but <code>cnt</code> ignores it and is just <code>0</code>. As authors, we wanted to show a
 counterexample where <code>reset</code> prevents <code>cnt</code> from increasing despite <code>start_stop</code> being <code>true</code>,
@@ -3182,10 +3181,10 @@ stopwatch's counter is always positive. We will use the version that starts from
 one where it can take an arbitrary positive value. Both versions work for this proof, but the
 former is better for obtaining non-trivial (length <code>0</code>) counterexamples if we need to.</p>
 <blockquote>
-<p><strong>NB:</strong> readers eager to <em>learn by doing</em> can start from any of the previous SMT examples
-involving BMC and try to conduct the proof themselves. The SMT examples for BMC have definitions
-for both <code>init</code> and <code>trans</code> ready to use. The easy version consists in having an SMT-LIB script
-for the <em>base</em> case, and another one for the <em>step</em> case. Solution in the <a href="induction/index.html#stopwatch-base">Stopwatch
+<p>Readers eager to <em>learn by doing</em> can start from any of the previous SMT examples involving BMC
+and try to conduct the proof themselves. The SMT examples for BMC have definitions for both
+<code>init</code> and <code>trans</code> ready to use. The easy version consists in having an SMT-LIB script for the
+<em>base</em> case, and another one for the <em>step</em> case. Solution in the <a href="induction/index.html#stopwatch-base">Stopwatch
 Base</a> and <a href="induction/index.html#stopwatch-step">Stopwatch Step</a> sections.</p>
 <p>Bonus points if you can do both with just one script, using activation literals. Perfect score if
 you can do both checks using only one activation literal, <strong>solely</strong> for the purpose of
@@ -3222,7 +3221,7 @@ counter:</p>
 </code></pre>
 <p>Z3 easily answers our question.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="induction/index.html#stopwatch-base">Stopwatch Base</a> section below.</p>
+<p>Full code in the <a href="induction/index.html#stopwatch-base">Stopwatch Base</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 unsat
@@ -3263,7 +3262,7 @@ need to declare two states since we need to check that <code>trans</code> preser
 </code></pre>
 <p>And that's it. Unless Z3 decides to answer <code>sat</code> for some reason, we are done.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="induction/index.html#stopwatch-step">Stopwatch Step</a> section below.</p>
+<p>Full code in the <a href="induction/index.html#stopwatch-step">Stopwatch Step</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; play drumroll.wav
 &gt; z3 test.smt2

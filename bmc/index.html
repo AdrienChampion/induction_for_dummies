@@ -348,7 +348,7 @@ state variables, and that a <em>state</em> is a valuation of all these state var
 state <code>s</code> is <em>reachable</em> if the system, starting from one of its initial states, can reach <code>s</code> by
 applying its transition relation <code>n</code> times, where <code>n</code> is an arbitrary natural number.</p>
 <blockquote>
-<p><strong>NB:</strong> <code>n</code> can be <code>0</code>, <em>i.e.</em> the initial states of a system are reachable, naturally.</p>
+<p>Note that <code>n</code> can be <code>0</code>, <em>i.e.</em> the initial states of a system are reachable, naturally.</p>
 </blockquote>
 <p>This notion of <em>reachability</em> is usually extended to apply to state predicates. For instance, in
 the stopwatch system, we can say that the state predicate <code>cnt &gt; 5</code> is reachable: just start from
@@ -363,8 +363,8 @@ reason about boolean, integer... theories directly to assess whether a given for
 satisfiable. The only time actual values (and thus states) are produced in when the formula is
 satisfiable and we ask for a model.</p>
 <blockquote>
-<p><strong>NB:</strong> while generally inefficient, tools such as <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> do manage to scale the explicit-state
-approach to impressively large systems. Also, it should be noted that when such a tool manages to
+<p>While generally inefficient, tools such as <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> do manage to scale the explicit-state approach
+to impressively large systems. Also, it should be noted that when such a tool manages to
 terminate, <em>i.e.</em> compute the entire reachable state space, they are able to (dis)prove
 properties that are much more complex than anything we will do here. <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> for instance can
 reason about <em>linear temporal logic</em> formulas which are far beyond the scope of these posts.</p>
@@ -462,7 +462,7 @@ such that they</p>
 <li>falsify our candidate.</li>
 </ul>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="#version-1">Version 1</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 sat
@@ -510,7 +510,7 @@ integer</em>. Let's fix our initial predicate.</p>
 <p>We do not need to change anything else, we can just run the same check on the updated initial
 predicate.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#version-2">Version 2</a> section below.</p>
+<p>Full code in the <a href="#version-2">Version 2</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 unsat
@@ -527,9 +527,9 @@ candidate. If not, we can unroll once more, and so on until we find a falsificat
 <p><br />
 </p>
 <blockquote>
-<p><strong>NB:</strong> the stopwatch system has an infinite reachable state space since <code>cnt</code> can reach any
-integer value (just keep incrementing it). Start actually proving candidates in the next chapter,
-this one focuses solely on finding counterexamples.</p>
+<p>The stopwatch system has an infinite reachable state space since <code>cnt</code> can reach any integer
+value (just keep incrementing it). Start actually proving candidates in the next chapter, this
+one focuses solely on finding counterexamples.</p>
 </blockquote>
 <p><br />
 </p>

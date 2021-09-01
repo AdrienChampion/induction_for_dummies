@@ -326,9 +326,9 @@ clear, if the goal is formal verification then <strong>we need the encoding to b
 proof on the encoded program tells us nothing of the real program, <em>i.e.</em> the one we want to verify
 in the first place.</p>
 <blockquote>
-<p><strong>NB:</strong> this is not to say that unsound encodings are necessarily useless. They can be useful if
-we are interested solely in finding bugs for instance. Since we will not try to prove anything,
-it is fine for the encoding to be unsound as long as it allows us to find actual/potential bugs.</p>
+<p>This is not to say that unsound encodings are necessarily useless. They can be useful if we are
+interested solely in finding bugs for instance. Since we will not try to prove anything, it is
+fine for the encoding to be unsound as long as it allows us to find actual/potential bugs.</p>
 </blockquote>
 <h2 id="outro"><a class="header" href="#outro">Outro</a></h2>
 <p>We hope we got across the point that setting up a verification process in a (semi-)industrial
@@ -347,11 +347,11 @@ result to mean anything.</p>
 sense for the original program is easy and fast. But a proof of correctness relies on the encoding
 being sound and correctly implemented.</p>
 <blockquote>
-<p><strong>NB</strong>: There are ways to mitigate this kind of problem. Soundness can be formally proved. The
-frontend can be made redundant by implementing it twice by two different teams in two different
-languages (two or more), and checking they produce exactly the same constraints. Solver-side,
-<em>proof logging</em> consists in having the solver log the logical steps of the actual proof it found
-so that they can be checked by one or more separate tools.</p>
+<p>There are ways to mitigate this kind of problem. Soundness can be formally proved. The frontend
+can be made redundant by implementing it twice by two different teams in two different languages
+(two or more), and checking they produce exactly the same constraints. Solver-side, <em>proof
+logging</em> consists in having the solver log the logical steps of the actual proof it found so that
+they can be checked by one or more separate tools.</p>
 </blockquote>
 <h2 id="next"><a class="header" href="#next">Next</a></h2>
 <p>The following posts dive into SMT-based transition system induction, with some property

@@ -145,12 +145,12 @@
                     <main>
                         <h1 id="transition-systems"><a class="header" href="#transition-systems">Transition Systems</a></h1>
 <blockquote>
-<p><strong>NB:</strong> this chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter
-builds on this one and is nothing but fun manipulations 😺 on the notions and examples introduced
-here. Transition systems are the <em>&quot;objects&quot;</em> we will later analyze and are, in a sense,
-relatively close to pieces of actual code (loops). This chapter starts bridging the gap between
-the relatively high-level notion of transition system and SMT solvers which are relatively
-low-level tools.</p>
+<p>This chapter is a bit abstract, there will be no fun manipulations 😿. The next chapter builds on
+this one and is nothing but fun manipulations 😺 on the notions and examples introduced here.
+Transition systems are the <em>&quot;objects&quot;</em> we will later analyze and are, in a sense, relatively
+close to pieces of actual code (loops). This chapter starts bridging the gap between the
+relatively high-level notion of transition system and SMT solvers which are relatively low-level
+tools.</p>
 </blockquote>
 <p><br />
 </p>
@@ -277,10 +277,9 @@ constraint captures the legal initial states and only the legal initial states.<
 valuation as input, and is true if and only if that state valuation is a legal initial state. We
 can write it in pseudo-code as <code>init(s) ≜ s.reset ⇒ s.cnt = 0</code> or, equivalently, <code>init(s) ≜ ¬s.reset ∨ (s.cnt = 0)</code>: <em>&quot;either <code>reset</code> is <code>false</code> or <code>cnt</code> is <code>0</code>&quot;</em>.</p>
 <blockquote>
-<p><strong>NB:</strong> it might seem like a detail, but you should <strong>not</strong> think of <code>s.cnt = 0</code> as an
-assignment. It is really a constraint that evaluates to <code>true</code> or <code>false</code> depending on the value
-of <code>s.cnt</code>. If it helps, you can think of <code>=</code> as the usual <code>==</code> operator found in most
-programming languages.</p>
+<p>It might seem like a detail, but you should <strong>not</strong> think of <code>s.cnt = 0</code> as an assignment. It is
+really a constraint that evaluates to <code>true</code> or <code>false</code> depending on the value of <code>s.cnt</code>. If it
+helps, you can think of <code>=</code> as the usual <code>==</code> operator found in most programming languages.</p>
 </blockquote>
 <p>Our initial predicate is not complete though. The specification also tells us that we are
 originally <em>not counting</em>, and that when <code>start_stop</code> is <code>true</code> we should toggle counting on/off.

@@ -235,9 +235,9 @@ po_s: (
 <span class="boring">}
 </span></code></pre></pre>
 <blockquote>
-<p><strong>NB:</strong> mikino's input format is designed to look relatively pretty with Rust syntax highlighting
-(which is used in the snippets above). It is definitely not legal Rust syntax though, so make
-sure <code>rustfmt</code> does not run on it as it will fail.</p>
+<p>Mikino's input format is designed to look relatively pretty with Rust syntax highlighting (which
+is used in the snippets above). It is definitely not legal Rust syntax though, so make sure
+<code>rustfmt</code> does not run on it as it will fail.</p>
 </blockquote>
 <p><br />
 </p>
@@ -273,7 +273,7 @@ process manually (or it exhausts memory/time).</p>
 <p><br />
 </p>
 <blockquote>
-<p><strong>NB:</strong> mikino requires <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3</a> to run, you can retrieve a binary for your operating system on
+<p>Mikino requires <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3</a> to run, you can retrieve a binary for your operating system on
 <a href="https://github.com/Z3Prover/z3/releases" title="Z3's releases on github">Z3's release page</a>. Mikino, by default, assumes a Z3 binary is in your <code>PATH</code> with
 name <code>z3</code>. You can override this with the <code>--z3_cmd</code> command-line argument: <code>mikino --z3_cmd &quot;my_z3&quot; ...</code> or <code>mikino --z3_cmd &quot;./my_z3&quot; ...</code> if Z3 is not in your <code>PATH</code> but is in the current
 directory.</p>
@@ -521,9 +521,9 @@ transition relation and causes <code>cnt</code> to be <code>0</code> regardless 
 <p><br />
 </p>
 <blockquote>
-<p><strong>NB:</strong> we had to somewhat artificially write the candidate as <code>(⇒ (and is_counting (not start_stop)) (&gt; cnt 0))</code>. Based on the paragraph above, the <code>(and is_counting (not start_stop))</code>
-part should really be <code>is_counting</code>. The problem with this is that we actually ignore
-<code>is_counting</code> in the initial state.</p>
+<p>We had to somewhat artificially write the candidate as <code>(⇒ (and is_counting (not start_stop)) (&gt; cnt 0))</code>. Based on the paragraph above, the <code>(and is_counting (not start_stop))</code> part should
+really be <code>is_counting</code>. The problem with this is that we actually ignore <code>is_counting</code> in the
+initial state.</p>
 <p>Hence, we would get a initial state counterexample where <code>start_stop</code> is <code>true</code>, meaning
 <code>is_counting</code> is <code>true</code>, but <code>cnt</code> ignores it and is just <code>0</code>. As authors, we wanted to show a
 counterexample where <code>reset</code> prevents <code>cnt</code> from increasing despite <code>start_stop</code> being <code>true</code>,

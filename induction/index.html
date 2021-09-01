@@ -240,10 +240,10 @@ stopwatch's counter is always positive. We will use the version that starts from
 one where it can take an arbitrary positive value. Both versions work for this proof, but the
 former is better for obtaining non-trivial (length <code>0</code>) counterexamples if we need to.</p>
 <blockquote>
-<p><strong>NB:</strong> readers eager to <em>learn by doing</em> can start from any of the previous SMT examples
-involving BMC and try to conduct the proof themselves. The SMT examples for BMC have definitions
-for both <code>init</code> and <code>trans</code> ready to use. The easy version consists in having an SMT-LIB script
-for the <em>base</em> case, and another one for the <em>step</em> case. Solution in the <a href="#stopwatch-base">Stopwatch
+<p>Readers eager to <em>learn by doing</em> can start from any of the previous SMT examples involving BMC
+and try to conduct the proof themselves. The SMT examples for BMC have definitions for both
+<code>init</code> and <code>trans</code> ready to use. The easy version consists in having an SMT-LIB script for the
+<em>base</em> case, and another one for the <em>step</em> case. Solution in the <a href="#stopwatch-base">Stopwatch
 Base</a> and <a href="#stopwatch-step">Stopwatch Step</a> sections.</p>
 <p>Bonus points if you can do both with just one script, using activation literals. Perfect score if
 you can do both checks using only one activation literal, <strong>solely</strong> for the purpose of
@@ -280,7 +280,7 @@ counter:</p>
 </code></pre>
 <p>Z3 easily answers our question.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#stopwatch-base">Stopwatch Base</a> section below.</p>
+<p>Full code in the <a href="#stopwatch-base">Stopwatch Base</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 unsat
@@ -321,7 +321,7 @@ need to declare two states since we need to check that <code>trans</code> preser
 </code></pre>
 <p>And that's it. Unless Z3 decides to answer <code>sat</code> for some reason, we are done.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#stopwatch-step">Stopwatch Step</a> section below.</p>
+<p>Full code in the <a href="#stopwatch-step">Stopwatch Step</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; play drumroll.wav
 &gt; z3 test.smt2

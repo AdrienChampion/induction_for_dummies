@@ -223,7 +223,7 @@ the main concern, but relatively small examples are quite readable if indented p
 )
 </code></pre>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="#version-1">Version 1</a> section below.</p>
 </blockquote>
 <p><br />
 </p>
@@ -274,7 +274,7 @@ state that's a successor of state <code>0</code>. For instance,</p>
 <p>The <code>check-sat</code> command asks Z3 whether there exists a valuation of all state variables verifying
 all our constraints. Said constraints include that state <code>1</code> must be a legal successor of state <code>0</code>.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="#version-1">Version 1</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 sat
@@ -318,13 +318,13 @@ Let's modify our last assertion: we keep the constraints over state <code>0</cod
 (get-model)
 </code></pre>
 <blockquote>
-<p><strong>NB:</strong> note that this assertion <strong>replaces</strong> the one above where we constrained state <code>1</code>'s
+<p>Note that this assertion <strong>replaces</strong> the one above where we constrained state <code>1</code>'s
 inputs.</p>
 </blockquote>
 <p>The question we are asking Z3 is now <em>&quot;say <code>cnt &gt; 7</code> and we're not counting; is it possible then to
 have <code>cnt = 0</code> in one transition?&quot;</em>.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#version-2">Version 2</a> section below.</p>
+<p>Full code in the <a href="#version-2">Version 2</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">sat
 (
@@ -363,7 +363,7 @@ not pressed, <code>cnt</code> can only increase or stay the same depending on wh
 <p>Humans (us) <em>&quot;knowing&quot;</em> this is not possible is not very valuable, as humans are notoriously great
 at being wrong. Let's just ask Z3 to prove (or disprove) what we <em>know</em>.</p>
 <blockquote>
-<p><strong>NB:</strong> full code in the <a href="#version-1">Version 1</a> section below.</p>
+<p>Full code in the <a href="#version-1">Version 1</a> section below.</p>
 </blockquote>
 <pre><code class="language-text">&gt; z3 test.smt2
 unsat
