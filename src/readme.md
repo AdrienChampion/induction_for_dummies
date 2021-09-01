@@ -3,13 +3,12 @@
 - Adrien Champion
 - <adrien.champion@ocamlpro.com>
 
-This series of posts broadly discusses *induction* as a *formal verification* technique, which here
-really means *formal program verification*. We will use concrete, runnable examples whenever
-possible. Some of them can run directly in a browser, while others require to run small
-easy-to-retrieve tools locally. Such is the case for pretty much all examples dealing directly with
-induction.
+This book broadly discusses *induction* as a *formal verification* technique, which here really
+means *formal program verification*. We will use concrete, runnable examples whenever possible.
+Some of them can run directly in a browser, while others require to run small easy-to-retrieve
+tools locally. Such is the case for pretty much all examples dealing directly with induction.
 
-These posts try to introduce the following notions:
+The next chapters discuss the following notions:
 
 - formal logics and formal frameworks;
 - SMT-solving: modern, *low-level* verification building blocks;
@@ -46,8 +45,8 @@ discussed here makes understanding other approaches significantly easier.
 
 - [SMT and Transition Systems](./trans_smt)
 
-    Transition systems are represented by formulas that SMT solver can work on. This post lays out
-    the foundation for more complex SMT-based analyses.
+    Transition systems are represented by formulas that SMT solver can work on. This chapter lays
+    out the foundation for more complex SMT-based analyses.
 
 - [Unrolling and BMC](./bmc)
 
@@ -58,9 +57,9 @@ discussed here makes understanding other approaches significantly easier.
 
 - [BMC: Mikino](./mikino_bmc)
 
-    Mikino is a small proof engine that can perform BMC. While it requires getting familiar with
-    its simple input format, it abstracts SMT solvers for us so that we can focus on higher-level
-    concepts.
+    [Mikino][mikino] is a small proof engine that can perform BMC. While it requires getting
+    familiar with its simple input format, it abstracts SMT solvers for us so that we can focus on
+    higher-level concepts.
 
 - [Induction](./induction)
 
@@ -70,8 +69,8 @@ discussed here makes understanding other approaches significantly easier.
 
 - [Induction: Mikino and Step Cex-s](./mikino_induction)
 
-    In addition to BMC, mikino can also perform induction. It can thus prove *inductive* properties
-    of a system. Once again, mikino abstracts the SMT solver for us.
+    In addition to BMC, [mikino] can also perform induction. It can thus prove *inductive*
+    properties of a system. Once again, mikino abstracts the SMT solver for us.
 
 - [Property Strengthening](./strength)
 
@@ -79,3 +78,5 @@ discussed here makes understanding other approaches significantly easier.
     property strengthening, which is really about *discovering* useful, powerful facts about the
     system's behavior. Such facts can make non-inductive invariants inductive, which is why most
     modern induction-based verification engines focus heavily on property strengthening.
+
+[mikino]: https://github.com/OCamlPro/mikino_bin (Mikino on github)

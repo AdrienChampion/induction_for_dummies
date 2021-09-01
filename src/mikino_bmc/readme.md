@@ -1,8 +1,8 @@
 # BMC: Mikino
 
-Mikino is a small transition system verification engine that relies on SMT solvers and everything
-we have seen so far (and will see later). It is designed to be relatively simple with user
-experience front and center: the goal is to have a tool that is gratifying to interact with to
+[Mikino][mikino] is a small transition system verification engine that relies on SMT solvers and
+everything we have seen so far (and will see later). It is designed to be relatively simple with
+user experience front and center: the goal is to have a tool that is gratifying to interact with to
 teach about induction-based verification.
 
 The easiest way to retrieve mikino is if you already have [rust] installed.
@@ -270,3 +270,4 @@ Output:
 [z3]: https://github.com/Z3Prover/z3 (Z3 on github)
 [z3 release]: https://github.com/Z3Prover/z3/releases (Z3's releases on github)
 [rust]: https://www.rust-lang.org/tools/install (Rust website, installation)
+[mikino]: https://github.com/OCamlPro/mikino_bin (Mikino on github)

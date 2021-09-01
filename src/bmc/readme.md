@@ -106,7 +106,7 @@ satisfiable and we ask for a model.
 > to impressively large systems. Also, it should be noted that when such a tool manages to
 > terminate, *i.e.* compute the entire reachable state space, they are able to (dis)prove
 > properties that are much more complex than anything we will do here. [TLA+] for instance can
-> reason about *linear temporal logic* formulas which are far beyond the scope of these posts.
+> reason about *linear temporal logic* formulas which are far beyond the scope of this book.
 
 \
 \
