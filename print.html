@@ -149,12 +149,11 @@
 <li>Adrien Champion</li>
 <li><a href="mailto:adrien.champion@ocamlpro.com">adrien.champion@ocamlpro.com</a></li>
 </ul>
-<p>This series of posts broadly discusses <em>induction</em> as a <em>formal verification</em> technique, which here
-really means <em>formal program verification</em>. We will use concrete, runnable examples whenever
-possible. Some of them can run directly in a browser, while others require to run small
-easy-to-retrieve tools locally. Such is the case for pretty much all examples dealing directly with
-induction.</p>
-<p>These posts try to introduce the following notions:</p>
+<p>This book broadly discusses <em>induction</em> as a <em>formal verification</em> technique, which here really
+means <em>formal program verification</em>. We will use concrete, runnable examples whenever possible.
+Some of them can run directly in a browser, while others require to run small easy-to-retrieve
+tools locally. Such is the case for pretty much all examples dealing directly with induction.</p>
+<p>The next chapters discuss the following notions:</p>
 <ul>
 <li>formal logics and formal frameworks;</li>
 <li>SMT-solving: modern, <em>low-level</em> verification building blocks;</li>
@@ -188,8 +187,8 @@ surprising mileage out of them if careful.</p>
 </li>
 <li>
 <p><a href="./trans_smt">SMT and Transition Systems</a></p>
-<p>Transition systems are represented by formulas that SMT solver can work on. This post lays out
-the foundation for more complex SMT-based analyses.</p>
+<p>Transition systems are represented by formulas that SMT solver can work on. This chapter lays
+out the foundation for more complex SMT-based analyses.</p>
 </li>
 <li>
 <p><a href="./bmc">Unrolling and BMC</a></p>
@@ -200,9 +199,9 @@ transition system using an SMT solver.</p>
 </li>
 <li>
 <p><a href="./mikino_bmc">BMC: Mikino</a></p>
-<p>Mikino is a small proof engine that can perform BMC. While it requires getting familiar with
-its simple input format, it abstracts SMT solvers for us so that we can focus on higher-level
-concepts.</p>
+<p><a href="https://github.com/OCamlPro/mikino_bin" title="Mikino on github">Mikino</a> is a small proof engine that can perform BMC. While it requires getting
+familiar with its simple input format, it abstracts SMT solvers for us so that we can focus on
+higher-level concepts.</p>
 </li>
 <li>
 <p><a href="./induction">Induction</a></p>
@@ -212,8 +211,8 @@ technique contrary to BMC, this is where we finally start proving things.</p>
 </li>
 <li>
 <p><a href="./mikino_induction">Induction: Mikino and Step Cex-s</a></p>
-<p>In addition to BMC, mikino can also perform induction. It can thus prove <em>inductive</em> properties
-of a system. Once again, mikino abstracts the SMT solver for us.</p>
+<p>In addition to BMC, <a href="https://github.com/OCamlPro/mikino_bin" title="Mikino on github">mikino</a> can also perform induction. It can thus prove <em>inductive</em>
+properties of a system. Once again, mikino abstracts the SMT solver for us.</p>
 </li>
 <li>
 <p><a href="./strength">Property Strengthening</a></p>
@@ -446,7 +445,7 @@ induction techniques.</p>
 <blockquote>
 <p>SMT solvers are basic building blocks for most modern verification tools. While studying SMT
 solvers is particularly rewarding for developing such tools, understanding SMT forces to grasp
-concepts that are very useful even for high-level users. Later posts will rely heavily on SMT
+concepts that are very useful even for high-level users. Later chapters will rely heavily on SMT
 solvers and readers are encouraged to run and modify examples themselves, or even create new ones.</p>
 </blockquote>
 <p><br />
@@ -480,19 +479,20 @@ and <code>arr</code> an array:</p>
 <p>Note that the last atom, <code>arr[y] = x + 1</code>, mixes array selection <code>arr[y]</code> with addition over
 integers <code>x + 1</code>.</p>
 <h2 id="z3"><a class="header" href="#z3">Z3</a></h2>
-<p>Examples in the next sections (and the next posts) will rely on the <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3 SMT solver</a> to actually
-run. You can build it from source or recover a binary from the <a href="https://github.com/Z3Prover/z3/releases" title="Z3's releases on github">release page</a>. The
-version should not matter too much for what we'll do, but for reference this guide used <code>v4.8.12</code>.</p>
+<p>Examples in the next sections (and the next chapter) will rely on the <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3 SMT solver</a> to
+actually run. You can build it from source or recover a binary from the <a href="https://github.com/Z3Prover/z3/releases" title="Z3's releases on github">release page</a>.
+The version should not matter too much for what we'll do, but for reference this guide used
+<code>v4.8.12</code>.</p>
 <p>From this point forward we assume readers have a Z3 binary called <code>z3</code> in their path. That is,
 running the command <code>z3 -version</code> should not fail and produce an output similar to</p>
 <pre><code class="language-text">Z3 version 4.8.13 - 64 bit
 </code></pre>
-<p>While we recommend Z3 for this series of posts, other efficient solvers exist and include
-<a href="https://alt-ergo.ocamlpro.com" title="Alt-Ergo homepage">Alt-Ergo</a>, <a href="https://cvc4.github.io/" title="CVC4 homepage">CVC4</a> and <a href="https://yices.csl.sri.com" title="Yices 2 homepage">Yices 2</a>. Solvers tend to be good at distinct kinds of
-problem from each other, and verification frameworks routinely run several of them in parallel,
-wait for the quickest answer, and discard solver instances that are still running.</p>
+<p>While we recommend Z3 here, other efficient solvers exist and include <a href="https://alt-ergo.ocamlpro.com" title="Alt-Ergo homepage">Alt-Ergo</a>, <a href="https://cvc4.github.io/" title="CVC4 homepage">CVC4</a>
+and <a href="https://yices.csl.sri.com" title="Yices 2 homepage">Yices 2</a>. Solvers tend to be good at distinct kinds of problem from each other, and
+verification frameworks routinely run several of them in parallel, wait for the quickest answer,
+and discard solver instances that are still running.</p>
 <!-- Last, while we recommend having Z3 available locally, you can run the examples in this section
-using only the [Z3 online playground][z3 online]. Beware that all following posts about induction
+using only the [Z3 online playground][z3 online]. Beware that all following chapters about induction
 require to have Z3 in your path. -->
 <h2 id="satisfiability"><a class="header" href="#satisfiability">Satisfiability</a></h2>
 <p>Formula satisfiability is concerned about whether it is possible to make some formula evaluate to
@@ -529,7 +529,7 @@ human readability. SMT-LIB is really meant to be used by programs to communicate
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.</p>
 <blockquote>
 <p><a href="https://code.visualstudio.com" title="VS Code homepage">VS Code</a> has an extension for SMT-LIB syntax highlighting (<code>.smt2</code> files). The pieces of SMT-LIB
-code we will show in these posts will not have syntax highlighting, unfortunately. We apologize
+code we will show in this book will not have syntax highlighting, unfortunately. We apologize
 for this problem, and encourage readers to copy these pieces of code in an editor that supports
 SMT-LIB using the button at the top-right of the code blocks.</p>
 </blockquote>
@@ -674,7 +674,7 @@ highly optimized tools constantly improved by ongoing theoretical and practical 
 arrays, algebraic data types, <em>etc.</em> And <em>expressive</em> because a great deal of verification problems
 are amenable to SMT without too much trouble.</p>
 <p>One such verification problem is <em>declarative transition system (induction-based) verification</em>, as
-we will see in the following posts.</p>
+we will see in the following chapters.</p>
 <!-- [z3 online]: https://rise4fun.com/z3 (Z3's online interface) -->
 <div style="break-before: page; page-break-before: always;"></div><h1 id="transition-systems"><a class="header" href="#transition-systems">Transition Systems</a></h1>
 <blockquote>
@@ -1694,7 +1694,7 @@ satisfiable and we ask for a model.</p>
 to impressively large systems. Also, it should be noted that when such a tool manages to
 terminate, <em>i.e.</em> compute the entire reachable state space, they are able to (dis)prove
 properties that are much more complex than anything we will do here. <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> for instance can
-reason about <em>linear temporal logic</em> formulas which are far beyond the scope of these posts.</p>
+reason about <em>linear temporal logic</em> formulas which are far beyond the scope of this book.</p>
 </blockquote>
 <p><br />
 </p>
@@ -2355,9 +2355,9 @@ sat
 </code></pre>
 </details>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="bmc-mikino"><a class="header" href="#bmc-mikino">BMC: Mikino</a></h1>
-<p>Mikino is a small transition system verification engine that relies on SMT solvers and everything
-we have seen so far (and will see later). It is designed to be relatively simple with user
-experience front and center: the goal is to have a tool that is gratifying to interact with to
+<p><a href="https://github.com/OCamlPro/mikino_bin" title="Mikino on github">Mikino</a> is a small transition system verification engine that relies on SMT solvers and
+everything we have seen so far (and will see later). It is designed to be relatively simple with
+user experience front and center: the goal is to have a tool that is gratifying to interact with to
 teach about induction-based verification.</p>
 <p>The easiest way to retrieve mikino is if you already have <a href="https://www.rust-lang.org/tools/install" title="Rust website, installation">rust</a> installed.</p>
 <pre><code class="language-text">&gt; cargo install mikino

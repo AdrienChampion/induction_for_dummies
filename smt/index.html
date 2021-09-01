@@ -147,7 +147,7 @@
 <blockquote>
 <p>SMT solvers are basic building blocks for most modern verification tools. While studying SMT
 solvers is particularly rewarding for developing such tools, understanding SMT forces to grasp
-concepts that are very useful even for high-level users. Later posts will rely heavily on SMT
+concepts that are very useful even for high-level users. Later chapters will rely heavily on SMT
 solvers and readers are encouraged to run and modify examples themselves, or even create new ones.</p>
 </blockquote>
 <p><br />
@@ -181,19 +181,20 @@ and <code>arr</code> an array:</p>
 <p>Note that the last atom, <code>arr[y] = x + 1</code>, mixes array selection <code>arr[y]</code> with addition over
 integers <code>x + 1</code>.</p>
 <h2 id="z3"><a class="header" href="#z3">Z3</a></h2>
-<p>Examples in the next sections (and the next posts) will rely on the <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3 SMT solver</a> to actually
-run. You can build it from source or recover a binary from the <a href="https://github.com/Z3Prover/z3/releases" title="Z3's releases on github">release page</a>. The
-version should not matter too much for what we'll do, but for reference this guide used <code>v4.8.12</code>.</p>
+<p>Examples in the next sections (and the next chapter) will rely on the <a href="https://github.com/Z3Prover/z3" title="Z3 on github">Z3 SMT solver</a> to
+actually run. You can build it from source or recover a binary from the <a href="https://github.com/Z3Prover/z3/releases" title="Z3's releases on github">release page</a>.
+The version should not matter too much for what we'll do, but for reference this guide used
+<code>v4.8.12</code>.</p>
 <p>From this point forward we assume readers have a Z3 binary called <code>z3</code> in their path. That is,
 running the command <code>z3 -version</code> should not fail and produce an output similar to</p>
 <pre><code class="language-text">Z3 version 4.8.13 - 64 bit
 </code></pre>
-<p>While we recommend Z3 for this series of posts, other efficient solvers exist and include
-<a href="https://alt-ergo.ocamlpro.com" title="Alt-Ergo homepage">Alt-Ergo</a>, <a href="https://cvc4.github.io/" title="CVC4 homepage">CVC4</a> and <a href="https://yices.csl.sri.com" title="Yices 2 homepage">Yices 2</a>. Solvers tend to be good at distinct kinds of
-problem from each other, and verification frameworks routinely run several of them in parallel,
-wait for the quickest answer, and discard solver instances that are still running.</p>
+<p>While we recommend Z3 here, other efficient solvers exist and include <a href="https://alt-ergo.ocamlpro.com" title="Alt-Ergo homepage">Alt-Ergo</a>, <a href="https://cvc4.github.io/" title="CVC4 homepage">CVC4</a>
+and <a href="https://yices.csl.sri.com" title="Yices 2 homepage">Yices 2</a>. Solvers tend to be good at distinct kinds of problem from each other, and
+verification frameworks routinely run several of them in parallel, wait for the quickest answer,
+and discard solver instances that are still running.</p>
 <!-- Last, while we recommend having Z3 available locally, you can run the examples in this section
-using only the [Z3 online playground][z3 online]. Beware that all following posts about induction
+using only the [Z3 online playground][z3 online]. Beware that all following chapters about induction
 require to have Z3 in your path. -->
 <h2 id="satisfiability"><a class="header" href="#satisfiability">Satisfiability</a></h2>
 <p>Formula satisfiability is concerned about whether it is possible to make some formula evaluate to
@@ -230,7 +231,7 @@ human readability. SMT-LIB is really meant to be used by programs to communicate
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.</p>
 <blockquote>
 <p><a href="https://code.visualstudio.com" title="VS Code homepage">VS Code</a> has an extension for SMT-LIB syntax highlighting (<code>.smt2</code> files). The pieces of SMT-LIB
-code we will show in these posts will not have syntax highlighting, unfortunately. We apologize
+code we will show in this book will not have syntax highlighting, unfortunately. We apologize
 for this problem, and encourage readers to copy these pieces of code in an editor that supports
 SMT-LIB using the button at the top-right of the code blocks.</p>
 </blockquote>
@@ -375,7 +376,7 @@ highly optimized tools constantly improved by ongoing theoretical and practical 
 arrays, algebraic data types, <em>etc.</em> And <em>expressive</em> because a great deal of verification problems
 are amenable to SMT without too much trouble.</p>
 <p>One such verification problem is <em>declarative transition system (induction-based) verification</em>, as
-we will see in the following posts.</p>
+we will see in the following chapters.</p>
 <!-- [z3 online]: https://rise4fun.com/z3 (Z3's online interface) -->
 
                     </main>

@@ -148,12 +148,11 @@
 <li>Adrien Champion</li>
 <li><a href="mailto:adrien.champion@ocamlpro.com">adrien.champion@ocamlpro.com</a></li>
 </ul>
-<p>This series of posts broadly discusses <em>induction</em> as a <em>formal verification</em> technique, which here
-really means <em>formal program verification</em>. We will use concrete, runnable examples whenever
-possible. Some of them can run directly in a browser, while others require to run small
-easy-to-retrieve tools locally. Such is the case for pretty much all examples dealing directly with
-induction.</p>
-<p>These posts try to introduce the following notions:</p>
+<p>This book broadly discusses <em>induction</em> as a <em>formal verification</em> technique, which here really
+means <em>formal program verification</em>. We will use concrete, runnable examples whenever possible.
+Some of them can run directly in a browser, while others require to run small easy-to-retrieve
+tools locally. Such is the case for pretty much all examples dealing directly with induction.</p>
+<p>The next chapters discuss the following notions:</p>
 <ul>
 <li>formal logics and formal frameworks;</li>
 <li>SMT-solving: modern, <em>low-level</em> verification building blocks;</li>
@@ -187,8 +186,8 @@ surprising mileage out of them if careful.</p>
 </li>
 <li>
 <p><a href="./trans_smt">SMT and Transition Systems</a></p>
-<p>Transition systems are represented by formulas that SMT solver can work on. This post lays out
-the foundation for more complex SMT-based analyses.</p>
+<p>Transition systems are represented by formulas that SMT solver can work on. This chapter lays
+out the foundation for more complex SMT-based analyses.</p>
 </li>
 <li>
 <p><a href="./bmc">Unrolling and BMC</a></p>
@@ -199,9 +198,9 @@ transition system using an SMT solver.</p>
 </li>
 <li>
 <p><a href="./mikino_bmc">BMC: Mikino</a></p>
-<p>Mikino is a small proof engine that can perform BMC. While it requires getting familiar with
-its simple input format, it abstracts SMT solvers for us so that we can focus on higher-level
-concepts.</p>
+<p><a href="https://github.com/OCamlPro/mikino_bin" title="Mikino on github">Mikino</a> is a small proof engine that can perform BMC. While it requires getting
+familiar with its simple input format, it abstracts SMT solvers for us so that we can focus on
+higher-level concepts.</p>
 </li>
 <li>
 <p><a href="./induction">Induction</a></p>
@@ -211,8 +210,8 @@ technique contrary to BMC, this is where we finally start proving things.</p>
 </li>
 <li>
 <p><a href="./mikino_induction">Induction: Mikino and Step Cex-s</a></p>
-<p>In addition to BMC, mikino can also perform induction. It can thus prove <em>inductive</em> properties
-of a system. Once again, mikino abstracts the SMT solver for us.</p>
+<p>In addition to BMC, <a href="https://github.com/OCamlPro/mikino_bin" title="Mikino on github">mikino</a> can also perform induction. It can thus prove <em>inductive</em>
+properties of a system. Once again, mikino abstracts the SMT solver for us.</p>
 </li>
 <li>
 <p><a href="./strength">Property Strengthening</a></p>
