@@ -13,6 +13,14 @@ There are several ways to retrieve a binary for mikino:
 	> cargo install mikino
 	```
 
+	or
+
+	```text
+	> cargo install --force mikino
+	```
+
+	to update your mikino install.
+
 	You can also build it from source, which also requires rust:
 
 	```text
@@ -23,6 +31,13 @@ There are several ways to retrieve a binary for mikino:
 	```
 
 - if you just want to retrieve a binary, you can do so on [mikino's release page][release page].
+
+Make sure you have mikino `v0.3.0` or above.
+
+```text
+> mikino -V
+mikino 0.3.0
+```
 
 \
 \

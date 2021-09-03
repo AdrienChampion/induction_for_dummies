@@ -9,4 +9,4 @@
 - [BMC: Mikino](./mikino_bmc/readme.md)
 - [Induction](./induction/readme.md)
 - [Induction: Mikino and Step Cex-s](./mikino_induction/readme.md)
-- [Property Strengthening](./strength/readme.md)
+- [Candidate Strengthening](./strength/readme.md)

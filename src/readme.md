@@ -14,7 +14,8 @@ The next chapters discuss the following notions:
 - SMT-solving: modern, *low-level* verification building blocks;
 - declarative transition systems;
 - transition system unrolling;
-- BMC and induction proofs over transition systems.
+- BMC and induction proofs over transition systems;
+- candidate strengthening.
 
 \
 \
@@ -22,6 +23,17 @@ The next chapters discuss the following notions:
 The approach presented here is far from being the only one when it comes to program verification.
 It happens to be relatively simple to understand, and we believe that familiarity with the notions
 discussed here makes understanding other approaches significantly easier.
+
+This book thus hopes to serve both as a relatively deep dive into the specific technique of
+SMT-based induction, as well as an example of the technical challenges inherent to both developing
+and using automated proof engines.
+
+\
+\
+
+Some chapters contain a few pieces of Rust code. Usually to provide a runnable version of a system
+under discussion, or to serve as example of actual code that we want to encode and verify. Some
+notions of Rust could definitely help in places, but this is not mandatory (probably).
 
 \
 \
@@ -70,13 +82,22 @@ discussed here makes understanding other approaches significantly easier.
 - [Induction: Mikino and Step Cex-s](./mikino_induction)
 
     In addition to BMC, [mikino] can also perform induction. It can thus prove *inductive*
-    properties of a system. Once again, mikino abstracts the SMT solver for us.
+    properties of a system. Once again, mikino abstracts the SMT solver for us. Mikino is designed
+    with user experience in mind, so by the end of this chapter you will probably be able to
+    experiment by modifying systems introduced so far, or write your own.
 
-- [Property Strengthening](./strength)
+- [Candidate Strengthening](./strength)
+
+    This chapter is quite technical and a bit theoretical. Make sure you are comfortable with all
+    the notions discussed so far before diving in.
 
     An invariant for a system is not necessarily inductive. This last part of the series focuses on
-    property strengthening, which is really about *discovering* useful, powerful facts about the
+    candidate strengthening, which is really about *discovering* useful, powerful facts about the
     system's behavior. Such facts can make non-inductive invariants inductive, which is why most
-    modern induction-based verification engines focus heavily on property strengthening.
+    modern induction-based verification engines focus heavily on candidate strengthening.
+
+    This chapter, unlike previous ones, aims at proving an actual piece of code by encoding it as a
+    transition system. It also touches on the complexity of verification and the notion of
+    undecidability.
 
 [mikino]: https://github.com/OCamlPro/mikino_bin (Mikino on github)

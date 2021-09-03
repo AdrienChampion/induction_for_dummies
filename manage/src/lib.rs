@@ -308,6 +308,8 @@ pub mod test {
                 code_out_check_smt2(conf, &out_path, &snippet_path).chain_err(err)?
             } else if ext == "mkn" {
                 code_out_check_mkn(conf, &out_path, &snippet_path).chain_err(err)?
+            } else if ext == "rs" {
+                code_out_check_rs(conf, &out_path, &snippet_path).chain_err(err)?
             } else {
                 bail!(
                     "unknown extension `{}` for code snippet `{}` with out file `{}`",
@@ -419,7 +421,7 @@ pub mod test {
             return Ok(false);
         }
         let mut cmd = std::process::Command::new(z3_cmd);
-        cmd.arg(snippet_path);
+        cmd.arg("-T:5").arg(snippet_path);
         let () = cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
         Ok(true)
@@ -482,7 +484,7 @@ pub mod test {
         }
 
         let mut cmd = std::process::Command::new(mikino_cmd);
-        cmd.args(&["--z3_cmd", z3_cmd]);
+        cmd.arg("--z3_cmd").arg(&format!("{} -T:5", z3_cmd));
 
         for arg in elems {
             if arg == "<file>" {
@@ -493,6 +495,44 @@ pub mod test {
         }
 
         Ok(cmd)
+    }
+
+    /// Checks a single `.mkn` file `snippet_path` against its output file `out_path`.
+    fn code_out_check_rs(
+        _conf: &Conf,
+        out_path: impl AsRef<Path>,
+        snippet_path: impl AsRef<Path>,
+    ) -> Res<bool> {
+        let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
+
+        let tmpfile = tempfile::NamedTempFile::new()
+            .map_err(|e| format!("failed to create temporary file: {}", e))?;
+        let mut cmd = std::process::Command::new("rustc");
+        cmd.arg("-o").arg(tmpfile.path()).arg(snippet_path);
+        let cmd_string = || {
+            format!(
+                "rustc -o {} {}",
+                tmpfile.path().display(),
+                snippet_path.display()
+            )
+        };
+        let status = cmd
+            .status()
+            .chain_err(|| format!("while running {}", cmd_string()))?;
+        if !status.success() {
+            bail!(
+                "command `{}` was not successful, exit code {}",
+                cmd_string(),
+                status
+                    .code()
+                    .map(|i| i.to_string())
+                    .unwrap_or_else(|| "??".into())
+            )
+        }
+        let mut cmd = std::process::Command::new(tmpfile.path());
+        cmd_output_same_as_file_content(&mut cmd, out_path)?;
+
+        Ok(true)
     }
 
     /// Retrieves the first line of a file.
