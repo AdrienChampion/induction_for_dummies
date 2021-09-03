@@ -505,17 +505,10 @@ pub mod test {
     ) -> Res<bool> {
         let (out_path, snippet_path) = (out_path.as_ref(), snippet_path.as_ref());
 
-        let tmpfile = tempfile::NamedTempFile::new()
-            .map_err(|e| format!("failed to create temporary file: {}", e))?;
+        let tmpfile = PathBuf::from("./dont_exist_please_CI_does_not_like_tempfile");
         let mut cmd = std::process::Command::new("rustc");
-        cmd.arg("-o").arg(tmpfile.path()).arg(snippet_path);
-        let cmd_string = || {
-            format!(
-                "rustc -o {} {}",
-                tmpfile.path().display(),
-                snippet_path.display()
-            )
-        };
+        cmd.arg("-o").arg(&tmpfile).arg(snippet_path);
+        let cmd_string = || format!("rustc -o {} {}", tmpfile.display(), snippet_path.display());
         let status = cmd
             .status()
             .chain_err(|| format!("while running {}", cmd_string()))?;
@@ -529,7 +522,7 @@ pub mod test {
                     .unwrap_or_else(|| "??".into())
             )
         }
-        let mut cmd = std::process::Command::new(tmpfile.path());
+        let mut cmd = std::process::Command::new(tmpfile);
         cmd_output_same_as_file_content(&mut cmd, out_path)?;
 
         Ok(true)
