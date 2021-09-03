@@ -1,0 +1,46 @@
+// CMD: mikino check <file>
+// ANCHOR: all
+vars: (
+	len, grouping: int
+	i: int
+	done: bool
+)
+
+// ANCHOR: init
+init: (and
+    (= len 8) // new
+	(≥ grouping 1)
+	(= i 0)
+	(= done (not (< i len)))
+	(= (mod len grouping) 0)
+)
+// ANCHOR_END: init
+
+trans: (and
+	(= grouping (pre grouping))
+	(= len (pre len))
+    (= done (not (< i len )))
+	(ite
+		(pre done)
+		// then
+		(= i (pre i))
+		// else
+		(= i (+ (pre i) grouping))
+	)
+)
+
+// ANCHOR: candidates
+po_s: (
+	"not done then i < len": (⇒ (not done) (< i len))
+	"not done then i + grouping ≤ len":       // new
+		(⇒ (not done) (≤ (+ i grouping) len)) // new
+	"done then i = len": (⇒ done (= i len))
+
+	"len is 8": (= len 8) // changed
+	"grouping > 0": (> grouping 0)
+	"i ≥ 0": (≥ i 0)
+	"len grouping related": (= (mod len grouping) 0)
+    "i % grouping = 0": (= (mod i grouping) 0)
+)
+// ANCHOR_END: candidates
+// ANCHOR_END: all

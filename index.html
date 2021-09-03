@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item "><a href="preface/index.html"><strong aria-hidden="true">2.</strong> Preface</a></li><li class="chapter-item "><a href="smt/index.html"><strong aria-hidden="true">3.</strong> SMT Solvers</a></li><li class="chapter-item "><a href="trans/index.html"><strong aria-hidden="true">4.</strong> Transition Systems</a></li><li class="chapter-item "><a href="trans_smt/index.html"><strong aria-hidden="true">5.</strong> SMT and Transition Systems</a></li><li class="chapter-item "><a href="bmc/index.html"><strong aria-hidden="true">6.</strong> Unrolling and BMC</a></li><li class="chapter-item "><a href="mikino_bmc/index.html"><strong aria-hidden="true">7.</strong> BMC: Mikino</a></li><li class="chapter-item "><a href="induction/index.html"><strong aria-hidden="true">8.</strong> Induction</a></li><li class="chapter-item "><a href="mikino_induction/index.html"><strong aria-hidden="true">9.</strong> Induction: Mikino and Step Cex-s</a></li><li class="chapter-item "><a href="strength/index.html"><strong aria-hidden="true">10.</strong> Property Strengthening</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="index.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item "><a href="preface/index.html"><strong aria-hidden="true">2.</strong> Preface</a></li><li class="chapter-item "><a href="smt/index.html"><strong aria-hidden="true">3.</strong> SMT Solvers</a></li><li class="chapter-item "><a href="trans/index.html"><strong aria-hidden="true">4.</strong> Transition Systems</a></li><li class="chapter-item "><a href="trans_smt/index.html"><strong aria-hidden="true">5.</strong> SMT and Transition Systems</a></li><li class="chapter-item "><a href="bmc/index.html"><strong aria-hidden="true">6.</strong> Unrolling and BMC</a></li><li class="chapter-item "><a href="mikino_bmc/index.html"><strong aria-hidden="true">7.</strong> BMC: Mikino</a></li><li class="chapter-item "><a href="induction/index.html"><strong aria-hidden="true">8.</strong> Induction</a></li><li class="chapter-item "><a href="mikino_induction/index.html"><strong aria-hidden="true">9.</strong> Induction: Mikino and Step Cex-s</a></li><li class="chapter-item "><a href="strength/index.html"><strong aria-hidden="true">10.</strong> Candidate Strengthening</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -158,13 +158,22 @@ tools locally. Such is the case for pretty much all examples dealing directly wi
 <li>SMT-solving: modern, <em>low-level</em> verification building blocks;</li>
 <li>declarative transition systems;</li>
 <li>transition system unrolling;</li>
-<li>BMC and induction proofs over transition systems.</li>
+<li>BMC and induction proofs over transition systems;</li>
+<li>candidate strengthening.</li>
 </ul>
 <p><br />
 </p>
 <p>The approach presented here is far from being the only one when it comes to program verification.
 It happens to be relatively simple to understand, and we believe that familiarity with the notions
 discussed here makes understanding other approaches significantly easier.</p>
+<p>This book thus hopes to serve both as a relatively deep dive into the specific technique of
+SMT-based induction, as well as an example of the technical challenges inherent to both developing
+and using automated proof engines.</p>
+<p><br />
+</p>
+<p>Some chapters contain a few pieces of Rust code. Usually to provide a runnable version of a system
+under discussion, or to serve as example of actual code that we want to encode and verify. Some
+notions of Rust could definitely help in places, but this is not mandatory (probably).</p>
 <p><br />
 </p>
 <h2 id="table-of-contents"><a class="header" href="#table-of-contents">Table of Contents</a></h2>
@@ -211,14 +220,21 @@ technique contrary to BMC, this is where we finally start proving things.</p>
 <li>
 <p><a href="./mikino_induction">Induction: Mikino and Step Cex-s</a></p>
 <p>In addition to BMC, <a href="https://github.com/OCamlPro/mikino_bin" title="Mikino on github">mikino</a> can also perform induction. It can thus prove <em>inductive</em>
-properties of a system. Once again, mikino abstracts the SMT solver for us.</p>
+properties of a system. Once again, mikino abstracts the SMT solver for us. Mikino is designed
+with user experience in mind, so by the end of this chapter you will probably be able to
+experiment by modifying systems introduced so far, or write your own.</p>
 </li>
 <li>
-<p><a href="./strength">Property Strengthening</a></p>
+<p><a href="./strength">Candidate Strengthening</a></p>
+<p>This chapter is quite technical and a bit theoretical. Make sure you are comfortable with all
+the notions discussed so far before diving in.</p>
 <p>An invariant for a system is not necessarily inductive. This last part of the series focuses on
-property strengthening, which is really about <em>discovering</em> useful, powerful facts about the
+candidate strengthening, which is really about <em>discovering</em> useful, powerful facts about the
 system's behavior. Such facts can make non-inductive invariants inductive, which is why most
-modern induction-based verification engines focus heavily on property strengthening.</p>
+modern induction-based verification engines focus heavily on candidate strengthening.</p>
+<p>This chapter, unlike previous ones, aims at proving an actual piece of code by encoding it as a
+transition system. It also touches on the complexity of verification and the notion of
+undecidability.</p>
 </li>
 </ul>
 
