@@ -150,7 +150,7 @@ there exists such a counterexample trace of some arbitrary length. Unfortunately
 do this as unrolling is a manual process: we declare state `i`, then assert the relation between
 state `i-1` and state `i`. We cannot write a finite number of assertions that encode an arbitrary
 number of unrollings for the SMT solver to reason about. You can go ahead and try it, but it will
-not work.
+not work. At least not without quantifiers (`∀`, `∃`), which would not scale well at all.
 
 \
 \

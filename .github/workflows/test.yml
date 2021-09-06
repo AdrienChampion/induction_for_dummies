@@ -9,18 +9,14 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
     steps:
       - uses: actions/checkout@v2
-      - uses: jontze/action-mdbook@v1
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v1
         with:
-          token: ${{secrets.GITHUB_TOKEN}}
-          use-linkcheck: true
+          mdbook-version: 'latest'
 
-      # - name: Setup mdBook
-      #   uses: peaceiris/actions-mdbook@v1
-      #   with:
-      #     mdbook-version: 'latest'
-
-      # - name: linkcheck setup
-      #   run: cargo install mdbook-linkcheck
+      - name: linkcheck setup
+        run: cargo install mdbook-linkcheck
 
       - name: Get Z3
         run: |

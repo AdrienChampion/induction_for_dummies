@@ -159,7 +159,10 @@ possibly other factors (such as your operating system).
 The model is slightly cryptic. Z3 defines `x` and `y` as functions taking no arguments, which means
 that they are constants. This is because all functions are *pure* in SMT-LIB, meaning they always
 produce the same output when given the same inputs. Hence, a function with no arguments can only
-produce one value, and is therefore the same as a constant.
+produce one value, and is therefore the same as a constant. In fact, `(define-fun <ident> () <type>
+<val>)` is the same as `(define-const <ident> <type> <val>)`, and the `(declare-const <ident>
+<type>)` we used in the SMT-LIB script is equivalent to `(declare-fun <ident> () <type>)`. Again,
+in SMT-LIB (and pure functional languages) a constant is just a function that takes no argument.
 
 This valuation is a model because `(> x 7) ≡ (> 8 7)` holds and so does `(= y (* 2 x)) ≡ (= 16 (* 2
 8))`.

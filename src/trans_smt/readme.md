@@ -91,8 +91,8 @@ all our constraints. Said constraints include that state `1` must be a legal suc
 {{ #include code/sw_trans_1.smt2.out }}
 ```
 
-It works. In this *model* (yours might differ), Z3 decided to have `cnt_0` be `7` which, given all
-the constraints, means that `cnt_1` is `8`. This is because `is_counting_1` is `true`, which is a
+It works. In this *model* (yours might differ), Z3 decided to have `cnt_0` be `8` which, given all
+the constraints, means that `cnt_1` is `9`. This is because `is_counting_1` is `true`, which is a
 consequence of the last assertion we wrote (`is_counting_0` is `false` and `start_stop_1` is
 `true`).
 
