@@ -126,6 +126,19 @@ bound). We actually don't care about what's in `arr`, just that its length is `l
 can safely ignore `arr` completely. Same for `acc`, its value is not relevant for `fold` to make
 sense in how it accesses `arr`. The only real state variable of interest in this loop is thus `i`.
 
+> There a whole bunch of additional properties we might want to prove. For instance, that `arr`
+> slices do not overlap. The point is that, whatever we are interested in proving, we should remove
+> everything that is not necessary as we encode the program. However, the encoding should at least
+> be *sound*: proving an invariant in the encoding must entail it is an invariant for the original
+> program.
+>
+> Here, we are doing the encoding by hand and we can pick and choose what is encoded or left out.
+> In an actual verification tool, the encoding process would be automatic. Such an automatic
+> encoder might encode the whole semantics of the program (meaning dealing with arrays at SMT-level
+> here) and hope for the best, or be clever enough to realize it can excise array-related things
+> for this particular verification challenge. Writing a clever, automatic encoder is difficult and
+> challenging, and can void all results if it is not *sound*.
+
 \
 \
 
@@ -274,11 +287,12 @@ stupid and needs to be told everything.
 
 When we add `i ≥ 0` as a candidate, we are *strengthening* candidate `done ⇒ i = len`. That is,
 this candidate is *not* inductive on the *raw system* (made of `init` and `trans`). If we hope to
-prove it by induction, we have to try to prove a *stronger* version `(done ⇒ i = len) ∧ strength`,
-for example with `strength ≝ i ≥ 0` in the previous example. It did not work, but if we can find a
-`strength` for which the proof goes through, then we won since the fact that `(done ⇒ i = len) ∧
-strength` is an invariant implies that `done ⇒ i = len` is an invariant. In this context `strength`
-is often called a *lemma* as its main goal is make the candidate we are interested in inductive.
+prove it by induction, we have to try to prove a *stronger* version `(done ⇒ i = len) ∧ lemma`, for
+example with `lemma ≝ i ≥ 0` in the previous example. We added the lemma as a separate candidate,
+but morally `lemma` was not really what we wanted to prove, it was just a *lemma* we added to help
+prove the main candidate (which failed). It did not work, but if we can find a `lemma` for which
+the proof goes through, then we won since the fact that `(done ⇒ i = len) ∧ lemma` is an invariant
+implies that `done ⇒ i = len` is an invariant.
 
 > We are about to strengthen this candidate manually, but maybe you can see why many
 > induction-based proof engine have some form of *invariant discovery*. Such techniques aim at
@@ -507,6 +521,20 @@ Full code in the [Version 7](#version-7) section.
 ```
 
 🎉
+
+\
+\
+
+It might be disappointing that we had to choose a value for the length, *i.e.* that we did not
+prove that `fold`'s array accesses are legal when `len` is `8`. Unfortunately, in its current
+state, Z3 cannot handle to have `len` as an unknown value because of the non-linear applications of
+`mod`ulo.
+
+This means that, assuming we are verifying a binary, we can conduct the same proof for all `len`
+values actually used by the program. It would be much better to verify `fold` for any length, but
+this illustrates the kind of trade-offs that are often necessary in a verification process due to
+the very high complexity (and sometimes undecidability) of the checks intrinsic to the verification
+approach.
 
 \
 \
