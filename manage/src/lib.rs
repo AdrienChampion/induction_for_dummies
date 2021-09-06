@@ -522,8 +522,12 @@ pub mod test {
                     .unwrap_or_else(|| "??".into())
             )
         }
-        let mut cmd = std::process::Command::new(tmpfile);
+        let mut cmd = std::process::Command::new(&tmpfile);
         cmd_output_same_as_file_content(&mut cmd, out_path)?;
+
+        // Delete temporary file.
+        std::fs::remove_file(&tmpfile)
+            .chain_err(|| format!("while deleting temp file `{}`", tmpfile.display()))?;
 
         Ok(true)
     }

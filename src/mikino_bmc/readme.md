@@ -127,9 +127,9 @@ process manually (or it exhausts memory/time).
 > directory.
 
 Let's try it. Mikino tries to improve its output's readability by using colors: unfortunately, this
-will not show in this plain text rendition. (As discussed when we introduced SMT, different
-versions of Z3 or even different operating system might produce different models. The same applies
-to mikino as its counterexamples are Z3 models.)
+will not show in this plain text rendition. (As discussed when I introduced SMT, different versions
+of Z3 or even different operating system might produce different models. The same applies to mikino
+as its counterexamples are Z3 models.)
 
 ```text
 > mikino bmc --bmc_max 10 test.mkn

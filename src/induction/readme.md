@@ -2,7 +2,7 @@
 
 Let's get a little bit abstract and meta. The incremental BMC approach we have seen in previous
 chapters can itself be seen as a transition system. To do this formally, we would need a whole
-bunch of notions from logics which are far beyond the scope we are in. No matter, we can discuss
+bunch of notions from logics which are far beyond this book's scope. No matter, we can discuss
 BMC as a transition system informally, with words. Writing *counterexample* constantly is quite
 tedious, we will use the much shorter *cex* (plural *cex-s*) contraction instead. Also, assume
 there is only one candidate for simplicity.
@@ -113,7 +113,7 @@ We can rephrase these two in terms of SMT solving and formula (un)satisfiability
 - *step*: `candidate(s) ∧ trans(s, s') ∧ ¬candidate(s')` is unsatisfiable.
 
 We all know what this means: it is finally time to achieve our dream of proving that the
-stopwatch's counter is always positive. We will use the version that starts from `cnt = 0`, not the
+stopwatch's counter is always positive. I will use the version that starts from `cnt = 0`, not the
 one where it can take an arbitrary positive value. Both versions work for this proof, but the
 former is better for obtaining non-trivial (length `0`) counterexamples if we need to.
 

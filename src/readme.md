@@ -4,7 +4,7 @@
 - <adrien.champion@ocamlpro.com>
 
 This book broadly discusses *induction* as a *formal verification* technique, which here really
-means *formal program verification*. We will use concrete, runnable examples whenever possible.
+means *formal program verification*. I will use concrete, runnable examples whenever possible.
 Some of them can run directly in a browser, while others require to run small easy-to-retrieve
 tools locally. Such is the case for pretty much all examples dealing directly with induction.
 
@@ -21,7 +21,7 @@ The next chapters discuss the following notions:
 \
 
 The approach presented here is far from being the only one when it comes to program verification.
-It happens to be relatively simple to understand, and we believe that familiarity with the notions
+It happens to be relatively simple to understand, and I believe that familiarity with the notions
 discussed here makes understanding other approaches significantly easier.
 
 This book thus hopes to serve both as a relatively deep dive into the specific technique of

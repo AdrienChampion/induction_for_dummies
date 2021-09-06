@@ -201,7 +201,7 @@ the example to get a better understanding of the encoding.
 
 > Mikino reports that Z3 produced unexpected values. This is not relevant for our discussion, but
 > these *functions* are part of the model. Z3 is letting us know how it decided to handle division
-> (modulo) by `0`. We do not go into deeper details here for space constraints, but this is a
+> (modulo) by `0`. I won't go into deeper details here for space constraints, but this is a
 > consequence of the fact that our system uses *non-linear arithmetic*, and non-linear division in
 > particular. A (system made of) formula(s) *uses non-linear arithmetic* if it uses
 > multiplication/division involving more than one variable (`x * y`, `x / y`). As opposed to

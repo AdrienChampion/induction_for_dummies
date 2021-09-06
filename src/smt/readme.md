@@ -52,15 +52,15 @@ actually run. You can build it from source or recover a binary from the [release
 The version should not matter too much for what we'll do, but for reference this guide used
 `v4.8.12`.
 
-From this point forward we assume readers have a Z3 binary called `z3` in their path. That is,
+From this point forward I assume readers have a Z3 binary called `z3` in their path. That is,
 running the command `z3 -version` should not fail and produce an output similar to
 
 ```text
 Z3 version 4.8.13 - 64 bit
 ```
 
-While we recommend Z3 here, other efficient solvers exist and include [Alt-Ergo][ae], [CVC4][cvc4]
-and [Yices 2][yices]. Solvers tend to be good at distinct kinds of problem from each other, and
+While I recommend Z3, other efficient solvers exist and include [Alt-Ergo][ae], [CVC4][cvc4] and
+[Yices 2][yices]. Solvers tend to be good at distinct kinds of problem from each other, and
 verification frameworks routinely run several of them in parallel, wait for the quickest answer,
 and discard solver instances that are still running.
 
@@ -113,7 +113,7 @@ human readability. SMT-LIB is really meant to be used by programs to communicate
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.
 
 > [VS Code] has an extension for SMT-LIB syntax highlighting (`.smt2` files). The pieces of SMT-LIB
-> code we will show in this book will not have syntax highlighting, unfortunately. We apologize
+> code I will show in this book will not have syntax highlighting, unfortunately. I apologize
 > for this problem, and encourage readers to copy these pieces of code in an editor that supports
 > SMT-LIB using the button at the top-right of the code blocks.
 

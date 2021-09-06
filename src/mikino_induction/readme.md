@@ -17,7 +17,7 @@ BMC is not the only thing mikino can do. It also has an induction mode which is 
 >
 > This can be useful to inspect the exact checks mikino is performing and modify/relaunch them.
 
-Let's make sure mikino is able to prove that `cnt ≥ 0` on the stopwatch system. We are using the
+Let's make sure mikino is able to prove that `cnt ≥ 0` on the stopwatch system. I am using the
 version of the system that starts at `0`
 
 ```rust ,compile_fail,no_run

@@ -201,8 +201,8 @@ in the verification framework such as changing the solver.
 
 Solvers have a notion of *soundness*. Roughly, a solver is *sound* if it can only prove *valid*
 results (meaning it cannot prove things that are *"wrong"*). Since we are interested in *using*
-(not *designing*) solvers, we do not expand on the notion of solver soundness and only consider
-sound solvers.
+(not *designing*) solvers, let's not go into more details on the notion of solver soundness and
+only consider sound solvers.
 
 \
 \
@@ -225,9 +225,9 @@ in the first place.
 
 ## Outro
 
-We hope we got across the point that setting up a verification process in a (semi-)industrial
-context requires a great deal of inspection. It requires assessing very precisely what kind of
-program we want to analyze, and what kind of property we want to check. Widening the perimeter of
+I hope I got across the point that setting up a verification process in a (semi-)industrial context
+requires a great deal of inspection. It requires assessing very precisely what kind of program we
+want to analyze, and what kind of property we want to check. Widening the perimeter of
 programs/properties supported can be arbitrarily complex.
 
 \
@@ -259,7 +259,7 @@ generally quite amazing tools. Next are *(declarative) transition systems*, whic
 programs we will analyze. They are relatively simple to understand and require little encoding to
 analyze them, meaning the encoding will be understandable when we look at it.
 
-Next we discuss *bounded model checking*, which on its own cannot (usually) prove anything: it
+Next let's discuss *bounded model checking*, which on its own cannot (usually) prove anything: it
 *just* finds counterexamples (bugs). The three posts after that discuss basic and more advanced
 induction techniques.
 

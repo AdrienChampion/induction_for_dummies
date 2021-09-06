@@ -81,8 +81,8 @@ Output:
 ## Reachability
 
 Before we actually get to BMC, let's define a few notions. Remember that transition systems have
-state variables, and that a *state* is a valuation of all these state variables. We say that a
-state `s` is *reachable* if the system, starting from one of its initial states, can reach `s` by
+state variables, and that a *state* is a valuation of all these state variables. Let's say a state
+`s` is *reachable* if the system, starting from one of its initial states, can reach `s` by
 applying its transition relation `n` times, where `n` is an arbitrary natural number.
 
 > Note that `n` can be `0`, *i.e.* the initial states of a system are reachable, naturally.
@@ -281,7 +281,7 @@ cannot prove anything because it will never finish exploring the state space. Al
 \
 \
 
-By this point, we expect most readers to be able to write SMT-LIB code that corresponds to a BMC
+By this point, I expect most readers to be able to write SMT-LIB code that corresponds to a BMC
 check for a given number of unrollings. Just to make sure, the [BMC with
 Unrolling](#bmc-with-unrolling) section showcases a BMC check where the transition relation is
 unrolled twice.
@@ -290,8 +290,8 @@ unrolled twice.
 \
 
 > **Warning:** slightly (more) technical and practical discussion ahead. What follows is not
-> mandatory to understand the upcoming chapters, but we think it is quite interesting and
-> definitely mandatory for writing your own (efficient) verification engine.
+> mandatory to understand the upcoming chapters, but I think it is quite interesting and definitely
+> mandatory for writing your own (efficient) verification engine.
 
 \
 \
@@ -307,7 +307,7 @@ check the remaining candidates at `k+1` and so on. Maybe they can be falsified b
 than `k` times.
 
 So, this whole process is interactive: what BMC does depends on what the solver previously said. In
-the next chapter, we will introduce mikino which is a tool that will perform BMC (and more) for us.
+the next chapter, I will introduce mikino which is a tool that will perform BMC (and more) for us.
 The way mikino conducts BMC is by launching Z3 as a separate process and feed it definitions,
 declarations, assertions, `check-sat`s and `get-model`s on its standard input. Z3 produces answers
 on its standard output, which mikino looks at to decide if/how to continue and what to stream to
