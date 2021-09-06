@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item "><a href="../index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item "><a href="../preface/index.html"><strong aria-hidden="true">2.</strong> Preface</a></li><li class="chapter-item "><a href="../smt/index.html"><strong aria-hidden="true">3.</strong> SMT Solvers</a></li><li class="chapter-item "><a href="../trans/index.html"><strong aria-hidden="true">4.</strong> Transition Systems</a></li><li class="chapter-item "><a href="../trans_smt/index.html"><strong aria-hidden="true">5.</strong> SMT and Transition Systems</a></li><li class="chapter-item "><a href="../bmc/index.html"><strong aria-hidden="true">6.</strong> Unrolling and BMC</a></li><li class="chapter-item "><a href="../mikino_bmc/index.html"><strong aria-hidden="true">7.</strong> BMC: Mikino</a></li><li class="chapter-item "><a href="../induction/index.html"><strong aria-hidden="true">8.</strong> Induction</a></li><li class="chapter-item "><a href="../mikino_induction/index.html"><strong aria-hidden="true">9.</strong> Induction: Mikino and Step Cex-s</a></li><li class="chapter-item expanded "><a href="../strength/index.html" class="active"><strong aria-hidden="true">10.</strong> Candidate Strengthening</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item "><a href="../index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item "><a href="../preface/index.html"><strong aria-hidden="true">2.</strong> Preface</a></li><li class="chapter-item "><a href="../smt/index.html"><strong aria-hidden="true">3.</strong> SMT Solvers</a></li><li class="chapter-item "><a href="../trans/index.html"><strong aria-hidden="true">4.</strong> Transition Systems</a></li><li class="chapter-item "><a href="../trans_smt/index.html"><strong aria-hidden="true">5.</strong> SMT and Transition Systems</a></li><li class="chapter-item "><a href="../bmc/index.html"><strong aria-hidden="true">6.</strong> Unrolling and BMC</a></li><li class="chapter-item "><a href="../mikino_bmc/index.html"><strong aria-hidden="true">7.</strong> BMC: Mikino</a></li><li class="chapter-item "><a href="../induction/index.html"><strong aria-hidden="true">8.</strong> Induction</a></li><li class="chapter-item "><a href="../mikino_induction/index.html"><strong aria-hidden="true">9.</strong> Induction: Mikino and Step Cex-s</a></li><li class="chapter-item expanded "><a href="../strength/index.html" class="active"><strong aria-hidden="true">10.</strong> Candidate Strengthening</a></li><li class="chapter-item "><a href="../conclusion/index.html"><strong aria-hidden="true">11.</strong> Conclusion</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -400,6 +400,19 @@ is legal, meaning <code>i &lt; len</code> and <code>next_i = i + grouping ≤ le
 bound). We actually don't care about what's in <code>arr</code>, just that its length is <code>len</code>. Our encoding
 can safely ignore <code>arr</code> completely. Same for <code>acc</code>, its value is not relevant for <code>fold</code> to make
 sense in how it accesses <code>arr</code>. The only real state variable of interest in this loop is thus <code>i</code>.</p>
+<blockquote>
+<p>There a whole bunch of additional properties we might want to prove. For instance, that <code>arr</code>
+slices do not overlap. The point is that, whatever we are interested in proving, we should remove
+everything that is not necessary as we encode the program. However, the encoding should at least
+be <em>sound</em>: proving an invariant in the encoding must entail it is an invariant for the original
+program.</p>
+<p>Here, we are doing the encoding by hand and we can pick and choose what is encoded or left out.
+In an actual verification tool, the encoding process would be automatic. Such an automatic
+encoder might encode the whole semantics of the program (meaning dealing with arrays at SMT-level
+here) and hope for the best, or be clever enough to realize it can excise array-related things
+for this particular verification challenge. Writing a clever, automatic encoder is difficult and
+challenging, and can void all results if it is not <em>sound</em>.</p>
+</blockquote>
 <p><br />
 </p>
 <p>Note that we have a few constants here: <code>len</code> and <code>grouping</code> do not change as the loop runs.
@@ -660,10 +673,12 @@ stupid and needs to be told everything.</p>
 <h2 id="strengthening-"><a class="header" href="#strengthening-">Strengthening 💪</a></h2>
 <p>When we add <code>i ≥ 0</code> as a candidate, we are <em>strengthening</em> candidate <code>done ⇒ i = len</code>. That is,
 this candidate is <em>not</em> inductive on the <em>raw system</em> (made of <code>init</code> and <code>trans</code>). If we hope to
-prove it by induction, we have to try to prove a <em>stronger</em> version <code>(done ⇒ i = len) ∧ strength</code>,
-for example with <code>strength ≝ i ≥ 0</code> in the previous example. It did not work, but if we can find a
-<code>strength</code> for which the proof goes through, then we won since the fact that <code>(done ⇒ i = len) ∧ strength</code> is an invariant implies that <code>done ⇒ i = len</code> is an invariant. In this context <code>strength</code>
-is often called a <em>lemma</em> as its main goal is make the candidate we are interested in inductive.</p>
+prove it by induction, we have to try to prove a <em>stronger</em> version <code>(done ⇒ i = len) ∧ lemma</code>, for
+example with <code>lemma ≝ i ≥ 0</code> in the previous example. We added the lemma as a separate candidate,
+but morally <code>lemma</code> was not really what we wanted to prove, it was just a <em>lemma</em> we added to help
+prove the main candidate (which failed). It did not work, but if we can find a <code>lemma</code> for which
+the proof goes through, then we won since the fact that <code>(done ⇒ i = len) ∧ lemma</code> is an invariant
+implies that <code>done ⇒ i = len</code> is an invariant.</p>
 <blockquote>
 <p>We are about to strengthen this candidate manually, but maybe you can see why many
 induction-based proof engine have some form of <em>invariant discovery</em>. Such techniques aim at
@@ -991,6 +1006,17 @@ success: all PO(s) are inductive
 |===|
 </code></pre>
 <p>🎉</p>
+<p><br />
+</p>
+<p>It might be disappointing that we had to choose a value for the length, <em>i.e.</em> that we did not
+prove that <code>fold</code>'s array accesses are legal when <code>len</code> is <code>8</code>. Unfortunately, in its current
+state, Z3 cannot handle to have <code>len</code> as an unknown value because of the non-linear applications of
+<code>mod</code>ulo.</p>
+<p>This means that, assuming we are verifying a binary, we can conduct the same proof for all <code>len</code>
+values actually used by the program. It would be much better to verify <code>fold</code> for any length, but
+this illustrates the kind of trade-offs that are often necessary in a verification process due to
+the very high complexity (and sometimes undecidability) of the checks intrinsic to the verification
+approach.</p>
 <p><br />
 </p>
 <h2 id="full-code-for-all-examples"><a class="header" href="#full-code-for-all-examples">Full Code for All Examples</a></h2>
@@ -1620,6 +1646,9 @@ success: all PO(s) are inductive
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
+                                                    <a rel="next" href="../conclusion/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         
                         <div style="clear: both"></div>
                     </nav>
@@ -1631,6 +1660,9 @@ success: all PO(s) are inductive
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
+                                    <a rel="next" href="../conclusion/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                             </nav>
 
         </div>
