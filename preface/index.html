@@ -312,8 +312,8 @@ in the verification framework such as changing the solver.</p>
 <h3 id="soundness-of-the-encoding"><a class="header" href="#soundness-of-the-encoding">Soundness (of the Encoding)</a></h3>
 <p>Solvers have a notion of <em>soundness</em>. Roughly, a solver is <em>sound</em> if it can only prove <em>valid</em>
 results (meaning it cannot prove things that are <em>&quot;wrong&quot;</em>). Since we are interested in <em>using</em>
-(not <em>designing</em>) solvers, we do not expand on the notion of solver soundness and only consider
-sound solvers.</p>
+(not <em>designing</em>) solvers, let's not go into more details on the notion of solver soundness and
+only consider sound solvers.</p>
 <p><br />
 </p>
 <p>There is a second notion of <em>soundness</em> however, which concerns the <em>encoding</em>. The <em>encoding</em> is
@@ -331,9 +331,9 @@ interested solely in finding bugs for instance. Since we will not try to prove a
 fine for the encoding to be unsound as long as it allows us to find actual/potential bugs.</p>
 </blockquote>
 <h2 id="outro"><a class="header" href="#outro">Outro</a></h2>
-<p>We hope we got across the point that setting up a verification process in a (semi-)industrial
-context requires a great deal of inspection. It requires assessing very precisely what kind of
-program we want to analyze, and what kind of property we want to check. Widening the perimeter of
+<p>I hope I got across the point that setting up a verification process in a (semi-)industrial context
+requires a great deal of inspection. It requires assessing very precisely what kind of program we
+want to analyze, and what kind of property we want to check. Widening the perimeter of
 programs/properties supported can be arbitrarily complex.</p>
 <p><br />
 </p>
@@ -359,7 +359,7 @@ strengthening at the end. We will first get to know <em>SMT solvers</em>, which 
 generally quite amazing tools. Next are <em>(declarative) transition systems</em>, which are the kind of
 programs we will analyze. They are relatively simple to understand and require little encoding to
 analyze them, meaning the encoding will be understandable when we look at it.</p>
-<p>Next we discuss <em>bounded model checking</em>, which on its own cannot (usually) prove anything: it
+<p>Next let's discuss <em>bounded model checking</em>, which on its own cannot (usually) prove anything: it
 <em>just</em> finds counterexamples (bugs). The three posts after that discuss basic and more advanced
 induction techniques.</p>
 

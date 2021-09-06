@@ -344,8 +344,8 @@ unsat
 </p>
 <h2 id="reachability"><a class="header" href="#reachability">Reachability</a></h2>
 <p>Before we actually get to BMC, let's define a few notions. Remember that transition systems have
-state variables, and that a <em>state</em> is a valuation of all these state variables. We say that a
-state <code>s</code> is <em>reachable</em> if the system, starting from one of its initial states, can reach <code>s</code> by
+state variables, and that a <em>state</em> is a valuation of all these state variables. Let's say a state
+<code>s</code> is <em>reachable</em> if the system, starting from one of its initial states, can reach <code>s</code> by
 applying its transition relation <code>n</code> times, where <code>n</code> is an arbitrary natural number.</p>
 <blockquote>
 <p>Note that <code>n</code> can be <code>0</code>, <em>i.e.</em> the initial states of a system are reachable, naturally.</p>
@@ -403,7 +403,7 @@ there exists such a counterexample trace of some arbitrary length. Unfortunately
 do this as unrolling is a manual process: we declare state <code>i</code>, then assert the relation between
 state <code>i-1</code> and state <code>i</code>. We cannot write a finite number of assertions that encode an arbitrary
 number of unrollings for the SMT solver to reason about. You can go ahead and try it, but it will
-not work.</p>
+not work. At least not without quantifiers (<code>∀</code>, <code>∃</code>), which would not scale well at all.</p>
 <p><br />
 </p>
 <p>Now that we are frustrated by this dead-end approach, let's forget about our ideal goal and try
@@ -543,7 +543,7 @@ cannot prove anything because it will never finish exploring the state space. Al
 <em>disprove</em> candidates.</p>
 <p><br />
 </p>
-<p>By this point, we expect most readers to be able to write SMT-LIB code that corresponds to a BMC
+<p>By this point, I expect most readers to be able to write SMT-LIB code that corresponds to a BMC
 check for a given number of unrollings. Just to make sure, the <a href="#bmc-with-unrolling">BMC with
 Unrolling</a> section showcases a BMC check where the transition relation is
 unrolled twice.</p>
@@ -551,8 +551,8 @@ unrolled twice.</p>
 </p>
 <blockquote>
 <p><strong>Warning:</strong> slightly (more) technical and practical discussion ahead. What follows is not
-mandatory to understand the upcoming chapters, but we think it is quite interesting and
-definitely mandatory for writing your own (efficient) verification engine.</p>
+mandatory to understand the upcoming chapters, but I think it is quite interesting and definitely
+mandatory for writing your own (efficient) verification engine.</p>
 </blockquote>
 <p><br />
 </p>
@@ -566,7 +566,7 @@ counterexample at the same depth falsifying other candidates. If not (<code>unsa
 check the remaining candidates at <code>k+1</code> and so on. Maybe they can be falsified by unrolling more
 than <code>k</code> times.</p>
 <p>So, this whole process is interactive: what BMC does depends on what the solver previously said. In
-the next chapter, we will introduce mikino which is a tool that will perform BMC (and more) for us.
+the next chapter, I will introduce mikino which is a tool that will perform BMC (and more) for us.
 The way mikino conducts BMC is by launching Z3 as a separate process and feed it definitions,
 declarations, assertions, <code>check-sat</code>s and <code>get-model</code>s on its standard input. Z3 produces answers
 on its standard output, which mikino looks at to decide if/how to continue and what to stream to

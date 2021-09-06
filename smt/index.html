@@ -185,12 +185,12 @@ integers <code>x + 1</code>.</p>
 actually run. You can build it from source or recover a binary from the <a href="https://github.com/Z3Prover/z3/releases" title="Z3's releases on github">release page</a>.
 The version should not matter too much for what we'll do, but for reference this guide used
 <code>v4.8.12</code>.</p>
-<p>From this point forward we assume readers have a Z3 binary called <code>z3</code> in their path. That is,
+<p>From this point forward I assume readers have a Z3 binary called <code>z3</code> in their path. That is,
 running the command <code>z3 -version</code> should not fail and produce an output similar to</p>
 <pre><code class="language-text">Z3 version 4.8.13 - 64 bit
 </code></pre>
-<p>While we recommend Z3 here, other efficient solvers exist and include <a href="https://alt-ergo.ocamlpro.com" title="Alt-Ergo homepage">Alt-Ergo</a>, <a href="https://cvc4.github.io/" title="CVC4 homepage">CVC4</a>
-and <a href="https://yices.csl.sri.com" title="Yices 2 homepage">Yices 2</a>. Solvers tend to be good at distinct kinds of problem from each other, and
+<p>While I recommend Z3, other efficient solvers exist and include <a href="https://alt-ergo.ocamlpro.com" title="Alt-Ergo homepage">Alt-Ergo</a>, <a href="https://cvc4.github.io/" title="CVC4 homepage">CVC4</a> and
+<a href="https://yices.csl.sri.com" title="Yices 2 homepage">Yices 2</a>. Solvers tend to be good at distinct kinds of problem from each other, and
 verification frameworks routinely run several of them in parallel, wait for the quickest answer,
 and discard solver instances that are still running.</p>
 <!-- Last, while we recommend having Z3 available locally, you can run the examples in this section
@@ -231,7 +231,7 @@ human readability. SMT-LIB is really meant to be used by programs to communicate
 actually write by hand. Still, it is readable enough for pedagogic and debugging purposes.</p>
 <blockquote>
 <p><a href="https://code.visualstudio.com" title="VS Code homepage">VS Code</a> has an extension for SMT-LIB syntax highlighting (<code>.smt2</code> files). The pieces of SMT-LIB
-code we will show in this book will not have syntax highlighting, unfortunately. We apologize
+code I will show in this book will not have syntax highlighting, unfortunately. I apologize
 for this problem, and encourage readers to copy these pieces of code in an editor that supports
 SMT-LIB using the button at the top-right of the code blocks.</p>
 </blockquote>
@@ -285,7 +285,8 @@ sat
 <p>The model is slightly cryptic. Z3 defines <code>x</code> and <code>y</code> as functions taking no arguments, which means
 that they are constants. This is because all functions are <em>pure</em> in SMT-LIB, meaning they always
 produce the same output when given the same inputs. Hence, a function with no arguments can only
-produce one value, and is therefore the same as a constant.</p>
+produce one value, and is therefore the same as a constant. In fact, <code>(define-fun &lt;ident&gt; () &lt;type&gt; &lt;val&gt;)</code> is the same as <code>(define-const &lt;ident&gt; &lt;type&gt; &lt;val&gt;)</code>, and the <code>(declare-const &lt;ident&gt; &lt;type&gt;)</code> we used in the SMT-LIB script is equivalent to <code>(declare-fun &lt;ident&gt; () &lt;type&gt;)</code>. Again,
+in SMT-LIB (and pure functional languages) a constant is just a function that takes no argument.</p>
 <p>This valuation is a model because <code>(&gt; x 7) ≡ (&gt; 8 7)</code> holds and so does <code>(= y (* 2 x)) ≡ (= 16 (* 2 8))</code>.</p>
 <p><br />
 </p>
