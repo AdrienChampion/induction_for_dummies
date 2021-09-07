@@ -1,7 +1,13 @@
-# Induction for Dummies
+# Verification for Dummies: SMT and Induction
+
+By [OCamlPro][ocp].
 
 - Adrien Champion
-- <adrien.champion@ocamlpro.com>
+
+    <adrien.champion@ocamlpro.com>
+
+\
+\
 
 This book broadly discusses *induction* as a *formal verification* technique, which here really
 means *formal program verification*. I will use concrete, runnable examples whenever possible.
@@ -101,3 +107,4 @@ notions of Rust could definitely help in places, but this is not mandatory (prob
     undecidability.
 
 [mikino]: https://github.com/OCamlPro/mikino_bin (Mikino on github)
+[ocp]: https://www.ocamlpro.com (OCamlPro's official website)
