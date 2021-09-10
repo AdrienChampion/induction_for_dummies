@@ -20,33 +20,42 @@ candidate)"*, which we can rephrase as
 A BMC *transition* amounts to unrolling the transition relation one step further (depth `k`), and
 check for falsification at `k`. Rephrased to echo `init`'s formulation, we get
 
-- `trans`: from an unrolling at `k-1` from the initial states with no cex, unroll to `k` and check
-  for a cex.
+- `trans(k-1, k)`: from an unrolling at `k-1` from the initial states with no cex, unroll to `k`
+  and check for a cex (with `k > 0`).
+
+So now we have a representation of BMC as a transition system with its `init` predicate and `trans`
+relation.
 
 \
 \
 
-It would be interesting to find a candidate invariant for BMC and try to prove it. As some readers
-have probably intuited, BMC actually has the property that it always finds the shortest cex
-possible in terms of *depth* (number of unrollings). More precisely, it finds one of them: if BMC
-produces a cex (trace of `k` states) of length `k`, there might be other cex-s of length `k` (and
-of length `i > k`). However, there cannot exist a shorter cex (of length `i < k`). More generally:
+It would be interesting to find a candidate invariant for BMC and try to prove it over the
+transition system representation of BMC we just introduced. As some readers have probably intuited,
+BMC actually has the property that it always finds the shortest cex possible in terms of *depth*
+(number of unrollings). More precisely, it finds one of them: if BMC produces a cex (trace of `k`
+states) of length `k`, there might be other cex-s of length `k` (and of length `i > k`). However,
+there cannot exist a shorter cex (of length `i < k`). More generally:
 
-- `candidate`: when BMC is unrolled at `k` from the initial states, then no cex of length `0 ≤ i <
-  k` exists.
+- `candidate(k)`: when BMC is unrolled at `k` from the initial states, then no cex of length `0 ≤ i
+  < k` exists.
+
+To be clear, our goal is to find a way to prove that `candidate` is an invariant for BMC, which
+is represented as a transition system by the `init` predicate and `trans` relation above.
 
 \
 \
 
-The question now is *"What would a proof of `candidate` for BMC look like?"*. Back when we
-discussed transition system, we managed to prove a few properties regarding the stopwatch system's
-transition relation. We proved, for instance, that assuming `cnt_0 > 7`, then we cannot have `cnt_1
-= 0` without `reset_1` being `true` if state `1` is a successor of state `0`.
+The question now is *"How can we prove that BMC verifies `candidate`?"*, or *"What would such a
+proof look like?"*. Back when we discussed transition system, we managed to prove a few properties
+regarding the stopwatch system's transition relation. For instance, we previously proved that
+assuming `cnt_0 > 7`, then we cannot have `cnt_1 = 0` without `reset_1` being `true` if state `1`
+is a successor of state `0`.
 
-So we could start building a proof for `candidate` by checking if it is a *consequence* of `trans`.
-Let's assume we have an unrolling at depth `k-1` from the initial states with cex; by `trans`, the
-next BMC step is to unroll to `k` and check for a cex at `k`. Looking at `candidate` now, is it the
-case that no cex of length `i < k` can exist?
+So we could start building a proof for `candidate` by checking if it is a *consequence* of `trans`:
+is it true that `trans(k-1, k) ⇒ candidate(k)`?. Let's assume we have an unrolling at depth `k-1`
+from the initial states with no cex; by `trans`, the next BMC step is to unroll to `k` and check
+for a cex at `k`. Looking at `candidate` now, is it the case that no cex of length `i < k` can
+exist?
 
 Well no, looking only our assumptions we cannot draw that conclusion: `trans` tells us there is no
 cex at `k-1`, but that's it. We know nothing of potential cex-s at `i < k - 1`. So, `candidate` is
@@ -58,16 +67,16 @@ have `cnt_1 = 0` without ..."
 \
 
 Instead of checking if `candidate` is a *consequence* of `trans` (which it is not as we just saw)
-we could check `trans` *preserves* `candidate`. Since `trans` relates succeeding states `s` and
-`s'`, we say that `trans` *preserves* `candidate` if `candidate(s) ∧ trans(s, s') ⇒ candidate(s')`.
+we could check `trans` *preserves* `candidate`. Since `trans` relates succeeding states `k-1` and
+`k`, we say that `trans` *preserves* `candidate` if `candidate(k) ∧ trans(k-1, k) ⇒ candidate(k)`.
 That is, *"states verifying `candidate` cannot, in one application of `trans`, reach a state
 falsifying `candidate`"*.
 
 Is it the case though? We take the same assumptions as above, when we looked at a transition from
-`k-1` to `k`, and also assume `candidate` at `k-1`: *"no cex of length `i < k - 1` exists"*. By
+`k-1` to `k`, and also assume `candidate` at `k-1`: *"no cex of length `i < k-1` exists"*. By
 `trans`, we unroll to `k` and check for a cex at `k`. Can there be cex of length `i < k`? No:
 `trans` tells us there was no cex at `k-1`, and our new `candidate`-assumption in the previous
-state tells us no cex of length `i < k -1 ` exists.
+state tells us no cex of length `i < kh-1 ` exists.
 
 \
 \
@@ -92,8 +101,9 @@ there is no `i` such that `0 ≤ i < 0`, then no.
 
 Putting both results together we have
 
-- BMC's starting point verifies `candidate`, and
-- BMC's notion of transition preserves `candidate`.
+- BMC's starting point verifies `candidate`, *i.e.* `init ⇒ candidate(0)`, and
+- BMC's notion of transition preserves `candidate`, *i.e.* `candidate(k-1) ∧ trans(k-1, k) ⇒
+  candidate(k)`.
 
 Then, by *induction*, executions of BMC cannot ever falsify `candidate`.
 
