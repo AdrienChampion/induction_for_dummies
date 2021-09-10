@@ -3147,28 +3147,36 @@ candidate)&quot;</em>, which we can rephrase as</p>
 <p>A BMC <em>transition</em> amounts to unrolling the transition relation one step further (depth <code>k</code>), and
 check for falsification at <code>k</code>. Rephrased to echo <code>init</code>'s formulation, we get</p>
 <ul>
-<li><code>trans</code>: from an unrolling at <code>k-1</code> from the initial states with no cex, unroll to <code>k</code> and check
-for a cex.</li>
+<li><code>trans(k-1, k)</code>: from an unrolling at <code>k-1</code> from the initial states with no cex, unroll to <code>k</code>
+and check for a cex (with <code>k &gt; 0</code>).</li>
 </ul>
+<p>So now we have a representation of BMC as a transition system with its <code>init</code> predicate and <code>trans</code>
+relation.</p>
 <p><br />
 </p>
-<p>It would be interesting to find a candidate invariant for BMC and try to prove it. As some readers
-have probably intuited, BMC actually has the property that it always finds the shortest cex
-possible in terms of <em>depth</em> (number of unrollings). More precisely, it finds one of them: if BMC
-produces a cex (trace of <code>k</code> states) of length <code>k</code>, there might be other cex-s of length <code>k</code> (and
-of length <code>i &gt; k</code>). However, there cannot exist a shorter cex (of length <code>i &lt; k</code>). More generally:</p>
+<p>It would be interesting to find a candidate invariant for BMC and try to prove it over the
+transition system representation of BMC we just introduced. As some readers have probably intuited,
+BMC actually has the property that it always finds the shortest cex possible in terms of <em>depth</em>
+(number of unrollings). More precisely, it finds one of them: if BMC produces a cex (trace of <code>k</code>
+states) of length <code>k</code>, there might be other cex-s of length <code>k</code> (and of length <code>i &gt; k</code>). However,
+there cannot exist a shorter cex (of length <code>i &lt; k</code>). More generally:</p>
 <ul>
-<li><code>candidate</code>: when BMC is unrolled at <code>k</code> from the initial states, then no cex of length <code>0 ≤ i &lt; k</code> exists.</li>
+<li><code>candidate(k)</code>: when BMC is unrolled at <code>k</code> from the initial states, then no cex of length <code>0 ≤ i &lt; k</code> exists.</li>
 </ul>
+<p>To be clear, our goal is to find a way to prove that <code>candidate</code> is an invariant for BMC, which
+is represented as a transition system by the <code>init</code> predicate and <code>trans</code> relation above.</p>
 <p><br />
 </p>
-<p>The question now is <em>&quot;What would a proof of <code>candidate</code> for BMC look like?&quot;</em>. Back when we
-discussed transition system, we managed to prove a few properties regarding the stopwatch system's
-transition relation. We proved, for instance, that assuming <code>cnt_0 &gt; 7</code>, then we cannot have <code>cnt_1 = 0</code> without <code>reset_1</code> being <code>true</code> if state <code>1</code> is a successor of state <code>0</code>.</p>
-<p>So we could start building a proof for <code>candidate</code> by checking if it is a <em>consequence</em> of <code>trans</code>.
-Let's assume we have an unrolling at depth <code>k-1</code> from the initial states with cex; by <code>trans</code>, the
-next BMC step is to unroll to <code>k</code> and check for a cex at <code>k</code>. Looking at <code>candidate</code> now, is it the
-case that no cex of length <code>i &lt; k</code> can exist?</p>
+<p>The question now is <em>&quot;How can we prove that BMC verifies <code>candidate</code>?&quot;</em>, or <em>&quot;What would such a
+proof look like?&quot;</em>. Back when we discussed transition system, we managed to prove a few properties
+regarding the stopwatch system's transition relation. For instance, we previously proved that
+assuming <code>cnt_0 &gt; 7</code>, then we cannot have <code>cnt_1 = 0</code> without <code>reset_1</code> being <code>true</code> if state <code>1</code>
+is a successor of state <code>0</code>.</p>
+<p>So we could start building a proof for <code>candidate</code> by checking if it is a <em>consequence</em> of <code>trans</code>:
+is it true that <code>trans(k-1, k) ⇒ candidate(k)</code>?. Let's assume we have an unrolling at depth <code>k-1</code>
+from the initial states with no cex; by <code>trans</code>, the next BMC step is to unroll to <code>k</code> and check
+for a cex at <code>k</code>. Looking at <code>candidate</code> now, is it the case that no cex of length <code>i &lt; k</code> can
+exist?</p>
 <p>Well no, looking only our assumptions we cannot draw that conclusion: <code>trans</code> tells us there is no
 cex at <code>k-1</code>, but that's it. We know nothing of potential cex-s at <code>i &lt; k - 1</code>. So, <code>candidate</code> is
 not a <em>consequence</em> of <code>trans</code>. All hope is not lost: our tiny proofs over the stopwatch system
@@ -3177,15 +3185,15 @@ have <code>cnt_1 = 0</code> without ...&quot;</p>
 <p><br />
 </p>
 <p>Instead of checking if <code>candidate</code> is a <em>consequence</em> of <code>trans</code> (which it is not as we just saw)
-we could check <code>trans</code> <em>preserves</em> <code>candidate</code>. Since <code>trans</code> relates succeeding states <code>s</code> and
-<code>s'</code>, we say that <code>trans</code> <em>preserves</em> <code>candidate</code> if <code>candidate(s) ∧ trans(s, s') ⇒ candidate(s')</code>.
+we could check <code>trans</code> <em>preserves</em> <code>candidate</code>. Since <code>trans</code> relates succeeding states <code>k-1</code> and
+<code>k</code>, we say that <code>trans</code> <em>preserves</em> <code>candidate</code> if <code>candidate(k) ∧ trans(k-1, k) ⇒ candidate(k)</code>.
 That is, <em>&quot;states verifying <code>candidate</code> cannot, in one application of <code>trans</code>, reach a state
 falsifying <code>candidate</code>&quot;</em>.</p>
 <p>Is it the case though? We take the same assumptions as above, when we looked at a transition from
-<code>k-1</code> to <code>k</code>, and also assume <code>candidate</code> at <code>k-1</code>: <em>&quot;no cex of length <code>i &lt; k - 1</code> exists&quot;</em>. By
+<code>k-1</code> to <code>k</code>, and also assume <code>candidate</code> at <code>k-1</code>: <em>&quot;no cex of length <code>i &lt; k-1</code> exists&quot;</em>. By
 <code>trans</code>, we unroll to <code>k</code> and check for a cex at <code>k</code>. Can there be cex of length <code>i &lt; k</code>? No:
 <code>trans</code> tells us there was no cex at <code>k-1</code>, and our new <code>candidate</code>-assumption in the previous
-state tells us no cex of length <code>i &lt; k -1 </code> exists.</p>
+state tells us no cex of length <code>i &lt; kh-1 </code> exists.</p>
 <p><br />
 </p>
 <p>Sweet, <code>trans</code> preserves <code>candidate</code>: from a state verifying <code>candidate</code>, we can only reach states
@@ -3204,8 +3212,8 @@ there is no <code>i</code> such that <code>0 ≤ i &lt; 0</code>, then no.</p>
 </p>
 <p>Putting both results together we have</p>
 <ul>
-<li>BMC's starting point verifies <code>candidate</code>, and</li>
-<li>BMC's notion of transition preserves <code>candidate</code>.</li>
+<li>BMC's starting point verifies <code>candidate</code>, <em>i.e.</em> <code>init ⇒ candidate(0)</code>, and</li>
+<li>BMC's notion of transition preserves <code>candidate</code>, <em>i.e.</em> <code>candidate(k-1) ∧ trans(k-1, k) ⇒ candidate(k)</code>.</li>
 </ul>
 <p>Then, by <em>induction</em>, executions of BMC cannot ever falsify <code>candidate</code>.</p>
 <h2 id="one-last-short-smt-dive"><a class="header" href="#one-last-short-smt-dive">One Last Short SMT Dive</a></h2>
