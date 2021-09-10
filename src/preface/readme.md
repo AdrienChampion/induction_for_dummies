@@ -7,7 +7,7 @@
 \
 \
 
-[Formal logics][logics] deals with reasoning in the context of a formal framework. For example, a
+[Formal logics][logics] deal with reasoning in the context of a formal framework. For example, a
 *type system* is a formal framework. [Strongly-typed][strong typing] programming languages rely on
 type systems to (dis)prove that programs are well-typed. For example, consider the following Rust
 function.

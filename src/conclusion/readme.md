@@ -18,9 +18,9 @@ Besides pure induction, there are many other techniques that are worth looking i
 important one is **P**roperty **D**irected **R**eachability (PDR), also known as **I**ncremental
 **C**onstruction of **I**nductive **C**lauses for **I**ndubitable **C**orrectness (IC3).
 Unfortunately, PDR/IC3 is mostly discussed in academic papers and I could not find a presentation
-understandable without a serious background in logics. This is partially due to the fact that PDR
-is still quite recent, but also to its complex and intricate nature. Here are a few links though,
-all of them are **PDF**:
+understandable without a serious background in formal logics. This is partially due to the fact
+that PDR is still quite recent, but also to its complex and intricate nature. Here are a few links
+though, all of them are **PDF**:
 
 - [original paper][ic3]
 - [efficient PDR][pdr]
