@@ -145,12 +145,12 @@ to a state falsifying the candidate.
 Thankfully, we have an SMT solver to do this. Can we actually explore the reachable state space and
 look for a falsification given what we have seen so far?
 
-A first approach to doing this would be to write a bunch of assertions that are satisfiable iff
-there exists such a counterexample trace of some arbitrary length. Unfortunately, we cannot really
-do this as unrolling is a manual process: we declare state `i`, then assert the relation between
-state `i-1` and state `i`. We cannot write a finite number of assertions that encode an arbitrary
-number of unrollings for the SMT solver to reason about. You can go ahead and try it, but it will
-not work. At least not without quantifiers (`∀`, `∃`), which would not scale well at all.
+A first approach to doing this would be to write a bunch of assertions that are satisfiable if and
+only if there exists such a counterexample trace of some arbitrary length. Unfortunately, we cannot
+really do this as unrolling is a manual process: we declare state `i`, then assert the relation
+between state `i-1` and state `i`. We cannot write a finite number of assertions that encode an
+arbitrary number of unrollings for the SMT solver to reason about. You can go ahead and try it, but
+it will not work. At least not without quantifiers (`∀`, `∃`), which would not scale well at all.
 
 \
 \
@@ -169,10 +169,11 @@ init(s) ≜ (s.reset ⇒ s.cnt = 0) ∧ (s.is_counting = s.start_stop)
 \
 \
 
-Now, we need to design some assertions for the SMT solver such that they are satisfiable iff there
-exists an initial state that falsifies our candidate. This is quite similar to the unrolling we did
-in the previous chapter, where we wrote assertions that were satisfiable iff state `1` was a
-successor of state `0`, and `cnt_1` was something else than `0`, `cnt_0` or `cnt_0 + 1`.
+Now, we need to design some assertions for the SMT solver such that they are satisfiable if and
+only if there exists an initial state that falsifies our candidate. This is quite similar to the
+unrolling we did in the previous chapter, where we wrote assertions that were satisfiable if and
+only if state `1` was a successor of state `0`, and `cnt_1` was something else than `0`, `cnt_0` or
+`cnt_0 + 1`.
 
 Following the same approach, we first need to `define-fun` our initial state predicate.
 

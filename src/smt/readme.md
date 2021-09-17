@@ -15,9 +15,9 @@ constraints expressed in **M**any-**S**orted **F**irst **O**rder **L**ogic (MSFO
 
 First, MSFOL is built on FOL (**F**irst **O**rder **L**ogic), which basically means *"boolean
 formulas"*. For instance, `a ∧ (false ∨ b ∨ c)` is a FOL formula, where `∧` is conjunction (`&&`)
-and `∨` is disjunction (`||`). So this formula *evaluates* to `true` *iff* `a` is `true` and either
-`b` or `c` is `true` (since `false` tends not to be `true`). We can represent this formula as a
-tree, where leaves are boolean literals and nodes are boolean operators.
+and `∨` is disjunction (`||`). So this formula *evaluates* to `true` if and only if `a` is `true`
+and either `b` or `c` is `true` (since `false` tends not to be `true`). We can represent this
+formula as a tree, where leaves are boolean literals and nodes are boolean operators.
 
 ```text
  ┌───∧───┐

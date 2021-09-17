@@ -91,8 +91,8 @@ init(s) ≜ (s.reset ⇒ s.cnt = 0) ∧ (s.is_counting = s.start_stop)
 ## Transition Relation
 
 So at this point we have a notion of state (data) maintained by the transition system, and a
-predicate (formula) that is true on a state valuation iff it is a legal initial state. We are only
-missing the description of how the system evolves.
+predicate (formula) that is true on a state valuation if and only if it is a legal initial state.
+We are only missing the description of how the system evolves.
 
 This is what the *transition relation* (a.k.a *step relation*) does. Its job is to examine the
 relation between two state valuations `s` and `s'`, and evaluate to `true` if and only `s'` is a
