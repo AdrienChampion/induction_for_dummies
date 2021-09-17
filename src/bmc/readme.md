@@ -95,11 +95,11 @@ the stopwatch system, we can say that the state predicate `cnt > 5` is reachable
 \
 
 Using this notion, we can talk about the set of all reachable states for a given system, called its
-*reachable state space*. This set can be infinite, and even when it's not actually constructing
+*reachable state space*. This set can be infinite, and even when it's not, actually constructing
 this set for realistic systems tends to be impractical. A tool that tries to construct this set is
 called *explicit-state*. SMT-based approaches are almost always *implicit-state*, as SMT solvers
-reason about boolean, integer... theories directly to assess whether a given formula is
-satisfiable. The only time actual values (and thus states) are produced in when the formula is
+reason at theory-level about booleans, integers... directly to assess whether a given formula is
+satisfiable. The only time actual values (and thus states) are produced is when the formula is
 satisfiable and we ask for a model.
 
 > While generally inefficient, tools such as [TLA+] do manage to scale the explicit-state approach

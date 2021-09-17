@@ -57,11 +57,11 @@ from the initial states with no cex; by `trans`, the next BMC step is to unroll 
 for a cex at `k`. Looking at `candidate` now, is it the case that no cex of length `i < k` can
 exist?
 
-Well no, looking only our assumptions we cannot draw that conclusion: `trans` tells us there is no
-cex at `k-1`, but that's it. We know nothing of potential cex-s at `i < k - 1`. So, `candidate` is
-not a *consequence* of `trans`. All hope is not lost: our tiny proofs over the stopwatch system
-actually made assumptions about the *previous* state. "**Assuming** `cnt_0 > 7`, then we cannot
-have `cnt_1 = 0` without ..."
+Well no, looking only at the assumptions we made we cannot draw that conclusion: `trans` tells us
+there is no cex at `k-1`, but that's it. We know nothing of potential cex-s at `i < k - 1`. So,
+`candidate` is not a *consequence* of `trans`. All hope is not lost: our tiny proofs over the
+stopwatch system actually made assumptions about the *previous* state. "**Assuming** `cnt_0 > 7`,
+then we cannot have `cnt_1 = 0` without ..."
 
 \
 \
