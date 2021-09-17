@@ -292,8 +292,8 @@ pressed), and <code>true</code> when <code>start_stop</code> is <code>true</code
 </p>
 <h2 id="transition-relation"><a class="header" href="#transition-relation">Transition Relation</a></h2>
 <p>So at this point we have a notion of state (data) maintained by the transition system, and a
-predicate (formula) that is true on a state valuation iff it is a legal initial state. We are only
-missing the description of how the system evolves.</p>
+predicate (formula) that is true on a state valuation if and only if it is a legal initial state.
+We are only missing the description of how the system evolves.</p>
 <p>This is what the <em>transition relation</em> (a.k.a <em>step relation</em>) does. Its job is to examine the
 relation between two state valuations <code>s</code> and <code>s'</code>, and evaluate to <code>true</code> if and only <code>s'</code> is a
 legal successor of <code>s</code>. The first part of the <em>transition relation</em> deals with <code>is_counting</code>, which

@@ -158,9 +158,9 @@ constraints expressed in <strong>M</strong>any-<strong>S</strong>orted <strong>F
 <em>satisfiable</em>. Let's unpack this.</p>
 <p>First, MSFOL is built on FOL (<strong>F</strong>irst <strong>O</strong>rder <strong>L</strong>ogic), which basically means <em>&quot;boolean
 formulas&quot;</em>. For instance, <code>a ∧ (false ∨ b ∨ c)</code> is a FOL formula, where <code>∧</code> is conjunction (<code>&amp;&amp;</code>)
-and <code>∨</code> is disjunction (<code>||</code>). So this formula <em>evaluates</em> to <code>true</code> <em>iff</em> <code>a</code> is <code>true</code> and either
-<code>b</code> or <code>c</code> is <code>true</code> (since <code>false</code> tends not to be <code>true</code>). We can represent this formula as a
-tree, where leaves are boolean literals and nodes are boolean operators.</p>
+and <code>∨</code> is disjunction (<code>||</code>). So this formula <em>evaluates</em> to <code>true</code> if and only if <code>a</code> is <code>true</code>
+and either <code>b</code> or <code>c</code> is <code>true</code> (since <code>false</code> tends not to be <code>true</code>). We can represent this
+formula as a tree, where leaves are boolean literals and nodes are boolean operators.</p>
 <pre><code class="language-text"> ┌───∧───┐
  │       │
  a    ┌──∨──┬───────┐
