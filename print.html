@@ -1705,11 +1705,11 @@ the stopwatch system, we can say that the state predicate <code>cnt &gt; 5</code
 <p><br />
 </p>
 <p>Using this notion, we can talk about the set of all reachable states for a given system, called its
-<em>reachable state space</em>. This set can be infinite, and even when it's not actually constructing
+<em>reachable state space</em>. This set can be infinite, and even when it's not, actually constructing
 this set for realistic systems tends to be impractical. A tool that tries to construct this set is
 called <em>explicit-state</em>. SMT-based approaches are almost always <em>implicit-state</em>, as SMT solvers
-reason about boolean, integer... theories directly to assess whether a given formula is
-satisfiable. The only time actual values (and thus states) are produced in when the formula is
+reason at theory-level about booleans, integers... directly to assess whether a given formula is
+satisfiable. The only time actual values (and thus states) are produced is when the formula is
 satisfiable and we ask for a model.</p>
 <blockquote>
 <p>While generally inefficient, tools such as <a href="https://lamport.azurewebsites.net/tla/tla.html" title="TLA+ website">TLA+</a> do manage to scale the explicit-state approach
@@ -3178,11 +3178,11 @@ is it true that <code>trans(k-1, k) ⇒ candidate(k)</code>?. Let's assume we ha
 from the initial states with no cex; by <code>trans</code>, the next BMC step is to unroll to <code>k</code> and check
 for a cex at <code>k</code>. Looking at <code>candidate</code> now, is it the case that no cex of length <code>i &lt; k</code> can
 exist?</p>
-<p>Well no, looking only our assumptions we cannot draw that conclusion: <code>trans</code> tells us there is no
-cex at <code>k-1</code>, but that's it. We know nothing of potential cex-s at <code>i &lt; k - 1</code>. So, <code>candidate</code> is
-not a <em>consequence</em> of <code>trans</code>. All hope is not lost: our tiny proofs over the stopwatch system
-actually made assumptions about the <em>previous</em> state. &quot;<strong>Assuming</strong> <code>cnt_0 &gt; 7</code>, then we cannot
-have <code>cnt_1 = 0</code> without ...&quot;</p>
+<p>Well no, looking only at the assumptions we made we cannot draw that conclusion: <code>trans</code> tells us
+there is no cex at <code>k-1</code>, but that's it. We know nothing of potential cex-s at <code>i &lt; k - 1</code>. So,
+<code>candidate</code> is not a <em>consequence</em> of <code>trans</code>. All hope is not lost: our tiny proofs over the
+stopwatch system actually made assumptions about the <em>previous</em> state. &quot;<strong>Assuming</strong> <code>cnt_0 &gt; 7</code>,
+then we cannot have <code>cnt_1 = 0</code> without ...&quot;</p>
 <p><br />
 </p>
 <p>Instead of checking if <code>candidate</code> is a <em>consequence</em> of <code>trans</code> (which it is not as we just saw)

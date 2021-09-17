@@ -192,11 +192,11 @@ is it true that <code>trans(k-1, k) ⇒ candidate(k)</code>?. Let's assume we ha
 from the initial states with no cex; by <code>trans</code>, the next BMC step is to unroll to <code>k</code> and check
 for a cex at <code>k</code>. Looking at <code>candidate</code> now, is it the case that no cex of length <code>i &lt; k</code> can
 exist?</p>
-<p>Well no, looking only our assumptions we cannot draw that conclusion: <code>trans</code> tells us there is no
-cex at <code>k-1</code>, but that's it. We know nothing of potential cex-s at <code>i &lt; k - 1</code>. So, <code>candidate</code> is
-not a <em>consequence</em> of <code>trans</code>. All hope is not lost: our tiny proofs over the stopwatch system
-actually made assumptions about the <em>previous</em> state. &quot;<strong>Assuming</strong> <code>cnt_0 &gt; 7</code>, then we cannot
-have <code>cnt_1 = 0</code> without ...&quot;</p>
+<p>Well no, looking only at the assumptions we made we cannot draw that conclusion: <code>trans</code> tells us
+there is no cex at <code>k-1</code>, but that's it. We know nothing of potential cex-s at <code>i &lt; k - 1</code>. So,
+<code>candidate</code> is not a <em>consequence</em> of <code>trans</code>. All hope is not lost: our tiny proofs over the
+stopwatch system actually made assumptions about the <em>previous</em> state. &quot;<strong>Assuming</strong> <code>cnt_0 &gt; 7</code>,
+then we cannot have <code>cnt_1 = 0</code> without ...&quot;</p>
 <p><br />
 </p>
 <p>Instead of checking if <code>candidate</code> is a <em>consequence</em> of <code>trans</code> (which it is not as we just saw)
