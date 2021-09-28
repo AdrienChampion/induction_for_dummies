@@ -1,5 +1,18 @@
 # Induction For Dummies
 
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">
+    <img
+        alt="Creative Commons License"
+        style="border-width:0"
+        src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png"
+    />
+</a>
+
+This work is licensed under a <a
+    rel="license"
+    href="http://creativecommons.org/licenses/by-sa/4.0/"
+>Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+
 Induction as a formal program verification technique for the uninitiated.
 
 ## Building
@@ -40,6 +53,13 @@ Such a file `file.ext` is expected to either
 The output file contains the output of running a certain command on `file.ext`, which depends on
 `ext`. For instance, `file.smt2` should have a `file.smt2.out` companion file containing the output
 of `z3 file.smt2`.
+
+
+## License
+
+This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
+To view a copy of this license, visit <http://creativecommons.org/licenses/by-sa/4.0> or send a
+letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 
 
 [Install Rust]: https://www.rust-lang.org/tools/install
