@@ -168,20 +168,25 @@ ways the loop can start.</p>
 stopwatch's display: it is an output.</p>
 <p>We also need an internal variable <code>is_counting</code> to remember whether we are counting or not:
 <code>start_stop</code> toggles counting, meaning we need to remember if we were previously counting or not to
-decide what a press of the <code>start_stop</code> button does. Hence, the state variables of our stopwatch are</p>
+decide what a press of the <code>start_stop</code> button does. Hence, the state variables (<code>svars</code>) of our
+stopwatch are</p>
 <pre><pre class="playground"><code class="language-rust  no_run compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
+</span>svars {
 	// inputs, `true` if pressed
-	start_stop, reset: bool
+	start_stop reset: bool,
 	// internal variable
-	is_counting: bool
+	is_counting: bool,
 	// output
-	cnt: int
-)
+	cnt: int,
+}
 <span class="boring">}
 </span></code></pre></pre>
+<blockquote>
+<p>As we will see later, this is the actual syntax we will use once we start playing with the mikino
+induction-based checker.</p>
+</blockquote>
 <p>The description of this system is</p>
 <ul>
 <li>the system is initially not counting;</li>
@@ -295,27 +300,27 @@ pressed), and <code>true</code> when <code>start_stop</code> is <code>true</code
 predicate (formula) that is true on a state valuation if and only if it is a legal initial state.
 We are only missing the description of how the system evolves.</p>
 <p>This is what the <em>transition relation</em> (a.k.a <em>step relation</em>) does. Its job is to examine the
-relation between two state valuations <code>s</code> and <code>s'</code>, and evaluate to <code>true</code> if and only <code>s'</code> is a
+relation between two state valuations <code>s</code> and <code>'s</code>, and evaluate to <code>true</code> if and only <code>'s</code> is a
 legal successor of <code>s</code>. The first part of the <em>transition relation</em> deals with <code>is_counting</code>, which
-should be toggled by <code>start_stop</code>. This is a constraint, if <code>s'</code> is a successor of <code>s</code> then they
+should be toggled by <code>start_stop</code>. This is a constraint, if <code>'s</code> is a successor of <code>s</code> then they
 should verify</p>
 <ul>
-<li><code>s'.start_stop ⇒ (s'.is_counting = ¬s.is_counting)</code>, and</li>
-<li><code>¬s'.start_stop ⇒ (s'.is_counting = s.is_counting)</code>.</li>
+<li><code>'s.start_stop ⇒ ('s.is_counting = ¬s.is_counting)</code>, and</li>
+<li><code>¬'s.start_stop ⇒ ('s.is_counting = s.is_counting)</code>.</li>
 </ul>
 <p>Note that we still have a constraint when <code>start_stop</code> is not pressed: the value should not change.
-If we did not constrain <code>s'.is_counting</code> in this case, then it would be unconstrained and thus
+If we did not constrain <code>'s.is_counting</code> in this case, then it would be unconstrained and thus
 could take any value. These two constraints are arguable more readable as</p>
 <ul>
-<li><code>s'.is_counting = if s'.start_stop { ¬s.is_counting } else { s.is_counting }</code>.</li>
+<li><code>'s.is_counting = if 's.start_stop { ¬s.is_counting } else { s.is_counting }</code>.</li>
 </ul>
 <p><br />
 </p>
 <p>Next, the system's description discusses how <code>cnt</code> evolves, which gives the following constraints:</p>
 <ul>
-<li><code>s'.reset ⇒ (s'.cnt = 0)</code>,</li>
-<li><code>s'.is_counting ⇒ (s'.cnt = s.cnt + 1)</code>, and</li>
-<li><code>¬s'.is_counting ⇒ (s'.cnt = s.cnt)</code>.</li>
+<li><code>'s.reset ⇒ ('s.cnt = 0)</code>,</li>
+<li><code>'s.is_counting ⇒ ('s.cnt = s.cnt + 1)</code>, and</li>
+<li><code>¬'s.is_counting ⇒ ('s.cnt = s.cnt)</code>.</li>
 </ul>
 <p>Most readers might notice that these constraints will not work well together. Whenever <code>reset</code> is
 pressed <code>cnt</code> must be <code>0</code>, and at the same time it must be either incremented or unchanged
@@ -323,25 +328,25 @@ depending on the value of <code>is_counting</code>. In most cases, these constra
 <details>
 	<summary>Expand this for a concrete example of a conflict.</summary>
 <blockquote>
-<p>Say <code>s.cnt = 1</code>, and both <code>s'.reset</code> and <code>s'.is_counting</code> are <code>true</code>. Then by the first
-constraint, we must have <code>s'.cnt = 0</code>; by the second constraint, we must also have <code>s'.cnt = 2</code>.
+<p>Say <code>s.cnt = 1</code>, and both <code>'s.reset</code> and <code>'s.is_counting</code> are <code>true</code>. Then by the first
+constraint, we must have <code>'s.cnt = 0</code>; by the second constraint, we must also have <code>'s.cnt = 2</code>.
 Hence, both constraints are in conflict and, together, they are unsatisfiable.</p>
 </blockquote>
 </details>
 <p>Assuming the order of the points in the description of the system matters, we can solve this problem
 by making the <code>reset</code> behavior preempt the behavior related to <code>is_counting</code>. We get</p>
 <ul>
-<li><code>s'.reset ⇒ (s'.cnt = 0)</code>,</li>
-<li><code>(s'.is_counting ∧ ¬s'.reset) ⇒ (s'.cnt = s.cnt + 1)</code>, and</li>
-<li><code>(¬s'.is_counting ∧ ¬s'.reset) ⇒ (s'.cnt = s.cnt)</code>.</li>
+<li><code>'s.reset ⇒ ('s.cnt = 0)</code>,</li>
+<li><code>('s.is_counting ∧ ¬'s.reset) ⇒ ('s.cnt = s.cnt + 1)</code>, and</li>
+<li><code>(¬'s.is_counting ∧ ¬'s.reset) ⇒ ('s.cnt = s.cnt)</code>.</li>
 </ul>
 <p>Alternatively, we can rewrite these constraints as</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>s'.cnt =
-	if s'.reset { 0 }
-	else if s'.is_counting { s.cnt + 1 }
+</span>'s.cnt =
+	if 's.reset { 0 }
+	else if 's.is_counting { s.cnt + 1 }
 	else { s.cnt }
 <span class="boring">}
 </span></code></pre></pre>
@@ -349,27 +354,27 @@ by making the <code>reset</code> behavior preempt the behavior related to <code>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>trans(s, s') =
-	  ( s'.start_stop ⇒ (s'.is_counting = ¬s.is_counting))
-	∧ (¬s'.start_stop ⇒ (s'.is_counting =  s.is_counting))
+</span>trans(s, 's) =
+	  ( 's.start_stop ⇒ ('s.is_counting = ¬s.is_counting))
+	∧ (¬'s.start_stop ⇒ ('s.is_counting =  s.is_counting))
 	∧ (
-		s'.cnt =
-			if s'.reset { 0 }
-			else if s'.is_counting { s.cnt + 1 }
+		's.cnt =
+			if 's.reset { 0 }
+			else if 's.is_counting { s.cnt + 1 }
 			else { s.cnt }
 	)
 <span class="boring">}
 </span></code></pre></pre>
 <p><br />
 </p>
-<p>Notice that <code>trans</code> only really constrains <code>s'.is_counting</code> and <code>s'.cnt</code>. This makes sense as the
-two other states variables <code>s'.start_stop</code> and <code>s'.reset</code> (both of type <code>bool</code>) are seen as
+<p>Notice that <code>trans</code> only really constrains <code>'s.is_counting</code> and <code>'s.cnt</code>. This makes sense as the
+two other states variables <code>'s.start_stop</code> and <code>'s.reset</code> (both of type <code>bool</code>) are seen as
 <em>inputs</em>. Since they are not constrained, they can take any (boolean) value at all.</p>
-<p>Notice also that, if we fix some values for <code>s'.start_stop</code> and <code>s'.reset</code>, then <code>trans</code> is
+<p>Notice also that, if we fix some values for <code>'s.start_stop</code> and <code>'s.reset</code>, then <code>trans</code> is
 <em>deterministic</em>: <code>s</code>, whatever it is, can only have one successor.</p>
-<table><thead><tr><th align="center"><code>s'.start_stop</code></th><th align="center"><code>s'.reset</code></th><th align="center"><code>s'.is_counting</code></th><th align="center"><code>s'.cnt</code></th></tr></thead><tbody>
-<tr><td align="center"><code>false</code></td><td align="center"><code>false</code></td><td align="center"><code>s.is_counting</code></td><td align="center"><code>if s'.is_counting { s.cnt + 1 } else { s.cnt }</code></td></tr>
-<tr><td align="center"><code>true</code></td><td align="center"><code>false</code></td><td align="center"><code>¬s.is_counting</code></td><td align="center"><code>if s'.is_counting { s.cnt + 1 } else { s.cnt }</code></td></tr>
+<table><thead><tr><th align="center"><code>'s.start_stop</code></th><th align="center"><code>'s.reset</code></th><th align="center"><code>'s.is_counting</code></th><th align="center"><code>'s.cnt</code></th></tr></thead><tbody>
+<tr><td align="center"><code>false</code></td><td align="center"><code>false</code></td><td align="center"><code>s.is_counting</code></td><td align="center"><code>if 's.is_counting { s.cnt + 1 } else { s.cnt }</code></td></tr>
+<tr><td align="center"><code>true</code></td><td align="center"><code>false</code></td><td align="center"><code>¬s.is_counting</code></td><td align="center"><code>if 's.is_counting { s.cnt + 1 } else { s.cnt }</code></td></tr>
 <tr><td align="center"><code>false</code></td><td align="center"><code>true</code></td><td align="center"><code>s.is_counting</code></td><td align="center"><code>0</code></td></tr>
 <tr><td align="center"><code>true</code></td><td align="center"><code>true</code></td><td align="center"><code>¬s.is_counting</code></td><td align="center"><code>0</code></td></tr>
 </tbody></table>

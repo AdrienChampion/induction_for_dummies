@@ -421,11 +421,11 @@ have to encode them as state variables along with <code>i</code>.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>The surprise state variable <code>done</code> is a flag we are going to use to indicate whether the loop is
@@ -435,13 +435,13 @@ beyond the scope of this chapter.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>init: (and
-    (≥ len 0)
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+</span>init {
+    len ≥ 0,
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>The first two simply constrain the values for <code>len</code> (<code>usize</code>, thus <code>≥ 0</code>) and <code>grouping</code> (checked
@@ -460,20 +460,19 @@ update the value of <code>done</code>, and finally that of <code>i</code>.</p>
 </span><span class="boring">fn main() {
 </span>// Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
 // iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
+trans {
+	'grouping = grouping,
+	'len = len,
 	// NEW value of the `done` flag, if `true` there will be no further iteration.
-    (= done (not (&lt; i len)))
-	(ite
-		// if    | If `done`,
-		(pre done)
-		// then  | just maintain the value, a.k.a. &quot;stuttering&quot;;
-		(= i (pre i))
-		// else  | otherwise, `i` is incremented by `grouping`.
-		(= i (+ (pre i) grouping))
-	)
-)
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p><br />
@@ -488,20 +487,19 @@ falsify <code>¬(len = 8 ∧ grouping = 4 ∧ i = len)</code>.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;¬(len = 8 ∧ grouping = 4 ∧ i = len)&quot;:
-		(not (and (= len 8) (= grouping 4) (= i len)))
-)
+</span>candidates {
+	&quot;candidate&quot;: ¬(len = 8 ⋀ grouping = 4 ⋀ i = len),
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Mikino yields</p>
 <pre><code class="language-text">&gt; mikino bmc test.mkn
-running BMC, looking for falsifications for 1 PO(s)...
+running BMC, looking for falsifications for 1 candidate(s)...
 checking for falsifications at depth 0
 checking for falsifications at depth 1
 checking for falsifications at depth 2
 found a falsification at depth 2:
-- `¬(len = 8 ∧ grouping = 4 ∧ i = len)` = (not (and (= len 8) (= grouping 4) (= i len)))
+- `candidate` = (not (and (= len 8) (= grouping 4) (= i len)))
   |=| Step 0
   |     done = false
   | grouping = 4
@@ -523,8 +521,8 @@ found a falsification at depth 2:
   |=|
 
 |===| Bmc result
-| - found a falsification for the following PO(s)
-|   `¬(len = 8 ∧ grouping = 4 ∧ i = len)`
+| - found a falsification for the following candidate(s)
+|   `candidate`
 |
 | - system is unsafe
 |===|
@@ -554,19 +552,19 @@ that shortly as we will run into this exact problem.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
-)
+</span>candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Full code in the <a href="#version-2">Version 2</a> section. Running mikino in <code>check</code> mode, we get:</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `done then i = len` = (=&gt; done (= i len))
   |=| Step k
   |     done = false
@@ -581,14 +579,14 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `done then i = len`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `not done then i &lt; len`
 |===|
@@ -606,25 +604,25 @@ actively mask cex-s. Spurious cex-s in this case, but if you make any mistake wh
 <code>trans</code> then you might block actual cex-s and safety proofs you might get would not say anything
 about the original system.</p>
 <p>The reason why, in this case, it <strong>would</strong> be safe to add <code>(pre i) ≥ 0</code> (don't do it though) is
-that it is an invariant, *i.e. a <em>consequence</em> of the system's behavior. So there's no reason to
+that it is an invariant, <em>i.e.</em> a <em>consequence</em> of the system's behavior. So there's no reason to
 force it on <code>trans</code>, we can just ask mikino to prove it instead.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
-)
+</span>candidates {
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Full code in the <a href="#version-2">Version 3</a> section. Mikino tells us</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `done then i = len` = (=&gt; done (= i len))
   |=| Step k
   |     done = false
@@ -651,15 +649,15 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `done then i = len`
 |   `i ≥ 0`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `not done then i &lt; len`
 |===|
@@ -707,25 +705,25 @@ less trivial to strengthen our real candidate successfully.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+</span>candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;i ≥ 0&quot;: (≥ i 0)
+	&quot;i ≥ 0&quot;: i ≥ 0,
 	// new
-	&quot;len ≥ 0&quot;: (≥ len 0)
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
-)
+	&quot;len ≥ 0&quot;: len ≥ 0,
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>and run mikino. Full code in the <a href="#version-4">Version 4</a> section.</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `done then i = len` = (=&gt; done (= i len))
   |=| Step k
   |     done = false
@@ -743,14 +741,14 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `done then i = len`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `grouping &gt; 0`
 |   `i ≥ 0`
@@ -783,17 +781,17 @@ Also, will it strengthen our main candidate enough to make it inductive?</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+</span>candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len ≥ 0&quot;: (≥ len 0)
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len ≥ 0&quot;: len ≥ 0,
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
 	// new
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>We run mikino but, inconspicuously, we change the command used to run Z3 slightly (change <code>z3</code> in
@@ -801,11 +799,12 @@ the string to whatever the path to your Z3 binary is). Full code in the <a href=
 section.</p>
 <pre><code class="language-bash">&gt; mikino --z3_cmd &quot;z3 -T:5&quot; check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
 |===| Error
-| smt solver reported `timeout`
+| smt-level error:
+| - smt solver reported `timeout`
 | during step check
 |===|
 </code></pre>
@@ -847,27 +846,28 @@ even if you wait for an infinite amount of time and memory.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+</span>candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len ≥ 0&quot;: (≥ len 0)
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len ≥ 0&quot;: len ≥ 0,
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
 	// new
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>when we got</p>
 <pre><code class="language-bash">&gt; mikino --z3_cmd &quot;z3 -T:5&quot; check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
 |===| Error
-| smt solver reported `timeout`
+| smt-level error:
+| - smt solver reported `timeout`
 | during step check
 |===|
 </code></pre>
@@ -894,21 +894,21 @@ binary.)</p>
 </p>
 <p>So, maybe, instead the loose constraint <code>len ≥ 0</code> and trying to conduct a proof for any value of
 <code>len</code> (which does not work, as we have seen), we could check each possible value of <code>len</code>
-separately. Notice that <code>len</code> is used in a non-linear <code>mod</code> application, <code>(mod len grouping)</code>:</p>
+separately. Notice that <code>len</code> is used in a non-linear <code>mod</code> application, <code>len % grouping</code>:</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+</span>candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len ≥ 0&quot;: (≥ len 0)
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len ≥ 0&quot;: len ≥ 0,
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
 	// new
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Checking for the concrete possible values of <code>len</code> instead would remove this non-linear <code>mod</code> and,
@@ -918,13 +918,13 @@ first we need to change <code>init</code> slightly:</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>init: (and
-    (= len 8) // new
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+</span>init {
+    len = 8, // new
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Nothing to do on <code>trans</code>, it does not mention <code>len</code> anyway. The candidate <code>len ≥ 0</code> changes to
@@ -932,34 +932,34 @@ become more precise though:</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+</span>candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len is 8&quot;: (= len 8) // changed
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len is 8&quot;: len = 8, // changed
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
-<p>While we still have the non-linear <code>(mod len grouping)</code>, the (candidate) invariant <code>(= len 8)</code>
-might actually be enough for Z3 to handle the checks on this system. We shall see.</p>
+<p>While we still have the non-linear <code>len % grouping</code>, the (candidate) invariant <code>len = 8</code> might
+actually be enough for Z3 to handle the checks on this system. We shall see.</p>
 <p>Full code in the <a href="#version-6">Version 6</a> section. Crossing our fingers, we nervously run mikino:</p>
 <pre><code class="language-text">&gt; mikino --z3_cmd &quot;z3 -T:5&quot; check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-success: all PO(s) are inductive
+success: all candidate(s) are inductive
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - all POs are inductive (preserved by the transition relation)
+| - all candidates are inductive (preserved by the transition relation)
 |
-| - system is safe, all reachable states verify the PO(s)
+| - system is safe, all reachable states verify the candidate(s)
 |===|
 </code></pre>
 <p>🎊 🎉 👏 🎊</p>
@@ -974,35 +974,35 @@ this candidate is going to be inductive or not.</p>
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;not done then i + grouping ≤ len&quot;:       // new
-		(⇒ (not done) (≤ (+ i grouping) len)) // new
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+</span>candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;not done then i + grouping ≤ len&quot;: // new
+		¬done ⇒ i + grouping ≤ len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len is 8&quot;: (= len 8) // changed
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len is 8&quot;: len = 8, // changed
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Full code in the <a href="#version-7">Version 7</a> section.</p>
 <p>🥁🥁🥁🥁🥁🥁</p>
 <pre><code class="language-text">&gt; mikino --z3_cmd &quot;z3 -T:5&quot; check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-success: all PO(s) are inductive
+success: all candidate(s) are inductive
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - all POs are inductive (preserved by the transition relation)
+| - all candidates are inductive (preserved by the transition relation)
 |
-| - system is safe, all reachable states verify the PO(s)
+| - system is safe, all reachable states verify the candidate(s)
 |===|
 </code></pre>
 <p>🎉</p>
@@ -1011,7 +1011,7 @@ success: all PO(s) are inductive
 <p>It might be disappointing that we had to choose a value for the length, <em>i.e.</em> that we did not
 prove that <code>fold</code>'s array accesses are legal when <code>len</code> is <code>8</code>. Unfortunately, in its current
 state, Z3 cannot handle to have <code>len</code> as an unknown value because of the non-linear applications of
-<code>mod</code>ulo.</p>
+modulo.</p>
 <p>This means that, assuming we are verifying a binary, we can conduct the same proof for all <code>len</code>
 values actually used by the program. It would be much better to verify <code>fold</code> for any length, but
 this illustrates the kind of trade-offs that are often necessary in a verification process due to
@@ -1122,51 +1122,49 @@ fold result: 26
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 
-init: (and
-    (≥ len 0)
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+init {
+    len ≥ 0,
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 
 // Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
 // iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
+trans {
+	'grouping = grouping,
+	'len = len,
 	// NEW value of the `done` flag, if `true` there will be no further iteration.
-    (= done (not (&lt; i len)))
-	(ite
-		// if    | If `done`,
-		(pre done)
-		// then  | just maintain the value, a.k.a. &quot;stuttering&quot;;
-		(= i (pre i))
-		// else  | otherwise, `i` is incremented by `grouping`.
-		(= i (+ (pre i) grouping))
-	)
-)
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 
-po_s: (
-	&quot;¬(len = 8 ∧ grouping = 4 ∧ i = len)&quot;:
-		(not (and (= len 8) (= grouping 4) (= i len)))
-)
+candidates {
+	&quot;candidate&quot;: ¬(len = 8 ⋀ grouping = 4 ⋀ i = len),
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
-running BMC, looking for falsifications for 1 PO(s)...
+running BMC, looking for falsifications for 1 candidate(s)...
 checking for falsifications at depth 0
 checking for falsifications at depth 1
 checking for falsifications at depth 2
 found a falsification at depth 2:
-- `¬(len = 8 ∧ grouping = 4 ∧ i = len)` = (not (and (= len 8) (= grouping 4) (= i len)))
+- `candidate` = (not (and (= len 8) (= grouping 4) (= i len)))
   |=| Step 0
   |     done = false
   | grouping = 4
@@ -1188,8 +1186,8 @@ found a falsification at depth 2:
   |=|
 
 |===| Bmc result
-| - found a falsification for the following PO(s)
-|   `¬(len = 8 ∧ grouping = 4 ∧ i = len)`
+| - found a falsification for the following candidate(s)
+|   `candidate`
 |
 | - system is unsafe
 |===|
@@ -1201,50 +1199,49 @@ found a falsification at depth 2:
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 
-init: (and
-    (≥ len 0)
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+init {
+    len ≥ 0,
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 
 // Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
 // iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
+trans {
+	'grouping = grouping,
+	'len = len,
 	// NEW value of the `done` flag, if `true` there will be no further iteration.
-    (= done (not (&lt; i len)))
-	(ite
-		// if    | If `done`,
-		(pre done)
-		// then  | just maintain the value;
-		(= i (pre i))
-		// else  | otherwise, `i` is incremented by `grouping`.
-		(= i (+ (pre i) grouping))
-	)
-)
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 
-po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
-)
+candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `done then i = len` = (=&gt; done (= i len))
   |=| Step k
   |     done = false
@@ -1259,14 +1256,14 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `done then i = len`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `not done then i &lt; len`
 |===|
@@ -1278,51 +1275,50 @@ failed: the following PO(s) are not inductive:
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 
-init: (and
-    (≥ len 0)
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+init {
+    len ≥ 0,
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 
 // Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
 // iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
+trans {
+	'grouping = grouping,
+	'len = len,
 	// NEW value of the `done` flag, if `true` there will be no further iteration.
-    (= done (not (&lt; i len)))
-	(ite
-		// if    | If `done`,
-		(pre done)
-		// then  | just maintain the value;
-		(= i (pre i))
-		// else  | otherwise, `i` is incremented by `grouping`.
-		(= i (+ (pre i) grouping))
-	)
-)
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 
-po_s: (
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
-)
+candidates {
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `done then i = len` = (=&gt; done (= i len))
   |=| Step k
   |     done = false
@@ -1349,15 +1345,15 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `done then i = len`
 |   `i ≥ 0`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `not done then i &lt; len`
 |===|
@@ -1369,56 +1365,55 @@ failed: the following PO(s) are not inductive:
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 
-init: (and
-    (≥ len 0)
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+init {
+    len ≥ 0,
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 
 // Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
 // iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
+trans {
+	'grouping = grouping,
+	'len = len,
 	// NEW value of the `done` flag, if `true` there will be no further iteration.
-    (= done (not (&lt; i len)))
-	(ite
-		// if    | If `done`,
-		(pre done)
-		// then  | just maintain the value;
-		(= i (pre i))
-		// else  | otherwise, `i` is incremented by `grouping`.
-		(= i (+ (pre i) grouping))
-	)
-)
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 
-po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;i ≥ 0&quot;: (≥ i 0)
+	&quot;i ≥ 0&quot;: i ≥ 0,
 	// new
-	&quot;len ≥ 0&quot;: (≥ len 0)
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
-)
+	&quot;len ≥ 0&quot;: len ≥ 0,
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `done then i = len` = (=&gt; done (= i len))
   |=| Step k
   |     done = false
@@ -1436,14 +1431,14 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `done then i = len`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `grouping &gt; 0`
 |   `i ≥ 0`
@@ -1459,54 +1454,58 @@ failed: the following PO(s) are not inductive:
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 
-init: (and
-    (≥ len 0)
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+init {
+    len ≥ 0,
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
-    (= done (not (&lt; i len )))
-	(ite
-		(pre done)
-		// then
-		(= i (pre i))
-		// else
-		(= i (+ (pre i) grouping))
-	)
-)
+// Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
+// iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
+trans {
+	'grouping = grouping,
+	'len = len,
+	// NEW value of the `done` flag, if `true` there will be no further iteration.
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 
-po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len ≥ 0&quot;: (≥ len 0)
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len ≥ 0&quot;: len ≥ 0,
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
 	// new
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino --z3_cmd &quot;z3 -T:5&quot; check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
 |===| Error
-| smt solver reported `timeout`
+| smt-level error:
+| - smt solver reported `timeout`
 | during step check
 |===|
 </code></pre>
@@ -1517,59 +1516,62 @@ checking step case...
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 
-init: (and
-    (= len 8) // new
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+init {
+    len = 8, // new
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
-    (= done (not (&lt; i len )))
-	(ite
-		(pre done)
-		// then
-		(= i (pre i))
-		// else
-		(= i (+ (pre i) grouping))
-	)
-)
+// Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
+// iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
+trans {
+	'grouping = grouping,
+	'len = len,
+	// NEW value of the `done` flag, if `true` there will be no further iteration.
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 
-po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len is 8&quot;: (= len 8) // changed
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len is 8&quot;: len = 8, // changed
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-success: all PO(s) are inductive
+success: all candidate(s) are inductive
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - all POs are inductive (preserved by the transition relation)
+| - all candidates are inductive (preserved by the transition relation)
 |
-| - system is safe, all reachable states verify the PO(s)
+| - system is safe, all reachable states verify the candidate(s)
 |===|
 </code></pre>
 </details>
@@ -1579,61 +1581,64 @@ success: all PO(s) are inductive
 <pre><pre class="playground"><code class="language-rust  compile_fail no_run">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
-</span>vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+</span>svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
 
-init: (and
-    (= len 8) // new
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (&lt; i len)))
-	(= (mod len grouping) 0)
-)
+init {
+    len = 8, // new
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i &lt; len),
+	len % grouping = 0,
+}
 
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
-    (= done (not (&lt; i len )))
-	(ite
-		(pre done)
-		// then
-		(= i (pre i))
-		// else
-		(= i (+ (pre i) grouping))
-	)
-)
+// Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
+// iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
+trans {
+	'grouping = grouping,
+	'len = len,
+	// NEW value of the `done` flag, if `true` there will be no further iteration.
+    'done = ¬('i &lt; 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
 
-po_s: (
-	&quot;not done then i &lt; len&quot;: (⇒ (not done) (&lt; i len))
-	&quot;not done then i + grouping ≤ len&quot;:       // new
-		(⇒ (not done) (≤ (+ i grouping) len)) // new
-	&quot;done then i = len&quot;: (⇒ done (= i len))
+candidates {
+	&quot;not done then i &lt; len&quot;: ¬done ⇒ i &lt; len,
+	&quot;not done then i + grouping ≤ len&quot;: // new
+		¬done ⇒ i + grouping ≤ len,
+	&quot;done then i = len&quot;: done ⇒ i = len,
 
-	&quot;len is 8&quot;: (= len 8) // changed
-	&quot;grouping &gt; 0&quot;: (&gt; grouping 0)
-	&quot;i ≥ 0&quot;: (≥ i 0)
-	&quot;len grouping related&quot;: (= (mod len grouping) 0)
-    &quot;i % grouping = 0&quot;: (= (mod i grouping) 0)
-)
+	&quot;i ≥ 0&quot;: i ≥ 0,
+	&quot;len is 8&quot;: len = 8, // changed
+	&quot;grouping &gt; 0&quot;: grouping &gt; 0,
+	&quot;len grouping related&quot;: len % grouping = 0,
+    &quot;i % grouping = 0&quot;: i % grouping = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-success: all PO(s) are inductive
+success: all candidate(s) are inductive
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - all POs are inductive (preserved by the transition relation)
+| - all candidates are inductive (preserved by the transition relation)
 |
-| - system is safe, all reachable states verify the PO(s)
+| - system is safe, all reachable states verify the candidate(s)
 |===|
 </code></pre>
 </details>

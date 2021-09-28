@@ -164,10 +164,10 @@ version of the system that starts at <code>0</code></p>
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>/// Initial predicate.
-init: (and
-	(= is_counting start_stop)
-	(= cnt 0)
-)
+init {
+	is_counting = start_stop,
+	cnt = 0,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>with a <code>cnt ≥ 0</code> candidate as well as a few falsifiable other candidates:</p>
@@ -175,11 +175,11 @@ init: (and
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>/// Candidate invariants, or &quot;Proof Objectives&quot; (`po_s`).
-po_s: (
-	&quot;cnt is positive&quot;: (≥ cnt 0)
-	&quot;cnt ≤ 2&quot;: (≤ cnt 2)
-	&quot;cnt ≤ 4&quot;: (≤ cnt 4)
-)
+candidates {
+	&quot;cnt is positive&quot;: cnt ≥ 0,
+	&quot;cnt ≤ 2&quot;: cnt ≤ 2,
+	&quot;cnt ≤ 4&quot;: cnt ≤ 4,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p><br />
@@ -187,10 +187,10 @@ po_s: (
 <p>Let's run mikino in <code>check</code> mode on this system, full code in the <a href="#full-code">Full Code</a> section.</p>
 <pre><code class="language-text">&gt; mikino check test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `cnt ≤ 2` = (&lt;= cnt 2)
   |=| Step k
   |         cnt = 2
@@ -217,15 +217,15 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `cnt ≤ 2`
 |   `cnt ≤ 4`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `cnt is positive`
 |===|
@@ -285,21 +285,21 @@ unrolling depth with <code>--bmc_max &lt;int&gt;</code> just like we did in <cod
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>/// Candidate invariants, or &quot;Proof Objectives&quot; (`po_s`).
-po_s: (
-	&quot;cnt is positive&quot;: (≥ cnt 0)
-	&quot;cnt ≤ 2&quot;: (≤ cnt 2)
-	&quot;cnt ≤ 4&quot;: (≤ cnt 4)
-)
+candidates {
+	&quot;cnt is positive&quot;: cnt ≥ 0,
+	&quot;cnt ≤ 2&quot;: cnt ≤ 2,
+	&quot;cnt ≤ 4&quot;: cnt ≤ 4,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>the last two candidates should be falsifiable at depth <code>3</code> and <code>5</code> respectively. Let's make sure
 this is the case.</p>
 <pre><code class="language-text">&gt; mikino check --bmc_max 5 test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `cnt ≤ 2` = (&lt;= cnt 2)
   |=| Step k
   |         cnt = 2
@@ -326,20 +326,20 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `cnt ≤ 2`
 |   `cnt ≤ 4`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `cnt is positive`
 |===|
 
-running BMC, looking for falsifications for 2 PO(s)...
+running BMC, looking for falsifications for 2 candidate(s)...
 checking for falsifications at depth 0
 checking for falsifications at depth 1
 checking for falsifications at depth 2
@@ -404,7 +404,7 @@ found a falsification at depth 5:
   |=|
 
 |===| Bmc result
-| - found a falsification for the following PO(s)
+| - found a falsification for the following candidate(s)
 |   `cnt ≤ 2`
 |   `cnt ≤ 4`
 |
@@ -418,61 +418,56 @@ found a falsification at depth 5:
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>/// State variables.
-vars: (
+svars {
 	/// Inputs of the system.
-	start_stop, reset: bool
+	start_stop reset: bool,
 	/// Keeps track of whether we are counting.
-	is_counting: bool
+	is_counting: bool,
 	/// Counts time, output of the system.
-	cnt: int
-)
+	cnt: int,
+}
 
 /// Initial predicate.
-init: (and
-	(= is_counting start_stop)
-	(= cnt 0)
-)
+init {
+	is_counting = start_stop,
+	cnt = 0,
+}
 
 /// Transition relation.
-trans: (and
-	(=
-		// The *next* value of `is_counting` is equal to...
+trans {
+	// The *next* value of `is_counting` is equal to...
+	'is_counting = if 'start_stop {
+		// ...if `'start_stop` is true, then the negation of
+		// its *previous* value...
+		¬is_counting
+	} else {
+		// ...otherwise, it is equal to its previous value.
 		is_counting
-		(ite start_stop
-			// ...if `start_stop` is true, then the negation of
-			// its *previous* value...
-			//    vvvvvvvvvvvvvvv
-			(not (pre is_counting))
-			// ...otherwise, it is equal to its previous value.
-			(pre is_counting)
-		)
-	)
-	(= cnt
-		(ite reset
-			0
-			(ite is_counting
-				(+ (pre cnt) 1)
-				(pre cnt)
-			)
-		)
-	)
-)
+	},
+	'cnt = if 'reset {
+		0
+	} else if 'is_counting {
+		cnt + 1
+	} else {
+		cnt
+	},
+}
 
 /// Candidate invariants, or &quot;Proof Objectives&quot; (`po_s`).
-po_s: (
-	&quot;cnt is positive&quot;: (≥ cnt 0)
-	&quot;cnt ≤ 2&quot;: (≤ cnt 2)
-	&quot;cnt ≤ 4&quot;: (≤ cnt 4)
-)
+candidates {
+	&quot;cnt is positive&quot;: cnt ≥ 0,
+	&quot;cnt ≤ 2&quot;: cnt ≤ 2,
+	&quot;cnt ≤ 4&quot;: cnt ≤ 4,
+}
 <span class="boring">}
 </span></code></pre></pre>
 <p>Output:</p>
 <pre><code class="language-text">&gt; mikino bmc --bmc_max 10 test.mkn
 checking base case...
-success: all PO(s) hold in the base state
+success: all candidate(s) hold in the base state
 
 checking step case...
-failed: the following PO(s) are not inductive:
+failed: the following candidate(s) are not inductive:
 - `cnt ≤ 2` = (&lt;= cnt 2)
   |=| Step k
   |         cnt = 2
@@ -499,15 +494,15 @@ failed: the following PO(s) are not inductive:
   |=|
 
 |===| Induction attempt result
-| - all POs hold in the initial state(s)
+| - all candidates hold in the initial state(s)
 |
-| - the following PO(s) are not inductive (not preserved by the transition relation)
+| - the following candidate(s) are not inductive (not preserved by the transition relation)
 |   `cnt ≤ 2`
 |   `cnt ≤ 4`
 |
-| - system might be unsafe, some PO(s) are not inductive
+| - system might be unsafe, some candidate(s) are not inductive
 |
-| - the following PO(s) hold in the initial state(s) and are inductive
+| - the following candidate(s) hold in the initial state(s) and are inductive
 |   and thus hold in all reachable states of the system:
 |   `cnt is positive`
 |===|
