@@ -32,11 +32,11 @@ There are several ways to retrieve a binary for mikino:
 
 - if you just want to retrieve a binary, you can do so on [mikino's release page][release page].
 
-Make sure you have mikino `v0.3.0` or above.
+Make sure you have mikino `v0.5.1` or above.
 
 ```text
 > mikino -V
-mikino 0.3.0
+mikino 0.5.1
 ```
 
 \
@@ -49,34 +49,46 @@ Mikino takes as input a transition system in a format consistent but slightly di
 we have seen up to this point. Systems are written in files organized as follows, illustrated on
 our stopwatch running example.
 
-First are state variable declarations. It is a list of declarations between parens introduced by
-the `vars` keyword and of form `<var_1>, <var_2>, ..., <var_n>: <type>` with `n ≥ 1`.
+First are state variable declarations. It is a list of declarations between braces introduced by
+the `svars` keyword and of form `<var_1> <var_2> ... <var_n>: <type>` with `n ≥ 1`.
 
 ```rust ,compile_fail,no_run
 {{ #include code/sw_1.mkn:var_decls }}
 ```
 
-Next is the initial predicate, introduced by the `init` keyword. Mikino expects SMT-LIB-2-like
-expressions (s-expressions), so it is very similar to what we have seen so far. A noticeable
-difference is that mikino supports (some) unicode operators such as `≥` and `⇒`.
+Next is the initial predicate, introduced by the `init` keyword. Mikino does not support
+SMT-LIB-2-like (s-)expressions (anymore), and instead expects Rust-like expressions. Note that
+mikino supports common unicode operators such as `∧`, `⋀`, `∨`, `⋁`, `≥` and `⇒`.
 
 ```rust ,compile_fail,no_run
 {{ #include code/sw_1.mkn:init }}
 ```
 
+> Here, we gave `init` a list of three comma-separated (with optional trailing comma) expressions.
+> This list is understood as a conjunction `⋀`, meaning the list above is equivalent to writing
+> `is_counting = start_stop ⋀ cnt ≥ 0 ⋀ (reset ⇒ cnt = 0)`.
+
+\
+\
+
 The transition relation definition, introduced by the `trans` keyword, differs slightly. Remember
 that the transition relation relates two states: the *previous* one and the *next* one. In mikino,
-we can mention the *next* version of a state variable `svar` by simply writing `svar`. If we want
-to refer to its *previous* version however, we must use the `pre` operator: `(pre svar)`.
+we refer to the *previous* version of a state variable `svar` by simply writing `svar`. If we want
+to refer to its *next* version, we must use the `'` (prime) prefix operator: `'svar`.
 
 ```rust ,compile_fail,no_run
 {{ #include code/sw_1.mkn:trans }}
 ```
 
+> `trans` also accepts a comma-separated list of expressions understood as a *conjunction* `⋀`.
+
+\
+\
+
 Last are the candidate invariants, sometimes called **P**roof **O**bjective**s**, introduced by the
-`po_s` keyword. It is given as a list of named candidates of shape `"string describing the
-candidate": <expr>`. The name of a candidate is what mikino will use to refer to that candidate in
-its output.
+`candidates` keyword. They are given as a comma-separated list of named candidates of shape
+`"string describing the candidate": <expr>`. The name of a candidate is what mikino will use to
+refer to that candidate in its output.
 
 ```rust ,compile_fail,no_run
 {{ #include code/sw_1.mkn:candidates }}
@@ -218,17 +230,17 @@ transition relation and causes `cnt` to be `0` regardless of `is_counting`'s val
 \
 \
 
-> We had to somewhat artificially write the candidate as `(⇒ (and is_counting (not start_stop)) (>
-> cnt 0))`. Based on the paragraph above, the `(and is_counting (not start_stop))` part should
-> really be `is_counting`. The problem with this is that we actually ignore `is_counting` in the
-> initial state.
+> We had to somewhat artificially write the candidate as `(is_counting ⋀ ¬start_stop) ⇒ cnt > 0`.
+> Based on the paragraph above, the `is_counting ⋀ ¬start_stop` part should really be
+> `is_counting`. The problem with this is that we actually ignore `is_counting` in the initial
+> state.
 >
 > Hence, we would get a initial state counterexample where `start_stop` is `true`, meaning
 > `is_counting` is `true`, but `cnt` ignores it and is just `0`. As authors, we wanted to show a
 > counterexample where `reset` prevents `cnt` from increasing despite `start_stop` being `true`,
 > and thus had to distort the candidate a little bit.
 >
-> A better way to write this candidate is `(⇒ is_counting (> cnt (pre cnt)))`. It would still be
+> A better way to write this candidate is `is_counting ⇒ 'cnt > cnt`. It would still be
 > falsifiable, for the same reason and with the same counterexample, but it would make more sense.
 > Sadly, mikino does not **currently** support *"two-state candidates"*, *i.e.* candidates that
 > refer to a *previous* state.

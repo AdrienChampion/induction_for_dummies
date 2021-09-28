@@ -259,7 +259,7 @@ actively mask cex-s. Spurious cex-s in this case, but if you make any mistake wh
 about the original system.
 
 The reason why, in this case, it **would** be safe to add `(pre i) ≥ 0` (don't do it though) is
-that it is an invariant, *i.e. a *consequence* of the system's behavior. So there's no reason to
+that it is an invariant, *i.e.* a *consequence* of the system's behavior. So there's no reason to
 force it on `trans`, we can just ask mikino to prove it instead.
 
 ```rust ,compile_fail,no_run
@@ -460,7 +460,7 @@ binary.)
 
 So, maybe, instead the loose constraint `len ≥ 0` and trying to conduct a proof for any value of
 `len` (which does not work, as we have seen), we could check each possible value of `len`
-separately. Notice that `len` is used in a non-linear `mod` application, `(mod len grouping)`:
+separately. Notice that `len` is used in a non-linear `mod` application, `len % grouping`:
 
 ```rust ,compile_fail,no_run
 {{ #include code/split_1.mkn:candidates }}
@@ -482,8 +482,8 @@ become more precise though:
 {{ #include code/split_2.mkn:candidates }}
 ```
 
-While we still have the non-linear `(mod len grouping)`, the (candidate) invariant `(= len 8)`
-might actually be enough for Z3 to handle the checks on this system. We shall see.
+While we still have the non-linear `len % grouping`, the (candidate) invariant `len = 8` might
+actually be enough for Z3 to handle the checks on this system. We shall see.
 
 Full code in the [Version 6](#version-6) section. Crossing our fingers, we nervously run mikino:
 
@@ -528,7 +528,7 @@ Full code in the [Version 7](#version-7) section.
 It might be disappointing that we had to choose a value for the length, *i.e.* that we did not
 prove that `fold`'s array accesses are legal when `len` is `8`. Unfortunately, in its current
 state, Z3 cannot handle to have `len` as an unknown value because of the non-linear applications of
-`mod`ulo.
+modulo.
 
 This means that, assuming we are verifying a binary, we can conduct the same proof for all `len`
 values actually used by the program. It would be much better to verify `fold` for any length, but

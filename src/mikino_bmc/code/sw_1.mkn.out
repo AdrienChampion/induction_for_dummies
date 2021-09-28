@@ -1,4 +1,4 @@
-running BMC, looking for falsifications for 3 PO(s)...
+running BMC, looking for falsifications for 3 candidate(s)...
 checking for falsifications at depth 0
 found a falsification at depth 0:
 - `cnt ≤ 2` = (<= cnt 2)
@@ -28,10 +28,10 @@ checking for falsifications at depth 9
 checking for falsifications at depth 10
 
 |===| Bmc result
-| - could not find falsifications for the following PO(s)
+| - could not find falsifications for the following candidate(s)
 |   `cnt is positive`
 |
-| - found a falsification for the following PO(s)
+| - found a falsification for the following candidate(s)
 |   `cnt ≤ 2`
 |   `cnt ≤ 4`
 |

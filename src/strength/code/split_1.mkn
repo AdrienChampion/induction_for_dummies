@@ -1,43 +1,52 @@
 // CMD: mikino check <file>
 // ANCHOR: all
-vars: (
-	len, grouping: int
-	i: int
-	done: bool
-)
+// ANCHOR: vars
+svars {
+	len grouping: int,
+	i: int,
+	done: bool,
+}
+// ANCHOR_END: vars
 
-init: (and
-    (≥ len 0)
-	(≥ grouping 1)
-	(= i 0)
-	(= done (not (< i len)))
-	(= (mod len grouping) 0)
-)
+// ANCHOR: init
+init {
+    len ≥ 0,
+	grouping ≥ 1,
+	i = 0,
+	done = ¬(i < len),
+	len % grouping = 0,
+}
+// ANCHOR_END: init
 
-trans: (and
-	(= grouping (pre grouping))
-	(= len (pre len))
-    (= done (not (< i len )))
-	(ite
-		(pre done)
-		// then
-		(= i (pre i))
-		// else
-		(= i (+ (pre i) grouping))
-	)
-)
+// ANCHOR: trans
+// Encodes iteration `(pre i)`, NOT iteration `i`. That is, `trans` encodes the
+// iteration where we access `arr` with the interval `(pre i)..((pre i) + grouping)`.
+trans {
+	'grouping = grouping,
+	'len = len,
+	// NEW value of the `done` flag, if `true` there will be no further iteration.
+    'done = ¬('i < 'len),
+	if done {
+		// just maintain the value;
+		'i = i
+	} else {
+		// otherwise, `i` is incremented by `grouping`.
+		'i = i + grouping
+	},
+}
+// ANCHOR_END: trans
 
 // ANCHOR: candidates
-po_s: (
-	"not done then i < len": (⇒ (not done) (< i len))
-	"done then i = len": (⇒ done (= i len))
+candidates {
+	"not done then i < len": ¬done ⇒ i < len,
+	"done then i = len": done ⇒ i = len,
 
-	"len ≥ 0": (≥ len 0)
-	"grouping > 0": (> grouping 0)
-	"i ≥ 0": (≥ i 0)
-	"len grouping related": (= (mod len grouping) 0)
+	"i ≥ 0": i ≥ 0,
+	"len ≥ 0": len ≥ 0,
+	"grouping > 0": grouping > 0,
+	"len grouping related": len % grouping = 0,
 	// new
-    "i % grouping = 0": (= (mod i grouping) 0)
-)
+    "i % grouping = 0": i % grouping = 0,
+}
 // ANCHOR_END: candidates
 // ANCHOR_END: all

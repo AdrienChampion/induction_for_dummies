@@ -1,4 +1,4 @@
-running BMC, looking for falsifications for 3 PO(s)...
+running BMC, looking for falsifications for 3 candidate(s)...
 checking for falsifications at depth 0
 checking for falsifications at depth 1
 found a falsification at depth 1:
@@ -25,11 +25,11 @@ checking for falsifications at depth 9
 checking for falsifications at depth 10
 
 |===| Bmc result
-| - could not find falsifications for the following PO(s)
+| - could not find falsifications for the following candidate(s)
 |   `cnt is positive`
 |   `reset works`
 |
-| - found a falsification for the following PO(s)
+| - found a falsification for the following candidate(s)
 |   `is_counting implies cnt > 0`
 |
 | - system is unsafe
