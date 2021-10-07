@@ -1,0 +1,131 @@
+
+
+\section{Introduction}%
+\label{sec:intro}
+
+\ita{Formal verification} consists in performing a static (compile-time) analysis of some program
+to \ita{verify}, or \ita{prove}, that the program respects certain properties. A compiler for a
+statically-typed language for instance (dis)proves that the program is well-typed. This is the case
+of the \rust{} compiler, which is a systems language with no dynamic memory management. In addition
+to type-checking, the \rust{} compiler also performs \ita{borrow-checking}~\cite{rust} and
+statically (dis)proves that a program is memory-safe and thread-safe ---absence of \ita{undefined
+behavior} and \ita{data races}.
+
+These properties are quite generic in the sense that it is reasonable to expect all programs to be
+well-typed, memory-safe and thread-safe. \ita{Functional properties} on the other hand are
+properties specific to the \ita{function} of a given program or piece of code. For instance,
+inserting \code{(key, value)} in a hash map should result in a hash map where \code{value} is
+associated to \code{key} ---unless the program ran out of memory.
+
+
+\section{Motivation}%
+\label{sec:motivation}
+
+Formal verification faces many challenges, and among the biggest ones is scaling up to complex
+code. Generic property verification such as type-checking scales easily because it has a built-in
+notion of abstraction: function signatures. Whenever a function or operator appears, the
+type-checker can abstract the call by its signature and check \ita{i)} that the call's inputs
+type-check and \ita{ii)} deduce the type of the output. There is no need to recursively look at the
+code of the function/operator to handle a call.
+
+Verifying functional properties is quite challenging as, in general, languages have no built-in
+abstraction mechanism for functional verification. The main solution to this problem is to augment
+the language with \ita{contract} annotations that specify the pre-conditions (requirements) and
+post-conditions (guarantees) of a function, or the invariants of a type.
+\\
+Another challenge is handling the loops appearing in the program. Dealing with loops virtually
+always boils down to some form of induction: the loop verifies some property \code{P} over the
+variables in scope if \ita{i)} \code{P} holds when entering the loop, and \ita{ii)} any \ita{single
+iteration} ---or \ita{step}--- of the loop starting from a state where \code{P} holds ends in a
+state where \code{P} holds. If indeed the loop verifies \code{P}, then the analysis knows \code{P}
+holds at the end of the loop and can move on to analyzing the rest of the code.
+
+\smallskip{}
+
+Now, assuming the analysis somehow has access to a detailed \ita{specification} (contracts for all
+functions/operators/types and invariants for all loops), there is some hope for the analysis to
+work and scale reasonably well. But where does the specification come from? Trying to somehow infer
+this kind of specification is extremely complex, highly fragile when the code evolves, and arguably
+not needed. Developers should have some mental version of this specification, otherwise writing
+(meaningful) code would not be possible ---just like developers must know what the type of a
+function should be when they write it.
+
+Unfortunately, writing specification for a verification engine requires skills/knowledge that
+average developers rarely possess. Ideally, writing specification should be a very common task akin
+to writing tests. This has been done~\cite{aws} by heavily working on the ergonomics of the
+contract language and verification tool, as well as educating developers on how to write
+specification and, crucially, why doing it is rewarding.
+
+\smallskip{}
+
+Assume now that developers are able (and willing) to write meaningful specification. The
+verification engine then runs, and say it proves the program is correct. This result is
+understandable and requires no further action, it is basically the same as passing a test. Say now
+the verification engine fails to verify the program: in general, this means one of two things.
+
+First, the tool produces a \ita{concrete counterexample}: for a function contract for instance, the
+developers is given actual inputs which make the function falsify its contract. Again, this is
+similar to a failed test or bug report and is fairly understandable ---fixing the problem might not
+be trivial, just like any test or bug report, but it should be within the developer's abilities.
+
+The second case is that the proof technique inside the tool cannot verify this exact specification
+on this exact piece of code. Proof techniques are almost always \ita{incomplete}%
+\footnote{%
+    \ita{Incomplete}: can fail to prove some properties even if they do hold.%
+}
+%
+at theory-level, and definitely always incomplete in practice even with very large time
+constraints. It is worth highlighting the fact that, if we want verification to be as common as
+testing, verification needs to be very efficient. This in turns means that the check(s) performed
+by the verification tool must be relatively simple. Hence, having developers writing specification
+is not enough, they need to write good, precise, easy-to-check specification.
+
+\smallskip{}
+
+One way to do this is to have all developers get a PhD in software safety and enough experience
+that they become experts in whatever technology the verification engine is based on. This is not
+going to happen, but it might be possible to meet developers half-way: some education on
+verification is definitely needed, but improving the ergonomics of the verification engine so that
+it is easily understandable could make the whole process much more practical. Especially when it
+comes to reporting \ita{failures with no concrete counterexample}.
+
+\smallskip{}
+
+\Mkn{} and its companion tutorial \ita{Verification for Dummies: Induction}%
+\footnote{%
+    \url{https://ocamlpro.github.io/verification_for_dummies}%
+}
+%
+constitute an attempt to educate developers with no verification knowledge or expertise about
+\ita{step counterexamples} in \ita{\smt{}-based} induction proof attempts. \smt{}
+solvers~\cite{smt} are building blocks used by most modern verification tools. \Mkn{}'s companion
+tutorial discusses them in a very hands-on fashion, strongly encouraging readers to run the
+examples provided themselves and modify them/write their own to get an understanding of what \smt{}
+solvers do.
+
+
+
+
+
+
+\section{Discussing Complexity}
+\label{sec:complexity}
+
+Let us very briefly discuss the complexity of formal verification. It seems to us that novices in
+verification are often kept oblivious of its very high complexity. Since generic program
+\smt{}-based verification has a complexity of \ita{k-EXP time} at best, we think it is crucial to
+address this topic very early on. Worse, verification engines in general are currently quite bad at
+handling systems featuring non-linear arithmetic (over which \smt{} is undecidable), which we think
+also needs to be brought up early on.
+
+This is exactly what \mkn{}'s tutorial does, by discussing both complexity and undecidability in
+its presentation of candidate strengthening. We argue that doing so is honest as it presents some
+limitations of the whole approach; but it is also rewarding. The tutorial makes readers play with a
+system that requires \smt{} checks that the underlying \smt{} solver cannot handle, and this
+becomes an opportunity to discuss some of the various tricks and techniques available to simplify
+the verification problem enough that we \mkn{} manages to produce a result.
+
+The tutorial decides to fix the value of one of the state variables (which makes sense in context).
+In a full-blown verification engine for generic programs supporting user-provided specification
+however, it would probably be more sensible to abstract away the non-linearity as done in
+\cite{cocospec}.

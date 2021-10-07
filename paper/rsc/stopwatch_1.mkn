@@ -1,0 +1,16 @@
+svars {
+    count: int,
+    reset: bool,
+}
+init {
+    count ≥ 0,
+    reset ⇒ (count = 0),
+}
+trans {
+    'count = if 'reset { 0 } else { count + 1 },
+}
+candidates {
+    "candidate 1": ¬(count = -7),
+    "candidate 2": reset ⇒ (count = 0),
+}
+
