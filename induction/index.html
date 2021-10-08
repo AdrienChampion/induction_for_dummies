@@ -190,11 +190,11 @@ stopwatch system actually made assumptions about the <em>previous</em> state. &q
 then we cannot have <code>cnt_1 = 0</code> without ...&quot;</p>
 <p><br />
 </p>
-<p>Instead of checking if <code>candidate</code> is a <em>consequence</em> of <code>trans</code> (which it is not as we just saw)
-we could check <code>trans</code> <em>preserves</em> <code>candidate</code>. Since <code>trans</code> relates succeeding states <code>k-1</code> and
-<code>k</code>, we say that <code>trans</code> <em>preserves</em> <code>candidate</code> if <code>candidate(k) ∧ trans(k-1, k) ⇒ candidate(k)</code>.
-That is, <em>&quot;states verifying <code>candidate</code> cannot, in one application of <code>trans</code>, reach a state
-falsifying <code>candidate</code>&quot;</em>.</p>
+<p>Instead of checking if <code>candidate</code> is a <em>consequence</em> of <code>trans</code> (which it is not as we just saw) we
+could check <code>trans</code> <em>preserves</em> <code>candidate</code>. Since <code>trans</code> relates succeeding states <code>k-1</code> and <code>k</code>,
+we say that <code>trans</code> <em>preserves</em> <code>candidate</code> if <code>candidate(k-1) ∧ trans(k-1, k) ⇒ candidate(k)</code>. That
+is, <em>&quot;states verifying <code>candidate</code> cannot, in one application of <code>trans</code>, reach a state falsifying
+<code>candidate</code>&quot;</em>.</p>
 <p>Is it the case though? We take the same assumptions as above, when we looked at a transition from
 <code>k-1</code> to <code>k</code>, and also assume <code>candidate</code> at <code>k-1</code>: <em>&quot;no cex of length <code>i &lt; k-1</code> exists&quot;</em>. By
 <code>trans</code>, we unroll to <code>k</code> and check for a cex at <code>k</code>. Can there be cex of length <code>i &lt; k</code>? No:
