@@ -1,96 +1,20 @@
-# SMT Solvers
+# SMT Scripts: SMT-LIB 2
 
-> SMT solvers are basic building blocks for most modern verification tools. While studying SMT
-> solvers is particularly rewarding for developing such tools, understanding SMT forces to grasp
-> concepts that are very useful even for high-level users. Later chapters will rely heavily on SMT
-> solvers and readers are encouraged to run and modify examples themselves, or even create new ones.
+This section goes through interactions with SMT solvers through the SMT-LIB 2 standard. Now,
+SMT-LIB 2 is a readable scripting language, but it is designed to be written and read by programs,
+not humans. Keep reading if you are interested in learning about SMT-LIB 2, which you need to if
+you plan to directly interact with SMT solvers.
 
-\
-\
-
-Let's go over a few theory-level notions before we actually start playing with SMT solvers. A
-**S**atisfiability **M**odulo **T**heory (SMT) solver is a solver for establishing whether some
-constraints expressed in **M**any-**S**orted **F**irst **O**rder **L**ogic (MSFOL) are
-*satisfiable*. Let's unpack this.
-
-First, MSFOL is built on FOL (**F**irst **O**rder **L**ogic), which basically means *"boolean
-formulas"*. For instance, `a ∧ (false ∨ b ∨ c)` is a FOL formula, where `∧` is conjunction (`&&`)
-and `∨` is disjunction (`||`). So this formula *evaluates* to `true` if and only if `a` is `true`
-and either `b` or `c` is `true` (since `false` tends not to be `true`). We can represent this
-formula as a tree, where leaves are boolean literals and nodes are boolean operators.
-
-```text
- ┌───∧───┐
- │       │
- a    ┌──∨──┬───────┐
-      │     │       │
-      │     │       │
-    false   b       c
-```
-
-The leaves of the tree are *atoms*. MSFOL essentially extends FOL by allowing atoms to be formulas
-in other theories such as integers, strings, arrays, *etc.* For instance, with `x` and `y` integers
-and `arr` an array:
-
-```text
-   ┌───∧─────┐
-   │         │
- x > 7    ┌──∨────┬───────┐
-          │       │       │
-          │       │       │
-        false   y ≤ x   arr[y] = x + 1
-```
-
-Note that the last atom, `arr[y] = x + 1`, mixes array selection `arr[y]` with addition over
-integers `x + 1`.
-
-
-## Z3
-
-Examples in the next sections (and the next chapter) will rely on the [Z3 SMT solver][z3] to
-actually run. You can build it from source or recover a binary from the [release page][z3 release].
-The version should not matter too much for what we'll do, but for reference this guide used
-`v4.8.12`.
-
-From this point forward I assume readers have a Z3 binary called `z3` in their path. That is,
-running the command `z3 -version` should not fail and produce an output similar to
-
-```text
-Z3 version 4.8.13 - 64 bit
-```
-
-While I recommend Z3, other efficient solvers exist and include [Alt-Ergo][ae], [CVC4][cvc4] and
-[Yices 2][yices]. Solvers tend to be good at distinct kinds of problem from each other, and
-verification frameworks routinely run several of them in parallel, wait for the quickest answer,
-and discard solver instances that are still running.
-
-<!-- Last, while we recommend having Z3 available locally, you can run the examples in this section
-using only the [Z3 online playground][z3 online]. Beware that all following chapters about induction
-require to have Z3 in your path. -->
+If you just want to understand what SMT solvers do, ideally with a more user-friendly language,
+head to [SMT Scripts: Mikino](mikino.html). It's pretty much the same as this section with more
+friendly language.
 
 \
 \
 
 
 
-## Satisfiability
-
-Formula satisfiability is concerned about whether it is possible to make some formula evaluate to
-`true`. More precisely, is it possible to find a valuation for the variables appearing in the
-formula under which the formula is `true`. Such a valuation is called a *model* of the formula. Let
-us write a tiny example and start running Z3 to play with satisfiability directly.
-
-> To be precise, *SAT* stands for the *boolean satisfiability problem*, which deals with finding
-> models for purely boolean formulas. *"SMT"* adds *"Modulo Theory"* to *"Satisfiability"* to
-> specify that atoms of the formula can mention theories different from booleans (integers, reals,
-> arrays, *etc.*) in its atoms, and that models must respect the rules of these theories.
-
-\
-\
-
-
-
-## SMT-LIB 2
+## Basics
 
 For simplicity's sake, let's only allow atoms to mention integers. Consider the following formula.
 
@@ -210,8 +134,8 @@ Let's add another constraint to make these constraints unsatisfiable. In the lat
 example, Z3 has no choice but to have `x` be `11` since it is the only way to verify the second
 constraint (because the third constraint prevents `y` from being even).
 
-We can simply constrain `x` to be even (which prevents `x` to be `11`), which we will write as "`x`
-cannot be odd".
+We can simply constrain `x` to be even (which prevents `x` from being `11`), which we will write as
+"`x` cannot be odd".
 
 ```text
 {{ #include code/ex_5.smt2 }}
@@ -246,8 +170,8 @@ Z3 answers "no": in this context, it is not possible for `x` not to be odd. This
 proved for us that the program's assert statement can never fail (and can be compiled away).
 
 What if, with different constraints, the negation of the program's assert statement was
-satisfiable? Then, [as we saw in the previous section](#playing-with-z3-sat), Z3 can give us a
-*model*: a valuation of all the (relevant) variables involved in the check. this constitutes a
+satisfiable? Then, [as we saw in the previous section](index.html#playing-with-z3-sat), Z3 can give
+us a *model*: a valuation of all the (relevant) variables involved in the check. this constitutes a
 *counterexample*, which shows how it is possible to verify the whole context but still falsify the
 program assertion (*i.e* satisfy the SMT-LIB-level `(assert (not <program_assertion>))`).
 
@@ -264,12 +188,5 @@ we will see in the following chapters.
 
 
 
-
-[z3]: https://github.com/Z3Prover/z3 (Z3 on github)
-[z3 release]: https://github.com/Z3Prover/z3/releases (Z3's releases on github)
-<!-- [z3 online]: https://rise4fun.com/z3 (Z3's online interface) -->
-[ae]: https://alt-ergo.ocamlpro.com (Alt-Ergo homepage)
-[cvc4]: https://cvc4.github.io/ (CVC4 homepage)
-[yices]: https://yices.csl.sri.com (Yices 2 homepage)
 [smt lib]: http://smtlib.cs.uiowa.edu (SMT-LIB homepage)
 [VS Code]: https://code.visualstudio.com (VS Code homepage)

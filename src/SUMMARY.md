@@ -3,6 +3,8 @@
 - [Introduction](./readme.md)
 - [Preface](./preface/readme.md)
 - [SMT Solvers](./smt/readme.md)
+	- [SMT Scripts: SMT-LIB 2](./smt/smt_lib.md)
+	- [SMT Scripts: Mikino](./smt/mikino.md)
 - [Transition Systems](./trans/readme.md)
 - [SMT and Transition Systems](./trans_smt/readme.md)
 - [Unrolling and BMC](./bmc/readme.md)
@@ -11,3 +13,4 @@
 - [Induction: Mikino and Step Cex-s](./mikino_induction/readme.md)
 - [Candidate Strengthening](./strength/readme.md)
 - [Conclusion](./conclusion/readme.md)
+- [Appendix: Mikino](./mikino_install/readme.md)
