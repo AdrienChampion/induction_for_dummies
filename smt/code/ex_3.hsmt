@@ -1,3 +1,5 @@
+// CMD: mikino script <file>
+// ANCHOR: all
 vars {
 	x y : int
 }

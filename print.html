@@ -752,7 +752,7 @@ these variables are.</p>
 <p>As you already guessed the first lines in the snippet above declare integer variables <code>x</code> and <code>y</code>.
 <code>vars</code> block let you declare variables of type <code>int</code>, <code>bool</code> or <code>rat</code>(ional) as a comma-separated
 (with optional trailing comma) list:</p>
-<pre><pre class="playground"><code class="language-rust">
+<pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>vars {
@@ -764,7 +764,7 @@ these variables are.</p>
 <span class="boring">}
 </span></code></pre></pre>
 <p>Anyway, an hsmt assertion of our running example would look like this:</p>
-<pre><pre class="playground"><code class="language-rust">
+<pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>vars {
@@ -832,7 +832,7 @@ the end like <code>assert!()</code>, <code>println!(&quot;my message&quot;)</cod
 <p>Now, we can assert more than one constraint. Mikino works on the conjunction of all constraints
 ---or at least Z3, behind the scene, does. In our running example, our only constraint is a
 conjunction, meaning we could write it as two constraints.</p>
-<pre><pre class="playground"><code class="language-rust">
+<pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>vars {
@@ -846,9 +846,17 @@ check_sat!()
 get_model!()
 <span class="boring">}
 </span></code></pre></pre>
+<pre><code class="language-text">&gt; mikino script test.rs
+sat
+model {
+    x: 8,
+    y: 16,
+}
+success
+</code></pre>
 <p>Alternatively, <code>assert</code> actually takes as input a comma-separated list (with optional trailing
 comma) of expressions, understood as a conjunction. So this also works:</p>
-<pre><pre class="playground"><code class="language-rust">
+<pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>vars {
@@ -864,12 +872,20 @@ check_sat!()
 get_model!()
 <span class="boring">}
 </span></code></pre></pre>
+<pre><code class="language-text">&gt; mikino script test.rs
+sat
+model {
+    x: 8,
+    y: 16,
+}
+success
+</code></pre>
 <p><br />
 </p>
 <p>Let's now add the constraint that <code>y</code> is an odd number: <code>y % 2 = 1</code>. This should void the previous
 model, and more generally any model that relies on making <code>y = 2*x</code> true to satisfy the constraints
 since <code>y</code> would need to be both even and odd.</p>
-<pre><pre class="playground"><code class="language-rust">
+<pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>vars {
@@ -902,7 +918,7 @@ example, the solver has no choice but to have <code>x</code> be <code>11</code> 
 second constraint (because the third constraint prevents <code>y</code> from being even).</p>
 <p>We can simply constrain <code>x</code> to be even (which prevents <code>x</code> from being <code>11</code>), which we will write as
 &quot;<code>x</code> cannot be odd&quot;.</p>
-<pre><pre class="playground"><code class="language-rust">
+<pre><pre class="playground"><code class="language-rust  compile_fail">
 <span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>vars {
@@ -927,15 +943,15 @@ get_model!()
 <pre><code class="language-text">❯ z3 test.rs
 unsat
 |===| Error
-| parse error at 16:1
+| parse error at 18:1
 |    | check_sat!()
-| 16 | get_model!()&lt;EOI&gt;
+| 18 | get_model!()&lt;EOI&gt;
 |    | ^~~~ here
 | - while requesting a model
 | - smt-level error:
 |   - solver error: &quot;line 18 column 10: model is not available&quot;
-| - performing script step for file `code/ex_5.rs`
-| - running `code/ex_5.rs` script
+| - performing script step for file `./src/smt/code/ex_5.hsmt`
+| - running `./src/smt/code/ex_5.hsmt` script
 |===|
 </code></pre>
 <p>We get an error though, because it does not make sense to ask for a model if the formula is
@@ -4878,7 +4894,7 @@ checking step case...
 |===| Error
 | smt-level error:
 | - smt solver reported `timeout`
-| during step check
+| - during step check
 |===|
 </code></pre>
 <p>Adding <code>-T:5</code> to the Z3 command tells Z3 to timeout after five seconds. Feel free to increase the
@@ -4941,7 +4957,7 @@ checking step case...
 |===| Error
 | smt-level error:
 | - smt solver reported `timeout`
-| during step check
+| - during step check
 |===|
 </code></pre>
 <p>We have been in an undecidable fragment all along (since we use non-linear arithmetic). But so far,
@@ -5579,7 +5595,7 @@ checking step case...
 |===| Error
 | smt-level error:
 | - smt solver reported `timeout`
-| during step check
+| - during step check
 |===|
 </code></pre>
 </details>
@@ -5748,7 +5764,7 @@ formulas.</p>
 <p>Mikino is written in <a href="https://www.rust-lang.org">Rust</a> and is available as a Rust library</p>
 <ul>
 <li>https://crates.io/crates/mikino_api</li>
-<li>https://docs.rs/mikino_api/0.9.0/mikino_api</li>
+<li>https://docs.rs/mikino_api/0.9.1/mikino_api</li>
 </ul>
 <p>and a Rust birany</p>
 <ul>
@@ -5798,18 +5814,18 @@ is up-to-date if it is installed already.</p>
 # debug, unoptimized build
 &gt; cargo build
 &gt; ./target/debug/mikino -V
-mikino 0.9.0
+mikino 0.9.1
 
 # release, optimized build
 &gt; cargo build --release
 &gt; ./target/release/mikino -V
-mikino 0.9.0
+mikino 0.9.1
 </code></pre>
 <p>Alternatively, you can ask <code>cargo</code> to install your local clone of the repo:</p>
 <pre><code class="language-bash">&gt; clone https://github.com/OCamlPro/mikino_bin
 &gt; cargo install --path mikino_bin
 &gt; mikino -V
-mikino 0.9.0
+mikino 0.9.1
 </code></pre>
 
                     </main>
