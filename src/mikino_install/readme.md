@@ -103,6 +103,7 @@ mikino 0.9.0
 [mikino release]: https://github.com/OCamlPro/mikino_bin/releases
 [mikino repo]: https://github.com/OCamlPro/mikino_bin
 [z3]: https://github.com/Z3Prover/z3
+[z3 release]: https://github.com/Z3Prover/z3/releases
 [ae]: https://alt-ergo.ocamlpro.com (Alt-Ergo homepage)
 [cvc4]: https://cvc4.github.io/ (CVC4 homepage)
 [yices]: https://yices.csl.sri.com (Yices 2 homepage)

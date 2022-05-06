@@ -1,27 +1,28 @@
 # SMT Scripts: Mikino
 
-This section as well as most following ones rely on [mikino][mikino], a nice tool I wrote for
+This section as well as most following ones rely on [mikino][mikino repo], a nice tool I wrote for
 interacting with SMT solvers and perform induction-based analyses (which we will do soon). If you
 want to follow along just make sure [you have mikino set up](../mikino_install). Be careful that
-mikino requires Z3 to actually run, as discussed in the set up instructions.
+mikino requires Z3 to actually run, as discussed in the [setup instructions](../mikino_install).
 
 \
 
-Mikino has its own script language for interacting with SMT solvers. It is basically a
+Mikino has its own scripting language for interacting with SMT solvers. It is basically a
 Rust-flavored version of [SMT-LIB 2][smt lib] called *hsmt* (Human SMT). While readable, SMT-LIB 2
-is designed to be written and read by programs, not humans. To see what I mean, take a look at
-[the SMT-LIB 2 version of this page](index.html#smt-lib-2) if you haven't already.
+is designed to be written and parsed by programs, not humans. You probably noticed this yourself
+reading the previous section.
 
 We want to emphasize that mikino is **not** an SMT solver: when running hsmt scripts, mikino acts
 as a thin layer between the hsmt code and Z3. Mikino translates your commands, passes them to Z3,
-and handles the result of the command if any. Whenever we say mikino does something in this
-section, it's really Z3 doing through mikino.
+and handles/prettifies the result of the command if any. Whenever we say *mikino does something* in
+this section, it's really Z3 doing through mikino.
 
 \
 
 We're going to go through what hsmt is shortly, but before we do know that you can run `mikino demo
---script demo.rs` to generate a demo script file `demo.rs` with more details about hsmt that we can
-cover here.
+--script demo.rs` to generate a demo script file `demo.rs` which discusses more details about hsmt
+that we can cover here. For instance, the demo discusses conditional branching (if-then-else) over
+check-sat results (which SMT-LIB 2 does not have) which will not be mentioned here.
 
 
 
