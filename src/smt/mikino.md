@@ -53,7 +53,7 @@ As you already guessed the first lines in the snippet above declare integer vari
 `vars` block let you declare variables of type `int`, `bool` or `rat`(ional) as a comma-separated
 (with optional trailing comma) list:
 
-```rust
+```rust ,compile_fail
 vars {
    x y : int,
    flag1 : bool,
@@ -64,8 +64,8 @@ vars {
 
 Anyway, an hsmt assertion of our running example would look like this:
 
-```rust
-{{ #include code/ex_1.rs }}
+```rust ,compile_fail
+{{ #include code/ex_1.hsmt:all }}
 ```
 
 All hsmt commands (`vars`, `assert`, `check_sat`, ...) accept their input either in a block `{ ...
@@ -83,7 +83,7 @@ SMT-LIB script above. No special option is needed and you should get the followi
 
 ```text
 > mikino script test.rs
-{{ #include code/ex_1.rs.out }}
+{{ #include code/ex_1.hsmt.out }}
 ```
 
 Mikino answered `sat`, indicating that the formula is *"satisfiable"*: there exists a model (a
@@ -93,7 +93,7 @@ not). We can do so by adding a `get_model!()` command after the `check_sat!()`. 
 `get_model!()` is **only** legal after a `check_sat!()` yielded `sat`.)
 
 ```rs
-{{ #include code/ex_2.rs }}
+{{ #include code/ex_2.hsmt:all }}
 ```
 
 After updating `test.rs`, running mikino again will produce a model. You might not get exactly the
@@ -102,7 +102,7 @@ possibly other factors (such as your operating system).
 
 ```text
 > mikino script test.rs
-{{ #include code/ex_2.rs.out }}
+{{ #include code/ex_2.hsmt.out }}
 ```
 
 
@@ -122,15 +122,25 @@ Now, we can assert more than one constraint. Mikino works on the conjunction of 
 ---or at least Z3, behind the scene, does. In our running example, our only constraint is a
 conjunction, meaning we could write it as two constraints.
 
-```rust
-{{ #include code/ex_3.rs }}
+```rust ,compile_fail
+{{ #include code/ex_3.hsmt:all }}
+```
+
+```text
+> mikino script test.rs
+{{ #include code/ex_3.hsmt.out }}
 ```
 
 Alternatively, `assert` actually takes as input a comma-separated list (with optional trailing
 comma) of expressions, understood as a conjunction. So this also works:
 
-```rust
-{{ #include code/ex_3_variant.rs}}
+```rust ,compile_fail
+{{ #include code/ex_3_variant.hsmt:all }}
+```
+
+```text
+> mikino script test.rs
+{{ #include code/ex_3_variant.hsmt.out }}
 ```
 
 \
@@ -142,15 +152,15 @@ Let's now add the constraint that `y` is an odd number: `y % 2 = 1`. This should
 model, and more generally any model that relies on making `y = 2*x` true to satisfy the constraints
 since `y` would need to be both even and odd.
 
-```rust
-{{ #include code/ex_4.rs }}
+```rust ,compile_fail
+{{ #include code/ex_4.hsmt:all }}
 ```
 
 We now get
 
 ```text
 > mikino script test.rs
-{{ #include code/ex_4.rs.out }}
+{{ #include code/ex_4.hsmt.out }}
 ```
 
 As expected, the solver now has to make the second constraint `true` through `x = 11`.
@@ -167,15 +177,15 @@ second constraint (because the third constraint prevents `y` from being even).
 We can simply constrain `x` to be even (which prevents `x` from being `11`), which we will write as
 "`x` cannot be odd".
 
-```rust
-{{ #include code/ex_5.rs }}
+```rust ,compile_fail
+{{ #include code/ex_5.hsmt:all }}
 ```
 
 Z3 knows exactly what we are doing and replies that the formula is unsatisfiable.
 
 ```text
 ❯ z3 test.rs
-{{ #include code/ex_5.rs.out }}
+{{ #include code/ex_5.hsmt.out }}
 ```
 
 We get an error though, because it does not make sense to ask for a model if the formula is

@@ -1,3 +1,5 @@
+// CMD: mikino script <file>
+// ANCHOR: all
 vars {
 	x y : int
 }
@@ -6,6 +8,10 @@ assert {
 	x > 7,
 	y = 2*x ∨ x = 11,
 	y % 2 = 1,
+}
+
+assert {
+	¬(x % 2 = 1),
 }
 
 check_sat!()

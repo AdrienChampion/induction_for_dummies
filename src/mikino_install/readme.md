@@ -3,7 +3,7 @@
 Mikino is written in [Rust][rust] and is available as a Rust library
 
 - https://crates.io/crates/mikino_api
-- https://docs.rs/mikino_api/0.9.0/mikino_api
+- https://docs.rs/mikino_api/0.9.1/mikino_api
 
 and a Rust birany
 
@@ -79,12 +79,12 @@ Clone [mikino's (binary) repo][mikino repo], and `cargo build` it:
 # debug, unoptimized build
 > cargo build
 > ./target/debug/mikino -V
-mikino 0.9.0
+mikino 0.9.1
 
 # release, optimized build
 > cargo build --release
 > ./target/release/mikino -V
-mikino 0.9.0
+mikino 0.9.1
 ```
 
 Alternatively, you can ask `cargo` to install your local clone of the repo:
@@ -93,7 +93,7 @@ Alternatively, you can ask `cargo` to install your local clone of the repo:
 > clone https://github.com/OCamlPro/mikino_bin
 > cargo install --path mikino_bin
 > mikino -V
-mikino 0.9.0
+mikino 0.9.1
 ```
 
 
