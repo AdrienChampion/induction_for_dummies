@@ -146,8 +146,7 @@ later posts.</p>
 <em>type system</em> is a formal framework. <a href="https://en.wikipedia.org/wiki/Strong_and_weak_typing">Strongly-typed</a> programming languages rely on
 type systems to (dis)prove that programs are well-typed. For example, consider the following Rust
 function.</p>
-<pre><pre class="playground"><code class="language-rust">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>fn demo(n: usize) -&gt; usize {
     let mut res = n;
@@ -180,8 +179,7 @@ constructed. Looking at these constraints, a tool (the borrow-checker here) can 
 regarding the (un)safety of the program.</p>
 </blockquote>
 <p>Consider the following Rust function, where <code>'a</code> is a lifetime parameter.</p>
-<pre><pre class="playground"><code class="language-rust  compile_fail">
-<span class="boring">#![allow(unused)]
+<pre><pre class="playground"><code class="language-rust  compile_fail"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// DOES NOT COMPILE
 fn demo&lt;'a&gt;(n: &amp;'a mut usize) -&gt; &amp;'a mut usize {
