@@ -8,16 +8,17 @@
 
 A *Functor* is an abstract structure consisting of a single `map` function. Functors are simple
 enough that they are quite easy to understand, at least compared to monads. Feel free to skip this
-and move on to the [chapter on applicatives](../part2/index.html).
+and move on to the [chapter on applicatives](../part2/index.html) if you already have a **solid**
+grasp on functors.
 
 
 
 ## Definition
 
-As discussed in the [intro](../index.html#monads), monads deal with type constructors `Mon : Type u
-→ Type v` which we can see as *wrappers* or *containers* `Mon α` around some type `α`. It's the same
-for functors, and if we decide to call the type constructor `Fct` then we can define the notion of
-Functor as follows.
+As discussed in the [intro](../index.html#monads), monads deal with type constructors `Mon : Type →
+Type`, or more generally `Mon : Type u → Type v`, which we can see as *wrappers* or *containers*
+`Mon α` around some type `α`. It's the same for functors, and if we decide to call the type
+constructor `Fct` then we can define the notion of Functor as follows.
 
 Note that [Lean 4's `Functor`][functor] is not defined *exactly* this way, we'll discuss that
 [soon](#functor-in-lean-4) as it does not matter for now.
@@ -27,11 +28,12 @@ Note that [Lean 4's `Functor`][functor] is not defined *exactly* this way, we'll
 ```
 
 > Note that in Lean 4, characters `?` and `!` can appear in identifiers. So `a?` is just an
-> identifier, like `a`, `a!` or `myIdent`. It is not special notation for anything.
+> identifier, like `a`, `a'`, `a!` or `myIdent`. It is not special notation for anything, nor are
+> `?` and `!` operators.
 
 Let's go over its arguments:
 
-- two implicit types `α` and `β`,
+- two implicit types `α` and `β`, in `Type u` since they're used as inputs for `Fct`,
 - a function from `α` to `β`, and
 - a value of type `Fct α` (wrapper around `α`).
 
@@ -78,6 +80,19 @@ and check that it does what it's supposed to
 {{ #include ../../../HaskellMonads/Part1.lean:list_examples }}
 ```
 
+<details>
+<summary>What's this "|>" operator?</summary>
+
+`term1 |> term2` is syntax for `term2 (term1)`, it passes its left-hand side as an argument to its
+right-hand side. You can read `someFn arg1 |> someFn' arg1' arg2' |> someFn'' arg1''` as
+
+- compute `someFn arg1` and obtain `val`;
+- compute `someFn' arg1' arg2' val` and obtain `val'`;
+- compute `someFn'' arg1'' val'`.
+
+---
+</details>
+
 <br>
 
 Notice how the `List` structure is preserved. Whatever function `f` we *map* over some list `l`, the
@@ -103,7 +118,7 @@ By its definition alone we can confirm that this *map* is structure-preserving f
 the internal value, if any, changes while the constructor (`some` or `none`) is preserved.
 
 This echoes *map* over lists which only modify each value in the list while preserving the *chain
-of constructors* `cons _ (cons _ (cons _ ...))` as *map* preserve length and order.
+of constructors* `cons _ (cons _ (cons _ ...))` as *map* preserves length and order.
 
 Let's see this in practice, using functions from the [previous `List` section](#list-as-a-functor).
 
@@ -118,7 +133,7 @@ Let's see this in practice, using functions from the [previous `List` section](#
 Let's have fun with a structure representing measurements for some real estate. In the real world
 everyone uses the metric system (don't **@me**), but let's pretend some still use some archaic,
 medieval system measuring areas in square "feet". Then we would need our `Measurements` structure to
-handle different units, making the unit used a type parameter.
+handle different units, turning the unit itself into a type parameter.
 
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_def }}
@@ -130,7 +145,7 @@ We probably need some conversion function over `Measurements` to accomodate for 
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_convert }}
 ```
 
-Not this looks a lot like the signature of `Functor.map`. It's also consistent with what functors
+Now this looks a lot like the signature of `Functor.map`. It's also consistent with what functors
 do: changing stored value(s) while preserving the surrounding structure. Let's see if we can
 actually instantiate `Functor` on `Measurements`.
 
@@ -142,7 +157,7 @@ That was easy.
 
 <br>
 
-To have even more fun than we already are we need to give ourselves some units
+To have even more fun than we already are, we need to give ourselves some units
 
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_units_def }}
@@ -154,11 +169,24 @@ and some functions to convert between units.
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_units_conv }}
 ```
 
+<br>
+
 Sweet, now to use all of this on concrete values.
 
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_examples }}
 ```
+
+<details>
+<summary>What's this "·" thing?</summary>
+
+When appearing in a term between parens, `·` means *"this term is a function taking an argument and
+puting it here"*. So `(· - 1 |> meter₂)` is really `fun n => n - 1 |> meter₂`.
+
+---
+</details>
+
+<br>
 
 As introduced in `m₄`'s definition, the infix operator `lft <$> rgt` is the same as `Functor.map lft
 rgt`. With practice, `<$>` is significantly less cumbersome than the alternative and makes chaining
@@ -175,11 +203,11 @@ That's enough fun, let's get serious.
 ## Functor Laws
 
 > This section discusses the logical properties of functors. There will be a few trivial proofs in
-> there. Feel free to skip it, especially as we will go over all of this again in the [last
+> there. Feel free to skim through, especially as we will go over all of this again in the [last
 > chapter](../part7/index.html).
 
 So far we have only seen the programmatic aspects of functors: they require a `map` function that's
-used to compute stuff. However functors, as concepts from category theory, have verify some
+used to compute stuff. However functors, as concepts from category theory, have to verify some
 properties.
 
 <br>
@@ -200,8 +228,8 @@ the value(s). Since `id` does not change anything, then `map id` does not change
 The second property is called *composition* and says that mapping some function `f`, and then some
 other function `g` should be equivalent to mapping `f ∘ g`.
 
-If you're not sneaky about you `Functor` instantiation, you should verify these laws by default. You
-**would** falsify them if `map f` did anything else than applying `f` to the `α`-s.
+If you're not sneaky about your `Functor` instantiation, you should verify these laws by default.
+You **would** falsify them if `map f` did anything else than applying `f` to the `α`-s.
 
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:laws_cex }}
@@ -221,6 +249,9 @@ then you perform your own *map* on the result. Then the compiler can, if it want
 *maps* as a single one. If you are working on a complex structure, a tree for instance, this means
 one traversal instead of two.
 
+Also, since functor are expected to respect these properties, users might rely on them which would
+break their code and cause them to complain profusely.
+
 <br>
 
 So, whenever possible we want to prove these properties actually do hold. Let's do so with our
@@ -230,8 +261,8 @@ So, whenever possible we want to prove these properties actually do hold. Let's 
 {{ #include ../../../HaskellMonads/Part1.lean:laws_proof }}
 ```
 
-We encouter `rfl` again. As discussed [earlier](../index.html#examples-as-theorems), `example`s rely
-on `rfl` to make Lean 4 prove equalities between some term and an expected (*evaluated*) value.
+We encouter `rfl` again. As discussed [earlier](../index.html#examples-as-theorems), our `example`s
+rely on `rfl` to make Lean 4 prove equalities between some term and an expected (*evaluated*) value.
 Here, `rfl` is powerful enough to conduct both proofs completely for us.
 
 

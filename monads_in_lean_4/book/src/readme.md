@@ -92,6 +92,7 @@ universal quantification (*forall*, `∀`) over two `Nat`s. It states that
 - *"given any two `Nat`s `n₁` and `n₂` here is a proof of `n₁ + n₂ = n₂ + n₁`"*
 
 which is really the same as `add_comm₂`.
+
 ---
 </details>
 
@@ -299,7 +300,6 @@ which is the same as this potentially more natural version
 ```
 
 ---
-
 </details>
 
 What's interesting is that we can see `mapStoresAType` as a *program generator* which, given a `s :
@@ -427,6 +427,8 @@ What about the original version, without explicit type annotation?
 ```
 
 Well, that works too.
+
+---
 </details>
 
 
@@ -458,6 +460,10 @@ whether we're talking about programs, programs that can generate programs, data,
 We still need to name universes (`u`, `v`...) and Lean still needs to track them internally to know
 what universe a given type is in. But we will not do anything fancy with them, type universes will
 just appear in the code and *be there*.
+
+So we will a lot of `Mon : Type u → Type v` when discussing monads. You can just think of this as a
+type constructor if you want, *e.g.* `Option : Type u → Type u`. It takes a type (in any universe)
+
 
 
 

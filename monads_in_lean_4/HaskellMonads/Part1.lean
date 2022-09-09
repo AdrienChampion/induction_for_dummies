@@ -11,7 +11,7 @@ namespace part1_examples
 namespace functor
 -- ANCHOR: functor_class
 class Functor (Fct : Type u → Type v) where
-  map (f : α → β) (a? : Fct α) : Fct β
+  map {α β : Type u} (f : α → β) (a? : Fct α) : Fct β
 -- ANCHOR_END: functor_class
 end functor
 
@@ -217,8 +217,10 @@ example : m₅ = meter₂ <$> (· - 1) <$> m₂
 
 
 -- ANCHOR: laws
-class Functor.Laws (Fct : Type u → Type v)
-extends Functor Fct
+class Functor.Laws
+  (Fct : Type u → Type v)
+extends
+  Functor Fct
 where
   functor_identity :
     ∀ (a : Fct α),
