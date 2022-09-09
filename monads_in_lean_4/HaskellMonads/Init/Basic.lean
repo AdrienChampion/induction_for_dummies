@@ -1,4 +1,4 @@
-import Std.Data.HashMap
+import Lean.Data.HashMap
 
 /-!
 # Useful Types and Helpers

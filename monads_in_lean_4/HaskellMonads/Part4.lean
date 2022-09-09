@@ -48,13 +48,13 @@ def main₁ : IO Unit :=
 def Env.func₂₁ : Env → Float :=
   Env.func₁₁
 
-def Env.func₂₂ : Reader Env Nat :=
+def Env.func₂₂ : ReaderM Env Nat :=
   do
     let env ← ReaderT.read
     2 + env.func₂₁.toNat
     |> pure
 
-def Env.func₂₃ : Reader Env String :=
+def Env.func₂₃ : ReaderM Env String :=
   do
     pure s! "Result: `{← Env.func₂₂}`"
 

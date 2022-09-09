@@ -121,7 +121,8 @@ instance : Monad.Laws Option where
   app_interchange {α β} f? a :=
     by
       rw [Seq.seq]
-      rfl
+      cases f?
+      <;> rfl
   app_composition {α β γ} a? f? g? :=
     by
       rw [Seq.seq]
