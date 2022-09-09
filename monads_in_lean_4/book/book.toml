@@ -1,0 +1,22 @@
+[book]
+authors = ["Adrien Champion"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Monads in Lean 4"
+
+[output.html]
+additional-css = [
+    "conf/alectryon.css",
+    "conf/pygments.css",
+]
+additional-js = [
+    "conf/alectryon.js",
+]
+
+[output.html.fold]
+enable = true
+level = 0
+
+[output.html.playground.boring-prefixes]
+lean = "# "
