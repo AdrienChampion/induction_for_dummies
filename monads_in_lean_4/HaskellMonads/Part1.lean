@@ -7,13 +7,141 @@ import HaskellMonads.Init
 -/
 
 
-namespace part1_examples
-namespace functor
+
+namespace Hidden
 -- ANCHOR: functor_class
 class Functor (Fct : Type u → Type v) where
+  --   v~v~~~~ given two (inferred) types,
   map {α β : Type u} (f : α → β) (a? : Fct α) : Fct β
+  --  `f` goes from ~~^           ^^~~~ and `a?` is a `Fct`-wrapped `α`
+  --  `α` to `β`
 -- ANCHOR_END: functor_class
-end functor
+end Hidden
+
+
+
+-- ANCHOR: opt_def
+--- Either `non` or `som val`.
+inductive Opt (α : Type u)
+| non : Opt α
+| som : α → Opt α
+deriving Repr, BEq
+--       ^^^^~~ class allowing Lean to `Repr`esent (display) values, which
+
+-- Make `Opt.non` and `Opt.som` visible for everyone without the `Opt.` bit.
+export Opt (non som)
+
+--- String representation assuming `ToString α`.
+def Opt.toString [ToString α] : Opt α → String
+  | non => "non"
+  | som a => s!"som {a}"
+--           ^^~~~~~^^^~~~ string interpolation
+
+--- Gives us string interpolation for `Opt` values.
+instance instToStringOpt
+  {α : Type u}
+  [ToString α]
+: ToString (Opt α) where
+  toString := Opt.toString
+
+-- string interpolation demo
+#eval
+  let val := som 5
+  s!"an `Opt` value: `{val}`"
+--> yields "an `Opt` value: `som 5`"
+-- ANCHOR_END: opt_def
+
+-- ANCHOR: opt_bad_map
+def Opt.badMap (_f : α → β) : Opt α → Opt β
+  | non => non
+  | som _ => non
+-- ANCHOR_END: opt_bad_map
+
+-- ANCHOR: opt_map
+def Opt.map (f : α → β) : Opt α → Opt β
+  | non => non
+  | som a => f a |> som
+
+example : (som 2).map (fun n => n * 3) = som 6
+:= rfl
+example : non.map (· * 3) = non
+:= rfl
+-- ANCHOR_END: opt_map
+
+-- ANCHOR: opt_functor
+instance instFunctorOpt : Functor Opt where
+  map := Opt.map
+-- ANCHOR_END: opt_functor
+
+-- ANCHOR: opt_examples
+namespace Opt.Examples
+  def opt₁ : Opt String :=
+    som "cat"
+  def opt₂ : Opt Nat :=
+    som 11
+  def opt₃ : Opt Bool :=
+    non
+
+  example : Functor.map String.length opt₁ = som 3
+  := rfl
+  example : Functor.map (· * 2) opt₂ = som 22
+  := rfl
+  example : Functor.map ToString.toString opt₃ = non
+  := rfl
+
+  -- Special notation for `Functor.map f val`: `f <$> val`, so the examples
+  -- above can be rewritten as
+  example : String.length <$> opt₁ = som 3
+  := rfl
+  example : (· * 2) <$> opt₂ = som 22
+  := rfl
+  example : ToString.toString <$> opt₃ = non
+  := rfl
+
+  -- Chaining `map`s.
+
+  example :
+    (
+      som true
+      |> Functor.map ToString.toString
+      -- `som "true"`
+      |> Functor.map String.length
+      -- `som 4`
+      |> Functor.map (· * 2)
+      -- `som 8`
+    )
+    = som 8
+  := rfl
+
+  -- Same but with `<$>`:
+  example :
+    (
+      -- `som 8`
+      (· * 2)
+      -- `som 4`
+      <$> String.length
+      -- `some "true"`
+      <$> ToString.toString
+      <$> som true
+    )
+    = som 8
+  := rfl
+
+  example :
+    (
+      (non : Opt Bool)
+      |> Functor.map ToString.toString
+      -- `non`
+      |> Functor.map String.length
+      -- `non`
+      |> Functor.map (· * 2)
+      -- `non`
+    )
+    = non
+  := rfl
+end Opt.Examples
+-- ANCHOR_END: opt_examples
+
 
 
 -- ANCHOR: list_defs
@@ -57,54 +185,6 @@ example :
   [ 8, 10, 8, 10 ]
 := rfl
 -- ANCHOR_END: list_examples
-
-
-
--- ANCHOR: option_defs
-def opt₁ : Option String :=
-  some "cat"
-def opt₂ : Option Nat :=
-  some 11
-def opt₃ : Option Bool :=
-  none
--- ANCHOR_END: option_defs
-
--- ANCHOR: option_examples
-example : Functor.map stringLength opt₁ = some 3
-:= rfl
-example : Functor.map natMul2 opt₂ = some 22
-:= rfl
-example : Functor.map boolToStr opt₃ = none
-:= rfl
-
-example :
-  (
-    some true
-    |> Functor.map boolToStr
-    -- some "true"
-    |> Functor.map stringLength
-    -- some 4
-    |> Functor.map natMul2
-  )
-  =
-  some 8
-:= rfl
-
-example :
-  (
-    none
-    |> Functor.map boolToStr
-    -- none
-    |> Functor.map stringLength
-    -- none
-    |> Functor.map natMul2
-  )
-  =
-  none
-:= rfl
--- ANCHOR_END: option_examples
-
-end part1_examples
 
 
 namespace part1

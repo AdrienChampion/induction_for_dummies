@@ -6,44 +6,47 @@
 
 <br>
 
-A *Functor* is an abstract structure consisting of a single `map` function. Functors are simple
-enough that they are quite easy to understand, at least compared to monads. Feel free to skip this
-and move on to the [chapter on applicatives](../part2/index.html) if you already have a **solid**
-grasp on functors.
+A *Functor* is an abstract structure consisting of a single `map` function.
+Functors are simple enough that they are quite easy to understand, at least
+compared to monads. Feel free to skip this and move on to the [chapter on
+applicatives](../part2/index.html) if you already have a **solid** grasp on
+functors.
 
 
 
 ## Definition
 
-As discussed in the [intro](../index.html#monads), monads deal with type constructors `Mon : Type →
-Type`, or more generally `Mon : Type u → Type v`, which we can see as *wrappers* or *containers*
-`Mon α` around some type `α`. It's the same for functors, and if we decide to call the type
-constructor `Fct` then we can define the notion of Functor as follows.
+As discussed in the [intro](../index.html#monads), monads deal with type
+constructors `Mon : Type → Type`, or more generally `Mon : Type u → Type v`,
+which we can see as *wrappers* or *containers* `Mon α` around some type `α`.
+It's the same for functors, and if we decide to call the type constructor `Fct`
+then we can define the notion of Functor as follows.
 
-Note that [Lean 4's `Functor`][functor] is not defined *exactly* this way, we'll discuss that
-[soon](#functor-in-lean-4) as it does not matter for now.
+Note that [Lean 4's `Functor`][functor] is not defined *exactly* this way, we'll
+discuss that [soon](#functor-in-lean-4) as it does not matter for now.
 
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:functor_class }}
 ```
 
-> Note that in Lean 4, characters `?` and `!` can appear in identifiers. So `a?` is just an
-> identifier, like `a`, `a'`, `a!` or `myIdent`. It is not special notation for anything, nor are
-> `?` and `!` operators.
+> Note that in Lean 4, characters `?` and `!` can appear in identifiers. So `a?`
+> is just an identifier, like `a`, `a'`, `a!` or `myIdent`. It is not special
+> notation for anything, nor are `?` and `!` operators.
 
 Let's go over its arguments:
 
-- two implicit types `α` and `β`, in `Type u` since they're used as inputs for `Fct`,
+- two implicit types `α` and `β`, in `Type u` since they're used as inputs for
+  `Fct`,
 - a function from `α` to `β`, and
-- a value of type `Fct α` (wrapper around `α`).
+- a value of type `Fct α` (wrapped `α`).
 
 Given these, `map` produces a `Fct β` (wrapped `β`).
 
 <br>
 
-The idea here is that `Functor.map` is a **struture-preserving** transformation. Whatever the `Fct`
-wrapper might be, it has some structure. `Functor.map` must preserve it and only modify the zero,
-one, or many `α` value(s) stored inside.
+The idea here is that `Functor.map` is a **struture-preserving** transformation.
+Whatever the `Fct` wrapper might be, it has some structure. `Functor.map` must
+preserve it and only modify the zero, one, or many `α` value(s) stored inside.
 
 Let's see that in action on some examples.
 
@@ -51,8 +54,55 @@ Let's see that in action on some examples.
 
 ## Examples
 
-Some readers probably thought of [`List.map`] and/or [`Option.map`] as soon as they saw
-`Functor.map`. And that's correct: both [`List`] and [`Option`] are functors (they are monads too).
+Some readers probably thought of [`List.map`] and/or [`Option.map`] as soon as
+they saw `Functor.map`. And that's correct: both [`List`] and [`Option`] are
+functors (they are monads too).
+
+
+### `Opt`ion as a `Functor`
+
+Let's define our own `Opt`ion type:
+
+```lean
+{{ #include ../../../HaskellMonads/Part1.lean:opt_def }}
+```
+
+Now we define a function with the signature of `Functor.map` for `Opt`:
+
+```lean
+{{ #include ../../../HaskellMonads/Part1.lean:opt_bad_map }}
+```
+
+This does not look right... `Functor.map` must be structure-preserving, and
+`Opt.badMap` is not since it turns a `som _` in a `non`. The only
+structure-preserving definition we can give is the normal `map` over options:
+
+```lean
+{{ #include ../../../HaskellMonads/Part1.lean:opt_map }}
+```
+
+<details>
+<summary>About the "·" in the second example...</summary>
+
+When appearing in a term between parens, `·` means *"this term is a function
+taking an argument and putting it here"*. So `(· * 3)` is really `fun n => n *
+3`.
+
+---
+</details>
+
+That's better, we can now instantiate `Functor`:
+
+```lean
+{{ #include ../../../HaskellMonads/Part1.lean:opt_functor }}
+```
+
+Now we can mess around with `Functor.map`:
+
+```lean
+{{ #include ../../../HaskellMonads/Part1.lean:opt_examples }}
+```
+
 
 
 
@@ -66,9 +116,9 @@ Let's define some lists and a few functions:
 
 <br>
 
-A *map* of a function `f` over a list `l` creates a new list containing the result of applying `f`
-to each element of `l`. [`List.map`] is the map function over lists, let's use that as our
-`Functor.map`
+A *map* of a function `f` over a list `l` creates a new list containing the
+result of applying `f` to each element of `l`. [`List.map`] is the map function
+over lists, let's use that as our `Functor.map`
 
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:list_functor }}
@@ -176,15 +226,6 @@ Sweet, now to use all of this on concrete values.
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_examples }}
 ```
-
-<details>
-<summary>What's this "·" thing?</summary>
-
-When appearing in a term between parens, `·` means *"this term is a function taking an argument and
-puting it here"*. So `(· - 1 |> meter₂)` is really `fun n => n - 1 |> meter₂`.
-
----
-</details>
 
 <br>
 
