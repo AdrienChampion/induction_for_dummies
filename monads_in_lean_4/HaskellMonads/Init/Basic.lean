@@ -1,4 +1,4 @@
-import Lean.Data.HashMap
+import Std.Data.HashMap
 
 /-!
 # Useful Types and Helpers
@@ -26,6 +26,7 @@ def String.tail (s : String) :=
   s.drop 1
 
 
+namespace hidden
 --- Copied from mathlib 4.
 @[simp]
 theorem List.get_cons_succ
@@ -36,6 +37,7 @@ theorem List.get_cons_succ
   = as.get ⟨i, Nat.lt_of_succ_lt_succ h⟩
 :=
   rfl
+end hidden
 
 
 

@@ -9,7 +9,10 @@ lean_lib HaskellMonads {
   -- add library configuration options here
 }
 
-@[defaultTarget]
+@[default_target]
 lean_exe haskellMonads {
   root := `Main
 }
+
+require std from git
+  "https://github.com/leanprover/std4"

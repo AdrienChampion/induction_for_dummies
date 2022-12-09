@@ -8,15 +8,19 @@ import HaskellMonads.Init
 
 
 
-namespace Hidden
+namespace Part1Functor
 -- ANCHOR: functor_class
+/-- A functor, very similar to Lean's definition.
+
+This is only illustrative, in the following we use Lean's definition directly.
+-/
 class Functor (Fct : Type u → Type v) where
   --   v~v~~~~ given two (inferred) types,
   map {α β : Type u} (f : α → β) (a? : Fct α) : Fct β
   --  `f` goes from ~~^           ^^~~~ and `a?` is a `Fct`-wrapped `α`
   --  `α` to `β`
 -- ANCHOR_END: functor_class
-end Hidden
+end Part1Functor
 
 
 
@@ -25,11 +29,17 @@ end Hidden
 inductive Opt (α : Type u)
 | non : Opt α
 | som : α → Opt α
-deriving Repr, BEq
---       ^^^^~~ class allowing Lean to `Repr`esent (display) values, which
+deriving Repr, BEq, Inhabited
+--       ^^^^~~ class allowing Lean to `Repr`esent (display) values in `#eval`
 
 -- Make `Opt.non` and `Opt.som` visible for everyone without the `Opt.` bit.
 export Opt (non som)
+
+#eval som (7 + 3 - 5)
+--> displays `Opt.som 5` thanks to `Repr`
+
+example : som (7 + 3 - 5) = som 5
+:= rfl
 
 --- String representation assuming `ToString α`.
 def Opt.toString [ToString α] : Opt α → String
@@ -38,17 +48,14 @@ def Opt.toString [ToString α] : Opt α → String
 --           ^^~~~~~^^^~~~ string interpolation
 
 --- Gives us string interpolation for `Opt` values.
-instance instToStringOpt
-  {α : Type u}
-  [ToString α]
-: ToString (Opt α) where
+instance instToStringOpt [ToString α] : ToString (Opt α) where
   toString := Opt.toString
 
 -- string interpolation demo
 #eval
   let val := som 5
-  s!"an `Opt` value: `{val}`"
---> yields "an `Opt` value: `som 5`"
+  s!"an Opt value: {val}"
+--> yields `"an Opt value: som 5"`
 -- ANCHOR_END: opt_def
 
 -- ANCHOR: opt_bad_map
@@ -71,6 +78,10 @@ example : non.map (· * 3) = non
 -- ANCHOR: opt_functor
 instance instFunctorOpt : Functor Opt where
   map := Opt.map
+
+-- Let's make sure Lean does see a `Functor` instance for `Op`.
+example : Functor Opt := inferInstance
+-- Does not produce any error, we're fine.
 -- ANCHOR_END: opt_functor
 
 -- ANCHOR: opt_examples
@@ -97,7 +108,9 @@ namespace Opt.Examples
   := rfl
   example : ToString.toString <$> opt₃ = non
   := rfl
+-- ANCHOR_END: opt_examples
 
+-- ANCHOR: opt_map_chain
   -- Chaining `map`s.
 
   example :
@@ -140,54 +153,7 @@ namespace Opt.Examples
     = non
   := rfl
 end Opt.Examples
--- ANCHOR_END: opt_examples
-
-
-
--- ANCHOR: list_defs
-def list₁ : List String :=
-  []
-def list₂ : List Nat :=
-  [1, 2, 3]
-def list₃ : List Bool :=
-  [true, false, true, false]
-
-def stringLength : String → Nat :=
-  String.length
-def natMul2 : Nat → Nat :=
-  (· * 2)  -- same as `fun n => n * 2`
-def boolToStr : Bool → String :=
-  toString -- from the `ToString` class
--- ANCHOR_END: list_defs
-
--- ANCHOR: list_functor
-instance : Functor List where
-  map := List.map
--- ANCHOR_END: list_functor
-
--- ANCHOR: list_examples
-example : Functor.map stringLength list₁ = []
-:= rfl
-example : Functor.map natMul2 list₂ = [2, 4, 6]
-:= rfl
-example : Functor.map boolToStr list₃ = ["true", "false", "true", "false"]
-:= rfl
-
-example :
-  (
-    Functor.map boolToStr list₃
-    -- ["true", "false", "true", "false"]
-    |> Functor.map stringLength
-    -- [4, 5, 4, 5]
-    |> Functor.map natMul2
-  )
-  =
-  [ 8, 10, 8, 10 ]
-:= rfl
--- ANCHOR_END: list_examples
-
-
-namespace part1
+-- ANCHOR_END: opt_map_chain
 
 
 
@@ -319,6 +285,7 @@ instance : Functor.Laws Measurements where
 -- ANCHOR_END: laws_proof
 
 
+namespace Part1FullFunctor
 -- ANCHOR: lean_functor
 class Functor (f : Type u → Type v) where
   -- same as our simple definition
@@ -331,6 +298,7 @@ class Functor (f : Type u → Type v) where
     fun b =>
       map (fun _a => b)
 -- ANCHOR_END: lean_functor
+end Part1FullFunctor
 
 namespace laws_cex
 -- ANCHOR: laws_cex
@@ -348,8 +316,6 @@ instance : Functor Measurements where
   }
 -- ANCHOR_END: laws_cex
 end laws_cex
-
-end part1
 
 
 

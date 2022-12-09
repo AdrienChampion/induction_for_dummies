@@ -1,4 +1,4 @@
-import Lean.Data.Rat
+import Std.Data.Rat
 
 import HaskellMonads.Init.Examples
 import HaskellMonads.Init.Basic
