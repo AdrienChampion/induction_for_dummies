@@ -41,13 +41,16 @@ end Part2Applicative
 section Opt
 
 -- ANCHOR: opt_applicative
+def Opt.pure : α → Opt α :=
+  som
+def Opt.seq : Opt (α → β) → (Unit → Opt α) → Opt β
+  | som f, getA? =>
+    f<$> getA? ()
+  | non, _ => non
+
 instance instApplicativeOpt : Applicative Opt where
-  pure a :=
-    som a
-  seq f? getA? :=
-    if let som f := f?
-    then f <$> getA? () -- same as `Functor.map f (getA? ())`
-    else non
+  pure := Opt.pure
+  seq := Opt.seq
 
 -- `seq` has an associated infix operator: `<*>`
 example : som (· + 1) <*> som 3 = som 4
@@ -138,6 +141,7 @@ example : (0:::1:::2:::3:::[]).map (· * 2) = (0:::2:::4:::6:::[])
 --ANCHOR: lst_pure_seq
 def Lst.pure : α → Lst α :=
   (· ::: [])
+
 def Lst.seq : Lst (α → β) → (Unit → Lst α) → Lst β
   | [], _ => []
   | f ::: fs, getAs =>

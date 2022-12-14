@@ -41,7 +41,7 @@ Given these, `map` produces a `Fct β` (wrapped `β`).
 
 <br>
 
-The idea here is that `Functor.map` is a **struture-preserving** transformation. Whatever the `Fct`
+The idea here is that `Functor.map` is a **structure-preserving** transformation. Whatever the `Fct`
 wrapper might be, it has some structure. `Functor.map` must preserve it and only modify the zero,
 one, or many `α` value(s) stored inside.
 
@@ -132,7 +132,7 @@ handle different units, turning the unit itself into a type parameter.
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_def }}
 ```
 
-We probably need some conversion function over `Measurements` to accomodate for medieval people.
+We probably need some conversion function over `Measurements` to accommodate for medieval people.
 
 ```lean
 {{ #include ../../../HaskellMonads/Part1.lean:measurements_convert }}
@@ -245,7 +245,7 @@ So, whenever possible we want to prove these properties actually do hold. Let's 
 {{ #include ../../../HaskellMonads/Part1.lean:laws_proof }}
 ```
 
-We encouter `rfl` again. As discussed [earlier](../index.html#examples-as-theorems), our `example`s
+We encounter `rfl` again. As discussed [earlier](../index.html#examples-as-theorems), our `example`s
 rely on `rfl` to make Lean 4 prove equalities between some term and an expected (*evaluated*) value.
 Here, `rfl` is powerful enough to conduct both proofs completely for us.
 
@@ -267,7 +267,7 @@ As mentioned back then, Lean 4's `Functor` is slightly different. Here it is:
 
 So what's going on here? The new `mapConst` function is almost the same as `map` but takes a
 "constant" `β` instead of a function `α → β`. It also has a *default definition* which can be
-overriden when instantiating `Functor`. Looking at the definition, we see that `mapConst b` is the
+overridden when instantiating `Functor`. Looking at the definition, we see that `mapConst b` is the
 same as `map (fun _ => b)`.
 
 So `mapConst` is really about *replacing* `α`(-s) rather than *mapping*, *i.e.* looking at the `α`
